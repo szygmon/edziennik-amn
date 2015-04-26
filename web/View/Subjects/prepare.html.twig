@@ -1,0 +1,33 @@
+{% extends './base.html.twig' %}
+
+{% block title %}eDziennik AMN - klasy{% endblock %}
+
+{% block head %}
+    <style type="text/css">
+        .content {
+            margin-top: 60px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Nowy przedmiot</h3>
+        </div>
+        <div class="panel-body">
+            <form name="inputform" method="POST" action="/admin/subjects/add">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">Nazwa przedmiotu:</span>
+                    <input type="text" name="name" value="" class="form-control" style="width:250px;" />
+
+                    
+                    <input type="submit" name="save" value="Zapisz" class="btn btn-default" />
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

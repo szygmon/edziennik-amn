@@ -1,0 +1,34 @@
+{% extends './base.html.twig' %}
+
+{% block title %}eDziennik AMN - klasy{% endblock %}
+
+{% block head %}
+    <style type="text/css">
+        .content {
+            margin-top: 60px;
+        }
+    </style>
+{% endblock %}
+
+
+
+{% block content %}
+    {% if info != 'brak' %}
+        {% if info.col == 'red' %}               
+            <div class="alert alert-danger" role="alert">
+        {% else %}
+            <div class="alert alert-success" role="alert">
+        {% endif %}
+
+        {{ info.inf }}
+        </div>
+    {% endif %}
+
+        <a href="{{ url('Classes/prepare') }}">Dodaj nową</a><hr />
+        {% for c in classes %}
+            {{ c.name }} rok {{ c.year }} <a href="{{ url('Classes/index') }}/del/{{ c.class_id }}">[usuń]</a><br />
+        {% else %}
+            Brak klas
+        {% endfor %}
+
+    {% endblock %}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head> 
+        <title>{% block title %}| TITLE{% endblock %}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+		{#		<link rel="shortcut icon" href="{{ url('template') }}/img/favicon.ico" type="image/x-icon">#}
+		<link rel="stylesheet" href="{{ url('assets') }}css/bootstrap.min.css">
+	{#	<link rel="stylesheet" href="{{ url('assets') }}css/bootstrap-theme.min.css">#}
+		<link rel="stylesheet" href="{{ url('template') }}/css/style.css?v1.0.0" type="text/css" >
+		<link rel="stylesheet" href="{{ url('template') }}/css/AdminLTE.css" type="text/css" >
+		<link rel="stylesheet" href="{{ url('template') }}/css/skin-green.css" type="text/css" >
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+		<link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+   
+		<script src="{{ url('assets') }}js/bootstrap.min.js"></script>	
+	{% block head %}{% endblock %}
+</head>
+
+<body>
+	{{ include('navbar.html.twig') }}
+	{% block body %}
+		<div class="container" style="margin-top:50px;">
+			{% block content %}{% endblock %}
+		</div>
+	{% endblock %}
+
+{% block footer %}
+	{{ include('footer.html.twig') }}
+{% endblock %}
+</body>
+</html>

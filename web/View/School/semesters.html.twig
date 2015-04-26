@@ -1,0 +1,29 @@
+{% extends './base.html.twig' %}
+
+{% block title %}eDziennik AMN - przedmioty{% endblock %}
+
+
+
+
+{% block content %}
+    <div class="row" style="margin-top:60px;margin-bottom: 20px;">
+    {% if info != 'brak' %}
+        {% if info.col == 'red' %}               
+            <div class="alert alert-danger" role="alert">
+        {% else %}
+            <div class="alert alert-success" role="alert">
+        {% endif %}
+
+        {{ info.inf }}
+        </div>
+    {% endif %}
+    
+    <a href="{{ url('School/sem_prepare') }}">Dodaj nowy</a><hr />
+    
+        {% for s in semesters %}
+            Rok {{ s.year.from_year }}/{{ s.year.to_year }} semestr {{ s.semester }} od {{ s.from_date|date("Y-m-d") }} do {{ s.to_date|date("Y-m-d") }} <a href="{{ url('School/semesters') }}/del/{{ s.id }}">[usuń]</a><br />
+        {% else %}
+            Brak
+        {% endfor %}
+    </div>
+    {% endblock %}

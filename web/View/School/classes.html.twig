@@ -1,0 +1,29 @@
+{% extends './base.html.twig' %}
+
+{% block title %}eDziennik AMN - przedmioty{% endblock %}
+
+
+
+
+{% block content %}
+    <div class="row" style="margin-top:60px;margin-bottom: 20px;">
+    {% if info != 'brak' %}
+        {% if info.col == 'red' %}               
+            <div class="alert alert-danger" role="alert">
+        {% else %}
+            <div class="alert alert-success" role="alert">
+        {% endif %}
+
+        {{ info.inf }}
+        </div>
+    {% endif %}
+    
+    <a href="{{ url('School/class_prepare') }}">Dodaj nową</a><hr />
+    
+{% for c in classes %}
+            {{ c.subject }} <a href="{{ url('School/classes') }}/del/{{ c.id }}">[usuń]</a><br />
+        {% else %}
+            Brak klas
+        {% endfor %}
+    </div>
+    {% endblock %}

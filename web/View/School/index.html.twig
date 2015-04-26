@@ -1,0 +1,29 @@
+{% extends './base.html.twig' %}
+
+{% block title %}eDziennik AMN - przedmioty{% endblock %}
+
+
+
+
+{% block content %}
+    <div class="row" style="margin-top:60px;margin-bottom: 20px;">
+    {% if info != 'brak' %}
+        {% if info.col == 'red' %}               
+            <div class="alert alert-danger" role="alert">
+        {% else %}
+            <div class="alert alert-success" role="alert">
+        {% endif %}
+
+        {{ info.inf }}
+        </div>
+    {% endif %}
+<ul>
+    <li><a href="{{ url('School/semesters') }}">Semestry</a></li>
+    <li><a href="{{ url('School/classes') }}">Klasy</a></li>
+    <li><a href="{{ url('School/subjects') }}">Przedmioty</a></li>
+    <li><a href="{{ url('School/classrooms') }}">Sale lekcyjne</a></li>
+    <li><a href="{{ url('School/hours') }}">Godziny zajęć</a></li>
+    <li><a href="{{ url('School/plans') }}">Plan lekcji</a></li>
+</ul>
+    </div>
+    {% endblock %}
