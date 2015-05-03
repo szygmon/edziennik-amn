@@ -3,6 +3,7 @@
 namespace Core;
 
 use Di;
+use Conf;
 
 class Template {
 
@@ -28,7 +29,7 @@ class Template {
 
 	public function __construct() {
 		$this->router = Di::get('Router');
-		$this->template = \Conf::get('nc.template', false);
+		$this->template = Conf::get('nc.template', false);
 		$this->twigFunctions = array(
 			'url' => array($this, 'fnUrl'),
 		);
@@ -59,7 +60,7 @@ class Template {
 
 	public function render(Response $response = NULL) {
 		$debug = ob_get_clean();
-		if ($debug && \Conf::get('nc.debug')) {
+		if ($debug && Conf::get('nc.debug')) {
 			echo('<pre class="debug_dump">' . $debug . '</pre>');
 		}
 
@@ -83,7 +84,7 @@ class Template {
 
 	private function prepareTwig() {
 		$loader = new \Twig_Loader_Filesystem(ABSPATH);
-		$twig = new \Twig_Environment($loader, array('cache' => ABSPATH . '/core/cache/twig/', 'debug' => \Conf::get("nc.debug")));
+		$twig = new \Twig_Environment($loader, array('cache' => ABSPATH . '/core/cache/twig/', 'debug' => Conf::get("nc.debug")));
 
 		foreach ($this->twigFunctions as $name => $method) {
 			$function = new \Twig_SimpleFunction($name, $method);
@@ -91,7 +92,7 @@ class Template {
 		}
 
 		$twig->addExtension(new \Twig_Extension_Core());
-		if (\Conf::get("nc.debug"))
+		if (Conf::get("nc.debug"))
 			$twig->addExtension(new \Twig_Extension_Debug());
 		$twig->addGlobal('Me', Di::get('Me'));
 		return $twig;
@@ -99,11 +100,11 @@ class Template {
 
 	public function fnUrl($route, $args = array(), $escaped = true) {
 		if ($route === 'site')
-			return $this->router->getUrl();
+			return $this->router->getUrl(Conf::get('nc.assets', null));
 		if ($route === 'template')
-			return $this->router->getUrl() . '/' . $this->getTemplatePath();
+			return $this->router->getUrl(Conf::get('nc.assets', null)) . '/' . $this->getTemplatePath();
 		if ($route === 'assets')
-			return $this->router->getUrl() . '/core/assets/' . (is_string($args) ? $args : '');
+			return $this->router->getUrl(Conf::get('nc.assets', null)) . '/core/assets/' . (is_string($args) ? $args : '');
 
 		return rtrim($this->router->url($route, $args, $escaped), '/');
 	}
