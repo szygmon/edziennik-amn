@@ -4,6 +4,7 @@ namespace controller;
 
 use Core\BaseController;
 use Model\Object;
+use Core\Response;
 
 // organizacja szkoły
 // klasy, przedmioty, sale lekcyjne, godziny zajęć, plan lekcji
@@ -27,19 +28,21 @@ class School {
 // info do przekazania 
     public function info($inf) {
         if ($inf == 'err') {
-            $info = array('inf' => 'Taka pozycja już istnieje!', 'col' => 'red');
+            $this->info = array('inf' => 'Taka pozycja już istnieje!', 'col' => 'red');
         } else if ($inf == 'err2') {
-            $info = array('inf' => 'Nie można usunąć tego semestru!', 'col' => 'red');
+            $this->info = array('inf' => 'Nie można usunąć tego semestru!', 'col' => 'red');
         } else if ($inf == 'err3') {
-            $info = array('inf' => 'Nie można usunąć grupy ponieważ zawiera podgrupy!', 'col' => 'red');
+            $this->info = array('inf' => 'Nie można usunąć grupy ponieważ zawiera podgrupy!', 'col' => 'red');
         } else if ($inf == 'added') {
-            $info = array('inf' => 'Pozycja została dodana', 'col' => 'green');
+            $this->info = array('inf' => 'Pozycja została dodana', 'col' => 'green');
         } else if ($inf == 'deleted') {
-            $info = array('inf' => 'Pozycja została usunięta', 'col' => 'green');
+            $this->info = array('inf' => 'Pozycja została usunięta', 'col' => 'green');
         } else if ($inf == 'updt') {
-            $info = array('inf' => 'Pozycja została zaktualizowana', 'col' => 'green');
+            $this->info = array('inf' => 'Pozycja została zaktualizowana', 'col' => 'green');
+        } else {
+            $this->info = 'brak';
         }
-        $this->info = $info;
+        return $this->info;
     }
 
 // index //
@@ -54,10 +57,11 @@ class School {
 // klasy //
     /**
      * @Route(/admin/school/classes/{action}/{id})
+     * @param \Core\Router $Router
      */
-    public function classes($id = '', $action = '') {
+    public function classes($Router, $id = '', $action = '') {
         // dodawanie
-        if (isset($_POST['save'])) {
+        if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) {
             // sprawdzenie czy już takiej nie ma
             $y = $this->em->getRepository('Model\\Year')->find($_POST['year']);
             $qb = $this->em->getRepository('\Model\\Clas')->findOneBy(array('name' => $_POST['name'], 'year' => $y));
@@ -71,6 +75,8 @@ class School {
                 $class->setYear($year);
                 $this->em->persist($class);
                 $this->em->flush();
+                if (isset($_POST['saveAndAdd']))
+                    $Router->redirect('School/classPrepare', array('info' => 'added'));
                 $this->info('added');
             }
         }
@@ -84,7 +90,7 @@ class School {
         }
 
         // lista
-        $classes = $this->em->getRepository('Model\\Clas')->findAll();
+        $classes = $this->em->getRepository('Model\\Clas')->findBy(array(), array('year' => 'ASC', 'name' => 'ASC'));
 
         // czyszczenie infa
         $info = $this->info;
@@ -94,20 +100,23 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/classes/prepare)
+     * @Route(/admin/school/classes/prepare/{info})
      */
-    public function classPrepare() {
+    public function classPrepare($info = 'brak') {
+        $inf = $this->info($info);
+
         $years = $this->em->getRepository('Model\\Year')->findAll();
-        return array('years' => $years);
+        return array('years' => $years, 'info' => $inf);
     }
 
 // grupy //
     /**
      * @Route(/admin/school/groups/{action}/{id})
+     * @param \Core\Router $Router
      */
-    public function groups($id = '', $action = '') {
+    public function groups($Router, $id = '', $action = '') {
         // dodawanie
-        if (isset($_POST['save'])) {
+        if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) {
             // aktualizacja
             if ($action == 'updt' && is_numeric($id)) {
                 $group = $this->em->getRepository('\Model\\Group')->find($id);
@@ -115,16 +124,13 @@ class School {
                 if ($_POST['mainGroup'] != 0) {
                     $mainGroup = $this->em->getRepository('\Model\\Group')->find($_POST['mainGroup']);
                     $group->setMainGroup($mainGroup);
-                }
+                } else 
+                    $group->setMainGroup(NULL);
                 $this->em->flush();
                 $this->info('updt');
                 // nowa
             } else {
-                // sprawdzenie czy już takiej nie ma
-                //$qb = $this->em->getRepository('\Model\\Group')->findOneBy(array('fromTime' => new \DateTime($_POST['fromTime']), 'toTime' => new \DateTime($_POST['toTime'])));
-                //if ($qb != NULL)
-                //    $this->info('err');
-                //else {
+                // sprawdzenie czy już takiej nie ma ?? potrzebne wogóle?? to sprawdzanie??
                 $group = new \Model\Group();
                 $group->setName($_POST['name']);
                 if ($_POST['mainGroup'] != 0) {
@@ -133,8 +139,9 @@ class School {
                 }
                 $this->em->persist($group);
                 $this->em->flush();
+                if (isset($_POST['saveAndAdd']))
+                    $Router->redirect('School/groupPrepare', array('info' => 'added'));
                 $this->info('added');
-                //}
             }
         }
 
@@ -154,18 +161,19 @@ class School {
         $info = $this->info;
         $this->info = 'brak';
 
-        $groups;
+        $groups = null;
         $this->groupList($groups);
         return array('groups' => $groups, 'info' => $info);
     }
 
     /**
-     * @Route(/admin/school/groups/prepare)
+     * @Route(/admin/school/groups/prepare/{info})
      */
-    public function groupPrepare() {
-        $groups;
+    public function groupPrepare($info = 'brak') {
+        $inf = $this->info($info);
+        $groups = null;
         $this->groupList($groups);
-        return array('groups' => $groups);
+        return array('groups' => $groups, 'info' => $inf);
     }
 
     /**
@@ -175,7 +183,7 @@ class School {
         if (is_numeric($id)) {
             $data = $this->em->getRepository('\Model\\Group')->find($id);
         }
-        $groups;
+        $groups = null;
         $this->groupList($groups);
         return array('group' => $data, 'groups' => $groups);
     }
@@ -198,10 +206,11 @@ class School {
 // sale lekcyjne //
     /**
      * @Route(/admin/school/classrooms/{action}/{id})
+     * @param \Core\Router $Router
      */
-    public function classrooms($id = '', $action = '') {
+    public function classrooms($Router, $id = '', $action = '') {
         // dodawanie
-        if (isset($_POST['save'])) {
+        if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) {
             // sprawdzenie czy już takiej nie ma
             $qb = $this->em->getRepository('\Model\\Classroom')->findOneBy(array('name' => $_POST['name']));
             if ($qb != NULL)
@@ -211,6 +220,8 @@ class School {
                 $classroom->setName($_POST['name']);
                 $this->em->persist($classroom);
                 $this->em->flush();
+                 if (isset($_POST['saveAndAdd']))
+                    $Router->redirect('School/classroomPrepare', array('info' => 'added'));
                 $this->info('added');
             }
         }
@@ -242,10 +253,11 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/classrooms/prepare)
+     * @Route(/admin/school/classrooms/prepare/{info})
      */
-    public function classroomPrepare() {
-        return array('zmienna' => "brak");
+    public function classroomPrepare($info = 'brak') {
+        $inf = $this->info($info);
+        return array('info' => $inf);
     }
 
 // godziny lekcyjne //
@@ -341,15 +353,14 @@ class School {
                 $g = $this->em->getRepository('\Model\\Group')->find($_POST['group']);
                 $plan->setGroup($g);
             }
-            
-            //$t = $this->em->getRepository('\Model\\Teacher')->find($_POST['teacher']);
-            $plan->setTeacher($t2);
+
+            $t = $this->em->getRepository('\Model\\Teacher')->find($_POST['teacher']);
+            $plan->setTeacher($t);
             $c = $this->em->getRepository('\Model\\Clas')->find($_POST['class']);
             $plan->setClass($c);
 
-
-            //$this->em->persist($plan);
-            //$this->em->flush();
+            $this->em->persist($plan);
+            $this->em->flush();
             $this->info('added');
         }
 
@@ -357,7 +368,7 @@ class School {
         $sem = $this->em->createQueryBuilder()
                 ->select('s')
                 ->from('\Model\\Semester', 's')
-                ->where('s.fromDate < ?1 AND s.toDate > ?1')
+                ->where('s.fromDate <= ?1 AND s.toDate >= ?1')
                 ->setParameters(array('1' => new \DateTime()))
                 ->getQuery()
                 ->getResult();
@@ -367,32 +378,18 @@ class School {
         $classes = $this->em->getRepository('Model\\Clas')->findBy(array('year' => $year), array('name' => 'ASC'));
         $subjects = $this->em->getRepository('Model\\Subject')->findAll();
         $classrooms = $this->em->getRepository('Model\\Classroom')->findAll();
-        $groups;
+        $groups = null;
         $this->groupList($groups);
         $teachers = $this->em->getRepository('\Model\\Teacher')->findAll();
-
-        // tworzenie danych do wyświetlenia w planie
-        $test = array('1a' => array(1 => array(1 => 1, 2 => 2, 3 => 3)), '1b' => array(2 => array('1' => 'stara')));
 
         // czyszczenie infa
         $info = $this->info;
         $this->info = 'brak';
 
-        return array('classes' => $classes, 'subjects' => $subjects, 'classrooms' => $classrooms, 'groups' => $groups, 'teachers' => $teachers, 'test' => $this->getPlan(), 'info' => $info);
+        return array('classes' => $classes, 'subjects' => $subjects, 'classrooms' => $classrooms, 'groups' => $groups, 'teachers' => $teachers, 'plan' => $this->getPlan(), 'info' => $info);
     }
 
     public function getPlan() {
-        $test = array(
-            '1a' => array(
-                1 => array( //lekcja
-                    1 => 'polski', //dzień
-                    2 => 'matma',
-                    3 => 'przyroda')
-            ),
-            '1b' => array(
-                2 => array(
-                    '1' => 'stara')));
-
         $sem = $this->em->createQueryBuilder()
                 ->select('s')
                 ->from('\Model\\Semester', 's')
@@ -415,22 +412,27 @@ class School {
                     ->getQuery()
                     ->getResult();
             foreach ($plan as $p) {
-                $s[$p->getHour()][$p->getDay()][] = array($p->getSubject()->getSubject().($p->getClassroom() != NULL ? ' s. '.$p->getClassroom()->getName() : ''), ($p->getGroup() != NULL ? ' ['.$p->getGroup()->getName().']' : ''));
+                $s[$p->getHour()][$p->getDay()][] = array(
+                    'subject' => $p->getSubject(), 
+                    'classroom' => $p->getClassroom(), 
+                    'group' => $p->getGroup(),
+                    'teacher' => $p->getTeacher()
+                );
             }
             $return[$class->getName()] = array(1 => $s[1], 2 => $s[2], 3 => $s[3], 4 => $s[4], 5 => $s[5], 6 => $s[6], 7 => $s[7], 8 => $s[8]);
             unset($s);
         }
-        //print_r ($return);
         return $return;
     }
 
 // przedmioty //
     /**
      * @Route(/admin/school/subjects/{action}/{id})
+     * @param \Core\Router $Router
      */
-    public function subjects($id = '', $action = '') {
+    public function subjects($Router, $id = '', $action = '') {
         // dodawanie
-        if (isset($_POST['save'])) {
+        if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) {
             // sprawdzenie czy już takiego przedmiotu nie ma
             $qb = $this->em->getRepository('\Model\\Subject')->findOneBy(array('subject' => $_POST['name']));
             if ($qb != NULL)
@@ -440,6 +442,8 @@ class School {
                 $sub->setSubject($_POST['name']);
                 $this->em->persist($sub);
                 $this->em->flush();
+                 if (isset($_POST['saveAndAdd']))
+                    $Router->redirect('School/subPrepare', array('info' => 'added'));
                 $this->info('added');
             }
         }
@@ -463,10 +467,11 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/subjects/prepare)
+     * @Route(/admin/school/subjects/prepare/{info})
      */
-    public function subPrepare() {
-        return array('zmienna' => "brak");
+    public function subPrepare($info = 'brak') {
+        $inf = $this->info($info);
+        return array('info' => $inf);
     }
 
 // semestry //
@@ -580,5 +585,192 @@ class School {
 
         return $years;
     }
+
+// nauczyciele
+    /**
+     * @Route(/admin/school/teachers/{action}/{id})
+     * @param \User\Me $Me
+     * @param \Core\Router $Router
+     */
+    public function teachers($Me, $Router, $id = '', $action = '') {
+        // dodawanie
+        if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) {
+            // aktualizacja
+            if ($action == 'updt' && is_numeric($id)) {
+                $user = $this->em->getRepository('\Model\\Teacher')->find($id);
+                $user->setEmail($_POST['email']);
+                $user->setUsername($_POST['username']);
+                $user->setGivenName($_POST['givenName']);
+                $user->setFamilyName($_POST['familyName']);
+                if ($_POST['password'] != '')
+                    $user->setPassword($_POST['password']);
+                $this->em->flush();
+                if (isset($_POST['saveAndAdd']))
+                    $Router->redirect('School/teacherPrepare', array('info' => 'updt'));
+                $this->info('updt');
+                // nowy
+            } else {
+                $user = new \Model\Teacher();
+                $user->setEmail($_POST['email']);
+                $user->setUsername($_POST['username']);
+                $user->setGivenName($_POST['givenName']);
+                $user->setFamilyName($_POST['familyName']);
+                if ($_POST['password'] == '')
+                    $user->setPassword('qwerty');
+                else
+                    $user->setPassword($_POST['password']);
+                $user->setSchool($Me->getModel()->getSchool());
+                $this->em->persist($user);
+                $this->em->flush();
+                if (isset($_POST['saveAndAdd']))
+                    $Router->redirect('School/teacherPrepare', array('info' => 'added'));
+                $this->info('added');
+            }
+        }
+
+        // usuwanie
+        if ($action == 'del' && is_numeric($id) && $id > 0) {
+            $t = $this->em->getRepository('\Model\\Teacher')->find($id); /// dodać jakieś waruki? żeby sie powiązania nie spieprzyły
+            $this->em->remove($t);
+            $this->em->flush();
+            $this->info('deleted');
+        }
+
+        // lista
+        $teachers = $this->em->getRepository('Model\\Teacher')->findAll();
+
+        // czyszczenie infa
+        $info = $this->info;
+        $this->info = 'brak';
+
+        return array('teachers' => $teachers, 'info' => $info);
+    }
+
+    /**
+     * @Route(/admin/school/teachers/prepare/{info})
+     */
+    public function teacherPrepare($info = 'brak') {
+        if (!is_numeric($info)) {
+            $inf = $this->info($info);
+            $teacher = 'new';
+        } else {
+            $inf = 'brak';
+            $teacher = $this->em->getRepository('Model\\Teacher')->find($info);
+        }
+
+        return array('info' => $inf, 'teacher' => $teacher);
+    }
+    
+// uczniowie
+    /**
+     * @Route(/admin/school/students/{action}/{id})
+     * @param \User\Me $Me
+     * @param \Core\Router $Router
+     */
+    public function students($Me, $Router, $id = '', $action = '') {
+        // dodawanie
+        if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) {
+            // aktualizacja
+            if ($action == 'updt' && is_numeric($id)) {
+                $user = $this->em->getRepository('\Model\\Student')->find($id);
+                $user->setEmail($_POST['email']);
+                $user->setUsername($_POST['username']);
+                $user->setGivenName($_POST['givenName']);
+                $user->setFamilyName($_POST['familyName']);
+                if ($_POST['password'] != '')
+                    $user->setPassword($_POST['password']);
+                
+                $user->setRegistrationNr($_POST['registrationNr']);
+                $user->setPesel($_POST['pesel']);
+                $user->setBirthdate(new \DateTime($_POST['birthdate']));
+                $user->setBirthplace($_POST['birthplace']);
+                
+                $this->em->flush();
+                if (isset($_POST['saveAndAdd']))
+                    $Router->redirect('School/teacherPrepare', array('info' => 'updt'));
+                $this->info('updt');
+                // nowy
+            } else {
+                $user = new \Model\Student();
+                $user->setEmail($_POST['email']);
+                $user->setUsername($_POST['username']);
+                $user->setGivenName($_POST['givenName']);
+                $user->setFamilyName($_POST['familyName']);
+                if ($_POST['password'] == '')
+                    $user->setPassword('qwerty');
+                else
+                    $user->setPassword($_POST['password']);
+                $user->setSchool($Me->getModel()->getSchool());
+                $user->setRegistrationNr($_POST['registrationNr']);
+                $user->setPesel($_POST['pesel']);
+                $user->setBirthdate(new \DateTime($_POST['birthdate']));
+                $user->setBirthplace($_POST['birthplace']);
+                
+                if ($_POST['class'] != 0) {
+                    $class = $this->em->getRepository('\Model\\Clas')->find($_POST['class']);
+                    $user->addClass($class);
+                }
+                
+                $this->em->persist($user);
+                $this->em->flush();
+                if (isset($_POST['saveAndAdd']))
+                    $Router->redirect('School/teacherPrepare', array('info' => 'added'));
+                $this->info('added');
+            }
+        }
+
+        // usuwanie
+        if ($action == 'del' && is_numeric($id) && $id > 0) {
+            $t = $this->em->getRepository('\Model\\Student')->find($id); /// dodać jakieś waruki? żeby sie powiązania nie spieprzyły
+            $this->em->remove($t);
+            $this->em->flush();
+            $this->info('deleted');
+        }
+
+        // lista
+        $students = $this->em->getRepository('Model\\Student')->findAll();
+
+        // czyszczenie infa
+        $info = $this->info;
+        $this->info = 'brak';
+
+        return array('students' => $students, 'info' => $info);
+    }
+
+    /**
+     * @Route(/admin/school/students/prepare/{info})
+     */
+    public function studentPrepare($info = 'brak') {
+        if (!is_numeric($info)) {
+            $inf = $this->info($info);
+            $student = 'new';
+        } else {
+            $inf = 'brak';
+            $student = $this->em->getRepository('Model\\Student')->find($info);
+        }
+
+        $years = $this->em->createQueryBuilder()
+                ->select('y')
+                ->from('\Model\\Year', 'y')
+                ->where('y.toYear >= ?1')
+                ->setParameter(1, date('Y'))
+                ->getQuery()
+                ->getResult();
+        foreach ($years as $year) {
+            $y[] = $year->getId();
+        }
+                
+        $class = $this->em->createQueryBuilder('Model\\Clas')
+                ->select('c')
+                ->from('\Model\\Clas', 'c')
+                ->where('c.year IN (:arr)')
+                ->setParameter('arr', $y)
+                ->orderBy('c.name')
+                ->getQuery()
+                ->getResult();
+        
+        return array('info' => $inf, 'student' => $student, 'class' => $class);
+    }
+
 
 }

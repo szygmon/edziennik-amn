@@ -1,8 +1,18 @@
 {% extends './base.html.twig' %}
 
-{% block title %}eDziennik AMN - klasy{% endblock %}
+{% block title %}eDziennik AMN - przedmioty{% endblock %}
 
 {% block content %}
+    {% if info != 'brak' %}
+        {% if info.col == 'red' %}               
+            <div class="alert alert-danger" role="alert">
+            {% else %}
+                <div class="alert alert-success" role="alert">
+                {% endif %}
+
+                {{ info.inf }}
+            </div>
+        {% endif %}
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
@@ -13,7 +23,7 @@
             <ol class="breadcrumb">
                 <li><a href="{{ url('Home/index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
                 <li><a href="{{ url('School/index') }}"><i class="fa"></i>Szkoła</a></li>
-                <li><a href="{{ url('School/semesters') }}"><i class="fa"></i>Przedmioty</a></li>
+                <li><a href="{{ url('School/subjects') }}"><i class="fa"></i>Przedmioty</a></li>
                 <li class="active">Dodaj nowy</li>
             </ol>
         </section>
@@ -37,6 +47,7 @@
 
                         <div class="box-footer clearfix no-border">
                             <input type="submit" name="save" value="Zapisz" class="btn btn-default pull-right" />
+                            <input type="submit" name="saveAndAdd" value="Zapisz i nowy" class="btn btn-default pull-right" />
                         </div>
 
                     </form>

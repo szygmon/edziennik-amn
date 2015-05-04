@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection as Collection;
 
 /**
  * @Entity
- * @HasLifecycleCallbacks()
  */
 class Teacher extends \Model\User {
 
@@ -16,8 +15,8 @@ class Teacher extends \Model\User {
          */
         protected $stopien; // przykład pola jakiegoś, potem się coś doda
 
-        ///** @OneToMany(targetEntity="\Model\Plan", mappedBy="teacher") */
-        //protected $plans;
+        /** @OneToMany(targetEntity="\Model\Plan", mappedBy="teacher") */
+        protected $plans;
         
         ///** @OneToMany(targetEntity="\Model\Educator", mappedBy="teacher") */
         //protected $educators;

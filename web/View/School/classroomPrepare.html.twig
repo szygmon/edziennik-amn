@@ -3,6 +3,16 @@
 {% block title %}eDziennik AMN - sale lekcyjne{% endblock %}
 
 {% block content %}
+    {% if info != 'brak' %}
+        {% if info.col == 'red' %}               
+            <div class="alert alert-danger" role="alert">
+            {% else %}
+                <div class="alert alert-success" role="alert">
+                {% endif %}
+
+                {{ info.inf }}
+            </div>
+        {% endif %}
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
@@ -13,7 +23,7 @@
             <ol class="breadcrumb">
                 <li><a href="{{ url('Home/index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
                 <li><a href="{{ url('School/index') }}"><i class="fa"></i>Szkoła</a></li>
-                <li><a href="{{ url('School/semesters') }}"><i class="fa"></i>Sale lekcyjne</a></li>
+                <li><a href="{{ url('School/classrooms') }}"><i class="fa"></i>Sale lekcyjne</a></li>
                 <li class="active">Dodaj nową</li>
             </ol>
         </section>
@@ -37,6 +47,8 @@
 
                         <div class="box-footer clearfix no-border">
                             <input type="submit" name="save" value="Zapisz" class="btn btn-default pull-right" />
+                            <input type="submit" name="saveAndAdd" value="Zapisz i nowa" class="btn btn-default pull-right" />
+                            
                         </div>
 
                     </form>

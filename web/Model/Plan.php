@@ -41,11 +41,11 @@ class Plan {
         */
         protected $subject;
         
-        ///**
-        //* @ManyToOne(targetEntity="\Model\Teacher", inversedBy="plans")  
-        //* @JoinColumn(nullable=false)      
-        //*/
-        //protected $teacher; // może sie tak nazywać??
+        /**
+        * @ManyToOne(targetEntity="\Model\Teacher", inversedBy="plans")  
+        * @JoinColumn(nullable=false)      
+        */
+        protected $teacher; // może sie tak nazywać??
         
         /**
         * @ManyToOne(targetEntity="\Model\Classroom", inversedBy="plans")  
