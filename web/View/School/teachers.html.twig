@@ -1,12 +1,12 @@
 {% extends './base.html.twig' %}
 
-{% block title %}eDziennik AMN - przedmioty{% endblock %}
+{% block title %}eDziennik AMN - nauczyciele{% endblock %}
 
 
 
 
 {% block content %}
-   
+
     {% if info != 'brak' %}
         {% if info.col == 'red' %}               
             <div class="alert alert-danger" role="alert">
@@ -29,7 +29,7 @@
                 <ol class="breadcrumb">
                     <li><a href="{{ url('Home/index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
                     <li><a href="{{ url('School/index') }}"><i class="fa"></i>Szkoła</a></li>
-                    <li class="active">Przedmioty</li>
+                    <li class="active">Nauczyciele</li>
                 </ol>
             </section>
 
@@ -40,12 +40,12 @@
                 <div class="box box-primary">
                     <div class="box-header">
                         <i class="ion ion-clipboard"></i>
-                        <h3 class="box-title">Przedmioty</h3>
+                        <h3 class="box-title">Nauczyciele</h3>
                     </div><!-- /.box-header -->
 
                     <div class="box-body">
                         <ul class="todo-list">
-                            {% for s in subjects %}
+                            {% for t in teachers %}
                                 <li>
                                     <!-- drag handle -->
                                     <span class="handle">
@@ -55,23 +55,23 @@
                                     <!-- checkbox -->
                                     <input type="checkbox" value="" name=""/>
                                     <!-- todo text -->
-                                    <span class="text">{{ s.subject }}</span>
+                                    <span class="text">{{ t.givenName }} {{ t.familyName }} ({{ t.username }}) e-mail: {{ t.email }}</span>
                                     <!-- General tools such as edit or delete-->
                                     <div class="tools">
-                                        
-                                        <a href="{{ url('School/subjects', {'action': 'del', 'id': s.id}) }}" class="fa fa-trash-o"></a>
+                                        <a href="{{ url('School/teacherPrepare', {'info': t.id}) }}" class="fa fa-edit"></a>
+                                        <a href="{{ url('School/teachers', {'action': 'del', 'id': t.id}) }}" class="fa fa-trash-o"></a>
                                     </div>
                                 </li>
                             {% else %}
                                 <li>
-                                    <span class="text">Brak przedmiotów w bazie</span>
+                                    <span class="text">Brak nauczycieli w bazie</span>
                                 </li>
                             {% endfor %}
                         </ul>
                     </div><!-- /.box-body -->
 
                     <div class="box-footer clearfix no-border">
-                        <a href="{{ url('School/subPrepare') }}" class="btn btn-default pull-right"><i class="fa fa-plus"></i> Dodaj nowy</a>
+                        <a href="{{ url('School/teacherPrepare') }}" class="btn btn-default pull-right"><i class="fa fa-plus"></i> Dodaj nowego</a>
                     </div>
                 </div><!-- /.box -->
 

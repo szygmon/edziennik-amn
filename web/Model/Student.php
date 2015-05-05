@@ -7,31 +7,44 @@ namespace Model;
  */
 class Student extends User {
 
-	use \AutoProperty;
+    use \AutoProperty;
 
-	/**
-	 * @Column(type="string", length=45, nullable=true)
-	 */
-	protected $registrationNr;
+    /**
+     * @Column(type="string", length=45, nullable=true)
+     */
+    protected $registrationNr;
 
-	/**
-	 * @Column(type="string", length=11, nullable=true) 
-	 */
-	protected $pesel;
+    /**
+     * @Column(type="string", length=11, nullable=true) 
+     */
+    protected $pesel;
 
-	/**
-	 * @Column(type="date", nullable=true)
-	 */
-	protected $birthdate;
+    /**
+     * @Column(type="date", nullable=true)
+     */
+    protected $birthdate;
 
-	/**
-	 * @Column(type="string", length=45, nullable=true) 
-	 */
-	protected $birthplace;
+    /**
+     * @Column(type="string", length=45, nullable=true) 
+     */
+    protected $birthplace;
 
-	/**
-	 * @Column(type="integer", nullable=false) 
-	 */
-	protected $numberInDaily;
+    /**
+     * @ManyToMany(targetEntity="\Model\Clas", inversedBy="students")
+     * @JoinTable(name="students_class")
+     */
+    protected $class;
+
+    public function addClass(\Model\Clas $class = null) {
+        $this->class->add($class);
+    }
+
+    public function removeClass(\Model\Clas $class) {
+        $this->class->removeElement($class);
+    }
+
+    public function __construct() {
+        $this->class = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
 }

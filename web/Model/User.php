@@ -4,6 +4,7 @@ namespace Model;
 
 use Doctrine\Common\Collections\ArrayCollection as Collection;
 
+
 /**
  * @Entity()
  * @Table(name="users")
