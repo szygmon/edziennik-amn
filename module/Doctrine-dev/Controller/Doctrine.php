@@ -51,7 +51,11 @@ class Doctrine {
 		if (Conf::get('cron.token') != $token)
 			throw new \Error403;
 
-		$r = $this->install(false);
+		$dev = new \DevReset;
+		if (method_exists($dev, 'update'))
+			$r = $dev->update();
+		else
+			$r = Db::install();
 		return array("error" => $r);
 	}
 

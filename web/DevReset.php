@@ -11,9 +11,19 @@ class DevReset {
 		$this->em = Di::get('em');
 	}
 
-	function create() {
+	public function create() {
 		Db::exec('set search_path to public');
 		return Db::install('public');
+	}
+
+	public function update() {
+		$schools = $this->em->getRepository('Model\\School')->findAll();
+		$um = new UserManager;
+		$r = array();
+		foreach ($schools as $school) {
+			$r += $um->setup($school);
+		}
+		return $r;
 	}
 
 	public function dummyData() {
