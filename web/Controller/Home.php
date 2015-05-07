@@ -2,7 +2,6 @@
 
 namespace Controller;
 
-use Core\BaseController;
 use Model\Object;
 use Core\Response;
 
@@ -30,8 +29,9 @@ class Home {
 	 * @param \Core\Router $Router
 	 */
 	public function index($Me, $Router) {
+		\Notify::error('Notify ;-)');
 		if ($Me->isLogged())
-			return new Response([],'Home/indexSchool');
+			return new Response([], 'Home/indexSchool');
 		return array("salesPage" => !$Router->getSubdomain());
 	}
 
@@ -57,7 +57,7 @@ class Home {
 		foreach ($schools as $school) {
 			$s[$school->getAlias()] = $school->getName();
 		}
-		
+
 		$msg = null;
 		if (isset($_POST['username']))
 			$msg = $this->homeUtil->loginForm($_POST);
@@ -66,6 +66,7 @@ class Home {
 	}
 
 	/**
+	 * Logout
 	 * @Route("/logout")
 	 * @param \User\Me $Me
 	 * @param \Core\Router $Router

@@ -19,7 +19,7 @@ class Year {
 	 */
 	protected $id;
 
-        /**
+	/**
 	 * @Column(type="integer", nullable=false)
 	 */
 	protected $fromYear;
@@ -28,10 +28,11 @@ class Year {
 	 * @Column(type="integer", nullable=false)
 	 */
 	protected $toYear;
-        
-        /** @OneToMany(targetEntity="\Model\Clas", mappedBy="year") */
-        protected $classes;
-        
-        /** @OneToMany(targetEntity="\Model\Semester", mappedBy="year") */
-        protected $semesters;
+
+	/** @OneToMany(targetEntity="\Model\Clas", mappedBy="year") */
+	protected $classes;
+
+	/** @OneToMany(targetEntity="\Model\Semester", mappedBy="year") */
+	protected $semesters;
+
 }

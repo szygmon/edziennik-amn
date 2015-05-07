@@ -9,124 +9,122 @@
 
 {% endblock %}
 {% block content %}
-    <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-            <h1>
-                Szkoła
-                <small>Control panel</small>
-            </h1>
-            <ol class="breadcrumb">
-                <li><a href="{{ url('Home/index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-                <li><a href="{{ url('School/index') }}"><i class="fa"></i>Szkoła</a></li>
-                <li><a href="{{ url('School/semesters') }}"><i class="fa"></i>Semestry</a></li>
-                <li class="active">Dodaj nowy</li>
-            </ol>
-        </section>
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<h1>
+			Szkoła
+			<small>Control panel</small>
+		</h1>
+		<ol class="breadcrumb">
+			<li><a href="{{ url('Home/index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+			<li><a href="{{ url('School/index') }}"><i class="fa"></i>Szkoła</a></li>
+			<li><a href="{{ url('School/semesters') }}"><i class="fa"></i>Semestry</a></li>
+			<li class="active">Dodaj nowy</li>
+		</ol>
+	</section>
 
-        <!-- Main content -->
-        <section class="content">
-            <div class="box box-primary">
-                <div class="box-header">
-                    <i class="ion ion-clipboard"></i>
-                    <h3 class="box-title">Dodaj rok szkolny</h3>
-                </div><!-- /.box-header -->
-                <div class="box-body">
+	<!-- Main content -->
+	<section class="content">
+		<div class="box box-primary">
+			<div class="box-header">
+				<i class="ion ion-clipboard"></i>
+				<h3 class="box-title">Dodaj rok szkolny</h3>
+			</div><!-- /.box-header -->
+			<div class="box-body">
 
-                    <form name="inputform" method="POST" action="{{ url('School/semesters', {'action': 'add'}) }}">
-                        <div class="input-group">
-                            <span class="input-group-addon" id="basic-addon1">Rok szkolny:</span>
+				<form name="inputform" method="POST" action="{{ url('School/semesters', {'action': 'add'}) }}">
+					<div class="input-group">
+						<span class="input-group-addon" id="basic-addon1">Rok szkolny:</span>
 
-                            <select name="year" class="form-control" style="width:250px">
-                                {% for y in years %}
-                                    <option value="{{ y.from }}">{{ y.year }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+						<select name="year" class="form-control" style="width:250px">
+							{% for y in years %}
+								<option value="{{ y.from }}">{{ y.year }}</option>
+							{% endfor %}
+						</select>
+					</div>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h4 class="box-title">Semestr 1</h4>
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label">Początek</label>
-                                    <div class="col-xs-5 dateContainer">
-                                        <div class="input-group input-append date DatePicker">
-                                            <input type="text" class="form-control" name="sem1From" />
-                                            <span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="clearfix"></div>
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label">Koniec</label>
-                                    <div class="col-xs-5 dateContainer">
-                                        <div class="input-group input-append date DatePicker">
-                                            <input type="text" class="form-control" name="sem1To" />
-                                            <span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+					<div class="row">
+						<div class="col-md-6">
+							<h4 class="box-title">Semestr 1</h4>
+							<div class="form-group">
+								<label class="col-xs-3 control-label">Początek</label>
+								<div class="col-xs-5 dateContainer">
+									<div class="input-group input-append date DatePicker">
+										<input type="text" class="form-control" name="sem1From" />
+										<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+									</div>
+								</div>
+							</div>
+							<div class="clearfix"></div>
+							<div class="form-group">
+								<label class="col-xs-3 control-label">Koniec</label>
+								<div class="col-xs-5 dateContainer">
+									<div class="input-group input-append date DatePicker">
+										<input type="text" class="form-control" name="sem1To" />
+										<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+									</div>
+								</div>
+							</div>
+						</div>
 
-                            <div class="col-md-6">
-                                <h4 class="box-title">Semestr 2</h4>
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label">Początek</label>
-                                    <div class="col-xs-5 dateContainer">
-                                        <div class="input-group input-append date DatePicker">
-                                            <input type="text" class="form-control" name="sem2From" />
-                                            <span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="clearfix"></div>
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label">Koniec</label>
-                                    <div class="col-xs-5 dateContainer">
-                                        <div class="input-group input-append date DatePicker">
-                                            <input type="text" class="form-control" name="sem2To" />
-                                            <span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+						<div class="col-md-6">
+							<h4 class="box-title">Semestr 2</h4>
+							<div class="form-group">
+								<label class="col-xs-3 control-label">Początek</label>
+								<div class="col-xs-5 dateContainer">
+									<div class="input-group input-append date DatePicker">
+										<input type="text" class="form-control" name="sem2From" />
+										<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+									</div>
+								</div>
+							</div>
+							<div class="clearfix"></div>
+							<div class="form-group">
+								<label class="col-xs-3 control-label">Koniec</label>
+								<div class="col-xs-5 dateContainer">
+									<div class="input-group input-append date DatePicker">
+										<input type="text" class="form-control" name="sem2To" />
+										<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
-                        <div class="box-footer clearfix no-border">
-                            <input type="submit" name="save" value="Zapisz" class="btn btn-default pull-right" />
-                        </div>
-                    </form>
-                </div><!-- /.box-body -->
-
+					<div class="box-footer clearfix no-border">
+						<input type="submit" name="save" value="Zapisz" class="btn btn-default pull-right" />
+					</div>
+				</form>
+			</div><!-- /.box-body -->
 
 
 
-            </div><!-- /.box -->
+
+		</div><!-- /.box -->
 
 
-        </section><!-- /.Left col -->
+	</section><!-- /.Left col -->
 
-    </div><!-- /.row (main row) -->
+</div><!-- /.row (main row) -->
 
 </section><!-- /.content -->
-</div><!-- /.content-wrapper -->
 
 <script type="text/javascript">
-    //$(document).ready(function () {
-    $('.DatePicker')
-            .datepicker({
-                format: 'yyyy-mm-dd',
-                language: 'pl'
-            });
-$.datepicker.setDefaults(
-  $.extend(
-    $.datepicker.regional['pl']
-  )
-);
+	//$(document).ready(function () {
+	$('.DatePicker')
+			.datepicker({
+				format: 'yyyy-mm-dd',
+				language: 'pl'
+			});
+	$.datepicker.setDefaults(
+			$.extend(
+					$.datepicker.regional['pl']
+					)
+			);
 
 
 
-    //});
+	//});
 </script>
 
 {% endblock %}

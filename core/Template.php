@@ -25,7 +25,12 @@ class Template {
 	/**
 	 * @var array
 	 */
-	private $twigFunctions;
+	private $twigFunctions = array();
+
+	/**
+	 * @var array
+	 */
+	private $twigGlobals = array();
 
 	public function __construct() {
 		$this->router = Di::get('Router');
@@ -49,8 +54,12 @@ class Template {
 		return $this->template;
 	}
 
-	public function addTwigFunctions($functions) {
+	public function addTwigFunctions(array $functions) {
 		$this->twigFunctions += $functions;
+	}
+
+	public function addTwigGlobals(array $globals) {
+		$this->twigGlobals += $globals;
 	}
 
 	private function getTemplatePath() {
@@ -90,6 +99,9 @@ class Template {
 			$function = new \Twig_SimpleFunction($name, $method);
 			$twig->addFunction($function);
 		}
+
+		foreach ($this->twigGlobals as $name => $var)
+			$twig->addGlobal($name, $var);
 
 		$twig->addExtension(new \Twig_Extension_Core());
 		if (Conf::get("nc.debug"))

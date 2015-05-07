@@ -1,6 +1,6 @@
 @import url(//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
 /*!
- *   AdminLTE v2.0.4
+ *   AdminLTE v2.0.
  *   Author: Almsaeed Studio
  *	 Website: Almsaeed Studio <http://almsaeedstudio.com>
  *   License: Open source - MIT
@@ -54,7 +54,7 @@ body {
  * Content Wrapper - contins main content
  * ```.right-side has been deprecated as of v2.0.0 in favor of .content-wrapper  ```
  */
-/*.content-wrapper,
+.content-wrapper,
 .right-side,
 .main-footer {
   -webkit-transition: -webkit-transform 0.3s cubic-bezier(0.32, 1.25, 0.375, 1.15);
@@ -66,7 +66,7 @@ body {
   transition: margin-left 0.3s cubic-bezier(0.32, 1.25, 0.375, 1.15);
   margin-left: 230px;
   z-index: 820;
-}*/
+}
 .layout-top-nav .content-wrapper,
 .layout-top-nav .right-side,
 .layout-top-nav .main-footer {
@@ -185,6 +185,13 @@ a:focus {
   position: relative;
   max-height: 100px;
   z-index: 1030;
+}
+.main-header > .navbar {
+  margin-bottom: 0;
+  margin-left: 230px;
+  border: none;
+  min-height: 50px;
+  border-radius: 0;
 }
 .layout-top-nav .main-header > .navbar {
   margin-left: 0!important;
