@@ -101,5 +101,14 @@ class Me {
 			$this->cookie = Cookie::create(Conf::get('nc.title') . "_session");
 		return $this->cookie;
 	}
+        
+        public function getUserType () {
+            if ($this->model instanceof \Model\Teacher)
+                return 'nauczyciel';
+            else if ($this->model instanceof \Model\Student)
+                return 'uczeń';
+            else
+                return false;
+        }
 
 }

@@ -41,7 +41,7 @@
 								<span class="text">Rok {{ s.year.fromYear }}/{{ s.year.toYear }}<small class="label {% if s.semester == 1 %}label-primary{% else %}label-warning{% endif %}">semestr {{ s.semester }}</small> od {{ s.fromDate|date("Y-m-d") }} do {{ s.toDate|date("Y-m-d") }}</span>
 								<!-- General tools such as edit or delete-->
 								<div class="tools">
-									<a href="{{ url('School/semEdit', {'id': s.id}) }}" class="fa fa-edit"></a>
+									<a href="{{ url('School/semestersEdit', {'id': s.id}) }}" class="fa fa-edit"></a>
 									<a href="{{ url('School/semesters', {'action': 'del', 'id': s.id}) }}" class="fa fa-trash-o"></a>
 								</div>
 							</li>
@@ -54,7 +54,7 @@
 				</div><!-- /.box-body -->
 
 				<div class="box-footer clearfix no-border">
-					<a href="{{ url('School/semPrepare') }}" class="btn btn-default pull-right"><i class="fa fa-plus"></i> Dodaj nowy</a>
+					<a href="{{ url('School/semestersEdit') }}" class="btn btn-default pull-right"><i class="fa fa-plus"></i> Dodaj nowy</a>
 				</div>
 			</div><!-- /.box -->
 
