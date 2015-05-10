@@ -33,12 +33,12 @@ class Clas {
     /** @OneToMany(targetEntity="\Model\Plan", mappedBy="class") */
     protected $plans;
 
-    ///** @OneToMany(targetEntity="\Model\Rating", mappedBy="clas") */
-    //protected $ratings;
+    /** @OneToMany(targetEntity="\Model\Rating", mappedBy="class") */
+    protected $ratings;
     ///** @OneToMany(targetEntity="\Model\Behavior", mappedBy="clas") */
     //protected $behaviors;
-    ///** @OneToMany(targetEntity="\Model\Rating_desc", mappedBy="clas") */
-    //protected $rating_descs;
+    /** @OneToMany(targetEntity="\Model\RatingDesc", mappedBy="class") */
+    protected $ratingDescs;
     ///** @OneToMany(targetEntity="\Model\Student_in_clas", mappedBy="clas") */
     //protected $students;
     ///** @OneToMany(targetEntity="\Model\Educator", mappedBy="clas") */

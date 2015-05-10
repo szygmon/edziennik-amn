@@ -29,6 +29,9 @@ class Student extends User {
      */
     protected $birthplace;
 
+    /** @OneToMany(targetEntity="\Model\Rating", mappedBy="student") */
+    protected $ratings;
+
     /**
      * @ManyToMany(targetEntity="\Model\Clas", inversedBy="students")
      * @JoinTable(name="students_class")

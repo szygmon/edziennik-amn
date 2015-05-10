@@ -75,13 +75,48 @@
 
 
                 </div>
+
+
+
                 <div class="chart tab-pane" id="attendance-chart" style="position: relative; min-height: 300px;">
                     {% for student in lesson.class.students %}
                         {{ student.givenName }} {{ student.familyName }}<br />
                     {% endfor %}
                 </div>
+
+
+
                 <div class="chart tab-pane" id="ratings-chart" style="position: relative; min-height: 300px;">
-                    Ocenki
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Uczeń</th>
+                                    {% for i in range(1, 20) %}
+                                    <th>{{ ratingd[i].shortDesc }}</th>
+                                    {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set nr = 1 %}
+                            {% for student in lesson.class.students %}
+                                <tr>
+                                    <td width="1%">{{ nr }}</td>
+                                    <td>{{ student.givenName }} {{ student.familyName }}</td>
+                                    {% for i in range(1, 20) %}
+                                        <td>
+                                            {{ ratings[i][student.id].value }}
+
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                {% set nr = nr + 1 %}
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
                 </div>
             </div>
         </div><!-- /.nav-tabs-custom -->
