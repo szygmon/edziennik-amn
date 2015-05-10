@@ -60,22 +60,26 @@ class Lesson {
 
         if (is_numeric($id)) { // edycja
             $lesson = $this->em->getRepository('Model\\Lesson')->find($id);
-        } else
+            
+            $ratingDescs = $this->em->getRepository('\Model\\RatingDesc')->findBy(array('class' => $lesson->getClass(), 'subject' => $lesson->getSubject()), array('order' => 'ASC'));
+            foreach ($ratingDescs as $rd) {
+                $ratingd[$rd->getOrder()] = $rd;
+                if ($rd->getRatings()) {
+                    foreach ($rd->getRatings() as $r) {
+                        $ratings[$rd->getOrder()][$r->getStudent()->getId()] = $r;
+                    }
+                }
+            }
+        } else {
             $lesson = null;
-
+            $ratings = null;
+            $ratingd = null;
+        }
         $subjects = $this->em->getRepository('\Model\\Subject')->findBy(array(), array('subject' => 'ASC'));
         $teachers = $this->em->getRepository('\Model\Teacher')->findBy(array(), array('familyName' => 'ASC'));
         $classes = $this->em->getRepository('\Model\Clas')->findBy(array('year' => $this->me->getActualYear()), array('name' => 'ASC'));
 
-        $ratingDescs = $this->em->getRepository('\Model\\RatingDesc')->findBy(array('class' => $lesson->getClass(), 'subject' => $lesson->getSubject()), array('order' => 'ASC'));
-        foreach ($ratingDescs as $rd) {
-            $ratingd[$rd->getOrder()] = $rd;
-            if ($rd->getRatings()) {
-                foreach ($rd->getRatings() as $r) {
-                    $ratings[$rd->getOrder()][$r->getStudent()->getId()] = $r;
-                }
-            }
-        }
+
 
         return array('subjects' => $subjects, 'teachers' => $teachers, 'classes' => $classes, 'lesson' => $lesson, 'ratingd' => $ratingd, 'ratings' => $ratings);
     }
