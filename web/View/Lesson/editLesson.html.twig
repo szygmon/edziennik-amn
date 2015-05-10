@@ -32,17 +32,42 @@
                 <!-- Morris chart - Sales -->
                 <div class="chart tab-pane active" id="lesson-chart" style="position: relative; min-height: 300px;">
 
-                    <form name="inputform" method="POST" action="{{ url('School/classrooms', {'action': 'add'}) }}">
+                    <form name="inputform" method="POST" action="{{ url('Lesson/editLesson', {'action': 'add'}) }}">
 
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">Nauczyciel:</label>
+                            <select name="teacher" class="form-control" {% if lesson.id %} disabled {% endif %}>
+                                {% for t in teachers %}
+                                    <option value="{{ t.id }}" {% if t.id == Me.getModel.id %} selected {% endif %}>{{ t.familyName }} {{ t.givenName }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-                        <div class="input-group">
-                            <span class="input-group-addon" >Temat:</span>
-                            <input type="text" name="name" value="" class="form-control" style="width:250px;" />
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">Klasa:</label>
+                            <select name="class" class="form-control" {% if lesson.id %} disabled {% endif %}>
+                                {% for c in classes %}
+                                    <option value="{{ c.id }}" {% if lesson.class.id == c.id %} selected {% endif %} >{{ c.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">Przedmiot:</label>
+                            <select name="subject" class="form-control" {% if lesson.id %} disabled {% endif %}>
+                                {% for s in subjects %}
+                                    <option value="{{ s.id }}" {% if lesson.subject.id == s.id %} selected {% endif %}>{{ s.subject }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">Temat:</label>
+                            <input type="text" name="topic" value="{{ lesson.topic }}" class="form-control" />
                         </div>
 
                         <div class="box-footer clearfix no-border">
                             <input type="submit" name="save" value="Zapisz" class="btn btn-default pull-right" />
-                            <input type="submit" name="saveAndAdd" value="Zapisz i nowa" class="btn btn-default pull-right" />
 
                         </div>
 
@@ -50,23 +75,22 @@
 
 
                 </div>
-                    <div class="chart tab-pane" id="attendance-chart" style="position: relative; min-height: 300px;">
-                        Frekwencja....
-                    </div>
-                    <div class="chart tab-pane" id="ratings-chart" style="position: relative; min-height: 300px;">
-                        Ocenki
-                    </div>
+                <div class="chart tab-pane" id="attendance-chart" style="position: relative; min-height: 300px;">
+                    {% for student in lesson.class.students %}
+                        {{ student.givenName }} {{ student.familyName }}<br />
+                    {% endfor %}
+                </div>
+                <div class="chart tab-pane" id="ratings-chart" style="position: relative; min-height: 300px;">
+                    Ocenki
+                </div>
             </div>
         </div><!-- /.nav-tabs-custom -->
 
+    </section>
 
 
 
 
-
-
-
-    </div><!-- /.box -->
 
 
 {% endblock %}

@@ -332,21 +332,6 @@ class School {
         return array('hour' => $data);
     }
 
-    public function getActualYear() {
-        $sem = $this->em->createQueryBuilder()
-                ->select('s')
-                ->from('\Model\\Semester', 's')
-                ->where('s.fromDate <= ?1 AND s.toDate >= ?1')
-                ->setMaxResults(1)
-                ->setParameters(array('1' => new \DateTime()))
-                ->getQuery()
-                ->getResult();
-        foreach ($sem as $s) {
-            $year = $s->getYear();
-        }
-        return $year;
-    }
-
     /**
      * plan lekcji
      * @Route(/admin/school/plans/{action}/{id})
@@ -384,7 +369,7 @@ class School {
         }
 
         // lista
-        $year = $this->getActualYear();
+        $year = $this->me->getActualYear();
         $classes = $this->em->getRepository('Model\\Clas')->findBy(array('year' => $year), array('name' => 'ASC'));
         $subjects = $this->em->getRepository('Model\\Subject')->findAll();
         $classrooms = $this->em->getRepository('Model\\Classroom')->findAll();

@@ -113,7 +113,29 @@ class Me {
 
     public function getActualClasses() {
         $em = \Di::get('em');
-        
+        return $em->getRepository('Model\\Clas')->findBy(array('year' => $this->getActualYear()), array('name' => 'ASC'));
+    }
+
+    public function getTeacherPlan($date = null) {
+        if (!$date)
+            $date = date('Y-m-d');
+
+        $day = date('N', strtotime($date));
+
+        $em = \Di::get('em');
+
+        return $em->createQueryBuilder()
+                        ->select('p')
+                        ->from('\Model\\Plan', 'p')
+                        ->where('p.teacher = ?1 AND p.fromDate <= ?2 AND p.toDate >= ?2 AND p.day = ?3')
+                        ->orderBy('p.hour')
+                        ->setParameters(array(1 => $this->getModel(), 2 => $date, 3 => $day))
+                        ->getQuery()
+                        ->getResult();
+    }
+
+    public function getActualYear() {
+        $em = \Di::get('em');
         $sem = $em->createQueryBuilder()
                 ->select('s')
                 ->from('\Model\\Semester', 's')
@@ -125,27 +147,7 @@ class Me {
         foreach ($sem as $s) {
             $year = $s->getYear();
         }
-        return $em->getRepository('Model\\Clas')->findBy(array('year' => $year), array('name' => 'ASC'));
-    }
-    
-    public function getTeacherPlan($date = null) {
-        if (!$date)
-            $date = date('Y-m-d');
-        
-        $day = date('N', strtotime($date));
-        
-        $em = \Di::get('em');
-        
-        return $em->createQueryBuilder()
-                ->select('p')
-                ->from('\Model\\Plan', 'p')
-                ->where('p.teacher = ?1 AND p.fromDate <= ?2 AND p.toDate >= ?2 AND p.day = ?3')
-                ->orderBy('p.hour')
-                ->setParameters(array(1 => $this->getModel(), 2 => $date, 3 => $day))
-                ->getQuery()
-                ->getResult();
-        
-        
+        return $year;
     }
 
 }
