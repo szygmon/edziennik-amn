@@ -63,9 +63,17 @@
                     <i class="fa fa-edit"></i> <span>Zajęcia</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    {% for plan in Me.getTeacherPlan %}
-                        <li><a href="#"><i class="fa fa-circle-o"></i> {{ plan.hour }}. {{ plan.class.name }}: {{ plan.subject.subject }}</a></li>
-                        {% endfor %}
+                    {% set i = 0 %}
+                    {% for plan in Me.getTeacherPlan.plan %}
+                        <li>
+                            {% if Me.getTeacherPlan.lessons[i] == '#' %}
+                                <a href="#" data-toggle="modal" data-target="#addLesson" data-lesson="{{ plan.hour }}|{{ plan.class.id }}|{{ plan.subject.id }}"><i class="fa fa-circle-o"></i> {{ plan.hour }}. {{ plan.class.name }}: {{ plan.subject.subject }}</a>
+                            {% else %} 
+                                <a href="{{ url('Lesson/editLesson', {'id': Me.getTeacherPlan.lessons[i].id }) }}"><i class="fa fa-circle-o"></i> {{ plan.hour }}. {{ plan.class.name }}: {{ plan.subject.subject }}</a>
+                            {% endif %}
+                        </li>
+                        {% set i = i + 1 %}
+                    {% endfor %}
                     <li><a href="{{ url('Lesson/editLesson') }}"><i class="fa fa-circle-o"></i> Nowa lekcja</a></li>
                 </ul>
             </li>
@@ -205,3 +213,87 @@
     </section>
     <!-- /.sidebar -->
 </aside>
+
+
+
+
+<div class="modal fade" id="addLesson" tabindex="-1" role="dialog" aria-labelledby="addLessonLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addLessonLabel">Nowa lekcja</h4>
+            </div>
+            <div class="modal-body">
+                <form name="inputform" method="POST" action="{{ url('Lesson/editLesson', {'action': 'add'}) }}">
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Godzina:</label>
+                        <select name="hour" id="lesson-hour-input" class="form-control">
+                            {% for i in range(1, 8) %}
+                                <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Nauczyciel:</label>
+                        <select name="teacher" class="form-control">
+                            {% for t in Me.getTeacherSidebarData.teachers %}
+                                <option value="{{ t.id }}" {% if t.id == Me.getModel.id %} selected {% endif %}>{{ t.familyName }} {{ t.givenName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Klasa:</label>
+                        <select name="class" class="form-control" id="lesson-class-input">
+                            {% for c in Me.getTeacherSidebarData.classes %}
+                                <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Przedmiot:</label>
+                        <select name="subject" class="form-control" id="lesson-subject-input">
+                            {% for s in Me.getTeacherSidebarData.subjects %}
+                                <option value="{{ s.id }}">{{ s.subject }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Temat:</label>
+                        <input type="text" name="topic" class="form-control" />
+                    </div>
+
+
+
+                    <div class="box-footer clearfix no-border">
+                        <input type="submit" name="save" value="Zapisz" class="btn btn-default pull-right" />
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript" >
+
+    $('#addLesson').on('show.bs.modal', function (event) {
+        var lbutton = $(event.relatedTarget); // Button that triggered the modal
+        var lrecipient = lbutton.data('lesson'); // Extract info from data-* attributes
+        var lmodal = $(this);
+        var lres = lrecipient.split('|');
+        lmodal.find('#lesson-class-input').val(lres[1]);
+        lmodal.find('#lesson-hour-input').val(lres[0]);
+        lmodal.find('#lesson-subject-input').val(lres[2]);
+    });
+
+</script>

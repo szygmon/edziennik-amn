@@ -47,8 +47,8 @@ class Lesson {
                 $lesson->setTeacher($teacher);
                 $class = $this->em->getRepository('\Model\\Clas')->find($_POST['class']);
                 $lesson->setClass($class);
-                $lesson->setDate(new \DateTime());
-                $lesson->setHour(1);
+                $lesson->setDate(new \DateTime()); /////////////////////////////////////////////////////////////////////////////////
+                $lesson->setHour($_POST['hour']);
                 $subject = $this->em->getRepository('\Model\\Subject')->find($_POST['subject']);
                 $lesson->setSubject($subject);
 
@@ -75,13 +75,11 @@ class Lesson {
             $ratings = null;
             $ratingd = null;
         }
-        $subjects = $this->em->getRepository('\Model\\Subject')->findBy(array(), array('subject' => 'ASC'));
-        $teachers = $this->em->getRepository('\Model\Teacher')->findBy(array(), array('familyName' => 'ASC'));
-        $classes = $this->em->getRepository('\Model\Clas')->findBy(array('year' => $this->me->getActualYear()), array('name' => 'ASC'));
+        
 
 
 
-        return array('subjects' => $subjects, 'teachers' => $teachers, 'classes' => $classes, 'lesson' => $lesson, 'ratingd' => $ratingd, 'ratings' => $ratings);
+        return array('lesson' => $lesson, 'ratingd' => $ratingd, 'ratings' => $ratings);
     }
 
 }

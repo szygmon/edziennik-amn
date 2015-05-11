@@ -124,14 +124,31 @@ class Me {
 
         $em = \Di::get('em');
 
-        return $em->createQueryBuilder()
-                        ->select('p')
-                        ->from('\Model\\Plan', 'p')
-                        ->where('p.teacher = ?1 AND p.fromDate <= ?2 AND p.toDate >= ?2 AND p.day = ?3')
-                        ->orderBy('p.hour')
-                        ->setParameters(array(1 => $this->getModel(), 2 => $date, 3 => $day))
-                        ->getQuery()
-                        ->getResult();
+        //return 
+        $plans = $em->createQueryBuilder()
+                ->select('p')
+                ->from('\Model\\Plan', 'p')
+                ->where('p.teacher = ?1 AND p.fromDate <= ?2 AND p.toDate >= ?2 AND p.day = ?3')
+                ->orderBy('p.hour')
+                ->setParameters(array(1 => $this->getModel(), 2 => $date, 3 => $day))
+                ->getQuery()
+                ->getResult();
+        foreach ($plans as $plan) {
+
+            $check = $em->getRepository('\Model\\Lesson')->findBy(array(
+                'teacher' => $plan->getTeacher(),
+                'class' => $plan->getClass(),
+                'subject' => $plan->getSubject(),
+                'hour' => $plan->getHour(),
+                'date' => new \DateTime($date)
+            ));
+            if ($check) {
+                $lessons[] = $check[0];
+            } else {
+                $lessons[] = '#';
+            }
+        }
+        return array('plan' => $plans, 'lessons' => $lessons);
     }
 
     public function getActualYear() {
@@ -148,6 +165,15 @@ class Me {
             $year = $s->getYear();
         }
         return $year;
+    }
+
+    public function getTeacherSidebarData() {
+        $em = \Di::get('em');
+        $subjects = $em->getRepository('\Model\\Subject')->findBy(array(), array('subject' => 'ASC'));
+        $teachers = $em->getRepository('\Model\Teacher')->findBy(array(), array('familyName' => 'ASC'));
+        $classes = $em->getRepository('\Model\Clas')->findBy(array('year' => $this->getActualYear()), array('name' => 'ASC'));
+
+        return array('subjects' => $subjects, 'teachers' => $teachers, 'classes' => $classes);
     }
 
 }
