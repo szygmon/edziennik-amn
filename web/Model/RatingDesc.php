@@ -1,6 +1,6 @@
 <?php
 
-namespace model;
+namespace Model;
 
 use Doctrine\Common\Collections\ArrayCollection as Collection;
 
@@ -37,7 +37,7 @@ class RatingDesc {
     /**
      * @Column(type="integer", nullable=false) 
      */
-    protected $order;
+    protected $orderDesc;
 
     /**
      * @Column(type="integer", nullable=false) 
@@ -45,12 +45,12 @@ class RatingDesc {
     protected $weight = 1;
 
     /** @Column(type="string") */
-    protected $desc;
+    protected $description;
 
     /** @Column(type="string", length=5) */
     protected $shortDesc;
 
-    /** @Column(type="string") */
+    /** @Column(type="string", nullable=true) */
     protected $color;
     
     public function __construct() {
