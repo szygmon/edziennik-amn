@@ -21,7 +21,7 @@ class Teacher extends \Model\User {
         ///** @OneToMany(targetEntity="\Model\Educator", mappedBy="teacher") */
         //protected $educators;
         
-        ///** @OneToMany(targetEntity="\Model\Lesson", mappedBy="teacher") */
-        //protected $lessons;
+        /** @OneToMany(targetEntity="\Model\Lesson", mappedBy="teacher") */
+        protected $lessons;
 	
 }

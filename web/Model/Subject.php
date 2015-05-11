@@ -33,8 +33,8 @@ class Subject {
         ///** @OneToMany(targetEntity="\Model\Rating_desc", mappedBy="subject") */
         //protected $rating_descs;
         
-        ///** @OneToMany(targetEntity="\Model\Lesson", mappedBy="subject") */
-        //protected $lessons;
+        /** @OneToMany(targetEntity="\Model\Lesson", mappedBy="subject") */
+        protected $lessons;
 	
 	public function getSubject() {
 		return $this->subject;

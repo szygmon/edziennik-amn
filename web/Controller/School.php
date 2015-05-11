@@ -50,7 +50,10 @@ class School {
      * @Route(/admin/school)
      */
     public function index() {
-        return array('info' => $this->info);
+        $year = $this->getActualYear();
+        $classes = $this->em->getRepository('Model\\Clas')->findBy(array('year' => $year), array('name' => 'ASC'));
+
+        return array('classes' => $classes);
     }
 
     /**
@@ -65,7 +68,7 @@ class School {
             $y = $this->em->getRepository('Model\\Year')->find($_POST['year']);
             $qb = $this->em->getRepository('\Model\\Clas')->findOneBy(array('name' => $_POST['name'], 'year' => $y));
             if ($qb != NULL)
-                $this->info('err');
+                \Notify::error('Taka klasa już istnieje!');
             else {
                 $year = $this->em->getRepository('Model\\Year')->find($_POST['year']);
 
@@ -74,9 +77,11 @@ class School {
                 $class->setYear($year);
                 $this->em->persist($class);
                 $this->em->flush();
-                if (isset($_POST['saveAndAdd']))
+                if (isset($_POST['saveAndAdd'])) {
+                    \Notify::success('Dodano!');
                     $Router->redirect('School/classPrepare', array('info' => 'added'));
-                $this->info('added');
+                }
+                \Notify::success('Dodano!');
             }
         }
 
@@ -327,8 +332,23 @@ class School {
         return array('hour' => $data);
     }
 
-// plan lekcji //
+    public function getActualYear() {
+        $sem = $this->em->createQueryBuilder()
+                ->select('s')
+                ->from('\Model\\Semester', 's')
+                ->where('s.fromDate <= ?1 AND s.toDate >= ?1')
+                ->setMaxResults(1)
+                ->setParameters(array('1' => new \DateTime()))
+                ->getQuery()
+                ->getResult();
+        foreach ($sem as $s) {
+            $year = $s->getYear();
+        }
+        return $year;
+    }
+
     /**
+     * plan lekcji
      * @Route(/admin/school/plans/{action}/{id})
      */
     public function plans($id = '', $action = '') {
@@ -364,16 +384,7 @@ class School {
         }
 
         // lista
-        $sem = $this->em->createQueryBuilder()
-                ->select('s')
-                ->from('\Model\\Semester', 's')
-                ->where('s.fromDate <= ?1 AND s.toDate >= ?1')
-                ->setParameters(array('1' => new \DateTime()))
-                ->getQuery()
-                ->getResult();
-        foreach ($sem as $s) {
-            $year = $s->getYear();
-        }
+        $year = $this->getActualYear();
         $classes = $this->em->getRepository('Model\\Clas')->findBy(array('year' => $year), array('name' => 'ASC'));
         $subjects = $this->em->getRepository('Model\\Subject')->findAll();
         $classrooms = $this->em->getRepository('Model\\Classroom')->findAll();
@@ -482,25 +493,20 @@ class School {
         if (isset($_POST['save'])) {
             // aktualizacja
             if ($action == 'updt' && is_numeric($id)) {
-                //$sem = $this->em->getRepository('\Model\\Semester')->find($id);
                 $sem = $this->em->getRepository('\Model\\Semester')->find($id);
                 $semesters = $this->em->getRepository('\Model\\Semester')->findBy(array('year' => $sem->getYear()), array('semester' => 'ASC'));
-                
+
                 $date1 = explode(' - ', $_POST['sem1DateRange']);
                 $semesters[0]->setFromDate(new \DateTime($date1[0]));
                 $semesters[0]->setToDate(new \DateTime($date1[1]));
-                
+
                 $date2 = explode(' - ', $_POST['sem2DateRange']);
                 $semesters[1]->setFromDate(new \DateTime($date2[0]));
                 $semesters[1]->setToDate(new \DateTime($date2[1]));
-                //var_dump('hhhh')       ;
-                //die;
                 $this->em->flush();
 
-                //$this->info('updt');
                 // nowy
             } else {
-                //var_dump('szmata'); die;
                 $year = new \Model\Year();
                 $year->setFromYear((int) $_POST['year']);
                 $year->setToYear($_POST['year'] + 1);
@@ -523,12 +529,11 @@ class School {
                 $this->em->persist($sem1);
                 $this->em->persist($sem2);
                 $this->em->flush();
-                //$this->info('added');
             }
         }
         // usuwanie
         if ($action == 'del' && is_numeric($id) && $id > 0) {
-            
+
             $sem = $this->em->getRepository('\Model\\Semester')->find($id);
             $date = new \DateTime('now');
             if ($date->format('Y') < $sem->getYear()->getFromYear()) { // sprawdzenie czy semestr nie jest aktualny albo się zaraz zacznie
@@ -563,11 +568,10 @@ class School {
             $semester = $this->em->getRepository('\Model\\Semester')->find($id);
             $semesters = $this->em->getRepository('\Model\\Semester')->findBy(array('year' => $semester->getYear()), array('semester' => 'ASC'));
         } else {
-            \Notify::success('Dodano semestr!');           
+            \Notify::success('Dodano semestr!');
         }
         return array('years' => $this->getYearsList(), 'semesters' => $semesters);
     }
-
 
 // generator roczników od aktualnego do +6 bez tych co są w bazie
     public function getYearsList() {

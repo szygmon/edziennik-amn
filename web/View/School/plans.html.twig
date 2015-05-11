@@ -20,8 +20,6 @@
             </div>
         {% endif %}
 
-
-        <div class="content-wrapper">
             <!-- Content Header (Page header) -->
             <section class="content-header">
                 <h1>
@@ -98,8 +96,7 @@
 
             </section>
         </div>
-    </section>
-</div>
+
 
 
 
@@ -198,24 +195,6 @@
         modal.find('#day-input').val(res[1]);
         modal.find('#hour-input').val(res[2]);
     });
-
-//callback handler for form submit
-    /* $("#ajaxform").submit(function (e)
-     {
-     e.preventDefault(); //STOP default action
-     
-     //var postData = $(this).serializeArray();
-     var term = $form.find( "input[name='save']" ).val(),
-     var formURL = $(this).attr("action");
-     var postData = $( ":input" ).serializeArray();
-     var posting = $.post(formURL, { save: term });
-     
-     // Put the results in a div
-     posting.done(function (data) {
-     //var content = $(data).find("#content");
-     $("#result").empty().append(data);
-     });
-     });*/
 
 </script>
 

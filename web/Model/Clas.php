@@ -30,7 +30,7 @@ class Clas {
      */
     protected $year;
 
-    /** @OneToMany(targetEntity="\Model\Plan", mappedBy="clas") */
+    /** @OneToMany(targetEntity="\Model\Plan", mappedBy="class") */
     protected $plans;
 
     ///** @OneToMany(targetEntity="\Model\Rating", mappedBy="clas") */
@@ -43,8 +43,8 @@ class Clas {
     //protected $students;
     ///** @OneToMany(targetEntity="\Model\Educator", mappedBy="clas") */
     //protected $educators;
-    ///** @OneToMany(targetEntity="\Model\Lesson", mappedBy="clas") */
-    //protected $lessons;
+    /** @OneToMany(targetEntity="\Model\Lesson", mappedBy="class") */
+    protected $lessons;
 
     /**
      * @ManyToMany(targetEntity="\Model\Student", mappedBy="class")
