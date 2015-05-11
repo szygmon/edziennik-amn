@@ -124,7 +124,7 @@
                                         <td>{{ student.givenName }} {{ student.familyName }}</td>
                                         {% for i in range(1, 20) %}
                                             <td class="text-center">
-                                                <span style="color: {{ ratingd[i].color }}"><input type="text" name="rat{{ student.id }}-{{ i }}" value="{{ ratings[student.id][i].value }}" style="width: 30px" /></span>
+                                                <span data-placement="top" data-toggle="tooltip" title="Data: {{ ratings[student.id][i].date|date("Y-m-d") }}" class="tooltipRating" style="color: {{ ratingd[i].color }}"><input type="text" name="rat{{ student.id }}-{{ i }}" value="{{ ratings[student.id][i].value }}" style="width: 30px" /></span>
                                             </td>
                                         {% endfor %}
                                         <td>
