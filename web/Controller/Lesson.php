@@ -74,7 +74,7 @@ class Lesson {
             if ($rd) { // edycja
                 $rd[0]->setDescription($_POST['desc']);
                 $rd[0]->setShortDesc($_POST['shortDesc']);
-                $rd[0]->setWeight($_POST['weight']);
+                $rd[0]->setWeight(is_numeric($_POST['weight']) ? $_POST['weight'] : 1);
                 $rd[0]->setColor($_POST['color']);
                 $this->em->flush();
                 $Router->redirect('Lesson/editLesson', array('id' => $_POST['lesson']));
@@ -83,7 +83,7 @@ class Lesson {
 
                 $rd->setDescription($_POST['desc']);
                 $rd->setShortDesc($_POST['shortDesc']);
-                $rd->setWeight($_POST['weight']);
+                $rd->setWeight(is_numeric($_POST['weight']) ? $_POST['weight'] : 1);
                 $rd->setClass($class);
                 $rd->setSubject($subject);
                 $rd->setOrderDesc($orderDesc);
@@ -114,12 +114,14 @@ class Lesson {
                             if ($rating->getStudent()->getId() == $student->getId()) { // update
                                 $find = true;
                                 if ($_POST['rat' . $student->getId() . '-' . $i]) {
-                                    $rating->setValue($_POST['rat' . $student->getId() . '-' . $i]);
-                                    $rating->setDate(new \DateTime());
-                                    $this->em->flush(); //////////////////////////////////////////////////może raz na końcu?
+                                    if ($_POST['rat' . $student->getId() . '-' . $i] != $rating->getValue()) {
+                                        $rating->setValue($_POST['rat' . $student->getId() . '-' . $i]);
+                                        $rating->setDate(new \DateTime());
+                                        $this->em->flush(); //////////////////////////////////////////////////może raz na końcu?
+                                    }
                                 } else { // usuwanie oceny która została usunięta z dziennika
                                     $this->em->remove($rating);
-                                    $this->em->flush();///////////////////////////////////////////////////jw
+                                    $this->em->flush(); ///////////////////////////////////////////////////jw
                                 }
                             }
                         }
