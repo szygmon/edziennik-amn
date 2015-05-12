@@ -68,7 +68,7 @@ class Student {
         }
 
 
-        return array('ratings' => $ratings, 'subjects' => $subjects, 'ratingsAv' => $ratingsAv);
+        return array('ratings' => $ratings, 'subjects' => $subjects, 'ratingsAv' => $ratingsAv, 'class' => $class);
     }
 
     /**
