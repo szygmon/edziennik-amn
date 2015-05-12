@@ -45,7 +45,7 @@ class Plan {
         * @ManyToOne(targetEntity="\Model\Teacher", inversedBy="plans")  
         * @JoinColumn(nullable=false)      
         */
-        protected $teacher; // może sie tak nazywać??
+        protected $teacher;
         
         /**
         * @ManyToOne(targetEntity="\Model\Classroom", inversedBy="plans")  

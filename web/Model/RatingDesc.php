@@ -24,6 +24,12 @@ class RatingDesc {
      * @JoinColumn(nullable=false)
      */
     protected $class;
+    
+    /**
+     * @ManyToOne(targetEntity="\Model\Semester", inversedBy="ratingDescs")  
+     * @JoinColumn(nullable=false)      
+     */
+    protected $semester;
 
     /**
      * @ManyToOne(targetEntity="\Model\Subject", inversedBy="ratingDescs")

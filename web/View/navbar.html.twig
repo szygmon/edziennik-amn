@@ -1,6 +1,12 @@
 <header class="main-header">
     <a href="{{ url('Home/index') }}" class="logo">e-<b>Dziennik</b></a>
     <nav class="navbar navbar-static-top" role="navigation">
+        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </a>
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
                 <!-- Messages: style can be found in dropdown.less-->
@@ -83,42 +89,25 @@
                 <li class="dropdown notifications-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-bell-o"></i>
-                        <span class="label label-warning">10</span>
+                        {% if Me.getNotifications.count > 0 %}
+                        <span class="label label-warning" id="notifscountern">{{ Me.getNotifications.count }}</span>
+                        {% endif %}
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="header">You have 10 notifications</li>
+                        <li class="header">Liczba powiadomień: <span id="notifscounter">{{ Me.getNotifications.count }}</span></li>
                         <li>
                             <!-- inner menu: contains the actual data -->
                             <ul class="menu">
-                                <li>
-                                    <a href="#">
-                                        <i class="fa fa-users text-aqua"></i> 5 new members joined today
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the page and may cause design problems
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <i class="fa fa-users text-red"></i> 5 new members joined
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#">
-                                        <i class="fa fa-shopping-cart text-green"></i> 25 sales made
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <i class="fa fa-user text-red"></i> You changed your username
-                                    </a>
-                                </li>
+                                {% for notif in Me.getNotifications.notifs %}
+                                    <li>
+                                        <a class="removeNotif" href="#" data-notifid="{{ notif.id }}">
+                                            <i class="fa fa-plus text-green"></i> {{ notif.msg }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
                             </ul>
                         </li>
-                        <li class="footer"><a href="#">View all</a></li>
+                        <li class="footer"><a href="#">Zobacz wszystkie</a></li>
                     </ul>
                 </li>
                 <!-- Tasks: style can be found in dropdown.less -->
@@ -234,3 +223,24 @@
         </div>
     </nav>
 </header>
+
+<script type="text/javascript" >
+    $('.removeNotif').on('click', function () {
+        var nid = $(this).attr('data-notifid');
+        $(this).parent().remove();
+        var url = '{{ url('Home/removeNotif') }}';
+
+        // Send the data using post
+        var posting = $.post(url, {id: nid});
+        posting.done(function () {
+            var c = $('#notifscounter').html();
+            var nc = c - 1;
+            $('#notifscounter').empty().append(nc);
+            if (nc == 0) {
+                $('#notifscountern').remove();
+            } else {
+                $('#notifscountern').empty().append(nc);
+            }
+        });
+    });
+</script>

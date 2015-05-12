@@ -151,7 +151,7 @@ class Me {
         return array('plan' => $plans, 'lessons' => $lessons);
     }
 
-    public function getActualYear() {
+    public function getActualSemester() {
         $em = \Di::get('em');
         $sem = $em->createQueryBuilder()
                 ->select('s')
@@ -161,10 +161,12 @@ class Me {
                 ->setParameters(array('1' => new \DateTime()))
                 ->getQuery()
                 ->getResult();
-        foreach ($sem as $s) {
-            $year = $s->getYear();
-        }
-        return $year;
+
+        return $sem[0];
+    }
+    
+    public function getActualYear() {
+        return $this->getActualSemester()->getYear();
     }
 
     public function getTeacherSidebarData() {
@@ -176,4 +178,13 @@ class Me {
         return array('subjects' => $subjects, 'teachers' => $teachers, 'classes' => $classes);
     }
 
+    public function getNotifications() {
+        $em = \Di::get('em');
+        
+        $notifications = $em->getRepository('\Model\\Notification')->findBy(array('user' => $this->model), array('id' => 'DESC'));
+        $count = count($notifications);
+        
+        return array('notifs' => $notifications, 'count' => $count);
+    }
+    
 }

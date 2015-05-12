@@ -37,7 +37,7 @@ class Lesson {
      * @param \Core\Router $Router
      */
     public function editLesson($Router, $id = '') {
-        if (isset($_POST['save'])) {
+        if (isset($_POST['save'])) { // lekcja
             if (is_numeric($id)) { // edycja
                 $lesson = $this->em->getRepository('Model\\Lesson')->find($id);
             } else { // nowy
@@ -68,7 +68,8 @@ class Lesson {
             $rd = $this->em->getRepository('\Model\\RatingDesc')->findBy(array(
                 'class' => $class,
                 'subject' => $subject,
-                'orderDesc' => $orderDesc
+                'orderDesc' => $orderDesc,
+                'semester' => $this->me->getActualSemester() ///////////////////////////////////////////narazie tylko aktualny semestr
             ));
 
             if ($rd) { // edycja
@@ -88,6 +89,7 @@ class Lesson {
                 $rd->setSubject($subject);
                 $rd->setOrderDesc($orderDesc);
                 $rd->setColor($_POST['color']);
+                $rd->setSemester($this->me->getActualSemester()); /////////////////////////////// tylko aktualny semestr
 
                 $this->em->persist($rd);
                 $this->em->flush();
@@ -135,6 +137,11 @@ class Lesson {
                                 $rating->setValue($_POST['rat' . $student->getId() . '-' . $i]);
                                 $rating->setDate(new \DateTime());
 
+                                $notif = new \Model\Notification(); // powiadomienie
+                                $notif->setMsg('Nowa ocena '.$_POST['rat' . $student->getId() . '-' . $i].' z '.$lesson->getSubject()->getSubject());
+                                $notif->setUser($student);
+                                $this->em->persist($notif);
+                                
                                 $this->em->persist($rating);
                                 $this->em->flush(); //////////////////////////////////////////////////może raz na końcu?
                             }
@@ -148,7 +155,11 @@ class Lesson {
         if (is_numeric($id)) { // edycja lekcji
             $lesson = $this->em->getRepository('Model\\Lesson')->find($id);
 
-            $ratingDescs = $this->em->getRepository('\Model\\RatingDesc')->findBy(array('class' => $lesson->getClass(), 'subject' => $lesson->getSubject()), array('orderDesc' => 'ASC'));
+            $ratingDescs = $this->em->getRepository('\Model\\RatingDesc')->findBy(array(
+                'class' => $lesson->getClass(),
+                'subject' => $lesson->getSubject(),
+                'semester' => $this->me->getActualSemester() //////////////////////////////// tylko oceny z aktualnego semestru
+                    ), array('orderDesc' => 'ASC'));
             foreach ($ratingDescs as $rd) {
                 $ratingd[$rd->getOrderDesc()] = $rd;
                 if ($rd->getRatings()) {
@@ -164,8 +175,10 @@ class Lesson {
                     }
                 }
             }
-            foreach ($ratingsSum as $key => $value) { // liczenie średniej
-                $ratingsAv[$key] = round($value / $counter[$key], 2);
+            if (isset($ratingsSum)) {
+                foreach ($ratingsSum as $key => $value) { // liczenie średniej
+                    $ratingsAv[$key] = round($value / $counter[$key], 2);
+                }
             }
         } else {
             $lesson = null;
