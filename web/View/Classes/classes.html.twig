@@ -20,24 +20,28 @@
             <div class="box-body">
                 <div id="students-table_wrapper" class="dataTables_wrapper form-inline" role="grid"><div class="row"><div class="col-xs-6"></div><div class="col-xs-6"></div></div>
 
-                    <table id="students-table" class="table table-bordered table-hover dataTable" aria-describedby="students-table_info">
+                    <table id="students-table" class="table table-bordered table-hover dataTable">
                         <thead>
-                            <tr role="row">
-                                <th class="sorting" role="columnheader" tabindex="0" aria-controls="students-table" rowspan="1" colspan="1" >Imię</th>
-                                <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="students-table" rowspan="1" colspan="1" aria-sort="ascending">Nazwisko</th>
-                                <th class="sorting" role="columnheader" tabindex="0" aria-controls="students-table" rowspan="1" colspan="1">Nick</th>
-                                <th class="sorting" role="columnheader" tabindex="0" aria-controls="students-table" rowspan="1" colspan="1">E-mail</th>
-                                <th class="sorting" role="columnheader" tabindex="0" aria-controls="students-table" rowspan="1" colspan="1">Miejsce urodzenia</th>
+                            <tr>
+                                <th width="1%">Grupy</th>
+                                <th>Nazwisko</th>
+                                <th>Imię</th>
+                                <th>Nick</th>
+                                <th>E-mail</th>
+                                <th>Miejsce urodzenia</th>
+
                             </tr>
                         </thead>
-                        <tbody role="alert" aria-live="polite" aria-relevant="all">
+                        <tbody>
                             {% for student in class.students %}
-                                <tr class="odd">
-                                    <td class="">{{ student.givenName }}</td>
-                                    <td class=" sorting_1">{{ student.familyName }}</td>
-                                    <td class="">{{ student.username }}</td>
-                                    <td class="">{{ student.email }}</td>
-                                    <td class=" ">{{ student.birthplace }}</td>
+                                <tr>
+                                    <td class="text-center"><a href="#" class="pull-right" data-toggle="modal" data-target="#addGroups" data-groups="{{ student.id }}"><i class="fa fa-group"></i></a></td>
+                                    <td>{{ student.familyName }}</td>
+                                    <td>{{ student.givenName }}</td>
+                                    <td>{{ student.username }}</td>
+                                    <td>{{ student.email }}</td>
+                                    <td>{{ student.birthplace }}</td>
+
                                 </tr>
                             {% endfor %}
                         </tbody></table>
@@ -47,21 +51,84 @@
 
         </div>
 
+
+
+
+
+
+
+        <div class="modal fade" id="addGroups" tabindex="-1" role="dialog" aria-labelledby="addGroupsLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="addGroupsLabel">Grupy ucznia</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" id="ajaxform" action="{{ url('Classes/studentsGroups', {'id': class.id } ) }}">
+
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">Grupy:</label>
+                                <select multiple="" name="groups[]" class="form-control">
+                                    {% for gr in groups %}
+                                        <option value="{{ gr.id }}">
+                                            {% if gr.level > 0 %}
+                                                {% for i in range(1, gr.level) %}&nbsp;&nbsp;&nbsp;{% endfor %}
+                                            {% endif %}
+                                            {{ gr.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+
+                            <input type="hidden" name="student" id="student-input" />
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
+                                <input type="submit" name="save" class="btn btn-primary" value="Zapisz" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" >
+
+            $('#addGroups').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var recipient = button.data('groups'); // Extract info from data-* attributes
+                var modal = $(this);
+                modal.find('#student-input').val(recipient);
+            });
+
+        </script>
+
+
+
+
+
+
     </section>
     <script src="{{ url('template') }}/js/jquery.dataTables.js" type="text/javascript"></script>
     <script src="{{ url('template') }}/js/dataTables.bootstrap.js" type="text/javascript"></script>
     <script type="text/javascript">
-        $(function () {
-            $("#example1").dataTable();
-            $('#students-table').dataTable({
-                "bPaginate": true,
-                "bLengthChange": true,
-                "bFilter": true,
-                "bSort": true,
-                "bInfo": true,
-                "bAutoWidth": false
+            $(function () {
+                $("#example1").dataTable();
+                $('#students-table').dataTable({
+                    "bPaginate": true,
+                    "bLengthChange": true,
+                    "bFilter": true,
+                    "bSort": true,
+                    "bInfo": true,
+                    "bAutoWidth": false,
+                    "aoColumnDefs": [{
+                            'bSortable': false,
+                            'aTargets': [0]
+                        }]
+                });
+
+                $("#classes-category-sidebar").addClass("treeview active");
             });
-            $("#classes-category-sidebar").addClass("treeview active");
-        });
     </script>
 {% endblock %}

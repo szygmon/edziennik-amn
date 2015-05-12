@@ -60,6 +60,11 @@ class Student extends User {
         $this->groups->removeElement($group);
     }
 
+    public function removeAllGroups() {
+        foreach ($this->groups as $s)
+            $this->groups->removeElement($s);
+    }
+
     public function __construct() {
         $this->class = new \Doctrine\Common\Collections\ArrayCollection();
         $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
