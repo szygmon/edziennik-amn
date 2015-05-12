@@ -21,7 +21,7 @@
             <div class="box-body">
                 <div class="row">
                     {% for i in range(0, 5) %}
-                        <div class="col-md-2 col-sm-4 col-xs-12">
+                        <div class="col-md-2">
                             <div class="bg-blue-active plan-top-margin">
                                 <div class="info-box-content plan-top text-center">
                                     <span class="info-box-text">{{ dayname[i] }}</span>
@@ -35,7 +35,7 @@
                     <div class="row">
                         {% for d in range(0, 5) %}
                             {% if d > 0 %}
-                                <div class="col-md-2 col-sm-4 col-xs-12">
+                                <div class="col-md-2">
                                     {% if plan[i][d].subject.subject %}
                                         <div class="info-box bg-green">
                                             <div class="info-box-content plan-plan">
@@ -52,7 +52,7 @@
                                     {% endif %}
                                 </div>
                             {% else %}
-                                <div class="col-md-2 col-sm-4 col-xs-12">
+                                <div class="col-md-2">
                                     <div class="info-box bg-blue">
                                         <span class="info-box-icon plan-number">{{ i }}</span>
                                         <div class="info-box-content plan-hour">

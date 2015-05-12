@@ -74,7 +74,7 @@ class Lesson {
 
             if ($rd) { // edycja
                 $rd[0]->setDescription($_POST['desc']);
-                $rd[0]->setShortDesc($_POST['shortDesc'] != '' ? $_POST['shortDesc'] : substr($_POST['description'], 0, 3));
+                $rd[0]->setShortDesc($_POST['shortDesc'] ? $_POST['shortDesc'] : substr($_POST['description'], 0, 3));
                 $rd[0]->setWeight(is_numeric($_POST['weight']) ? $_POST['weight'] : 1);
                 $rd[0]->setColor($_POST['color']);
                 $this->em->flush();
@@ -83,7 +83,7 @@ class Lesson {
                 $rd = new \Model\RatingDesc();
 
                 $rd->setDescription($_POST['desc']);
-                $rd->setShortDesc($_POST['shortDesc'] != '' ? $_POST['shortDesc'] : substr($_POST['description'], 0, 3));
+                $rd->setShortDesc($_POST['shortDesc'] ? $_POST['shortDesc'] : substr($_POST['description'], 0, 3)); ///////////////// nie działa...
                 $rd->setWeight(is_numeric($_POST['weight']) ? $_POST['weight'] : 1);
                 $rd->setClass($class);
                 $rd->setSubject($subject);
