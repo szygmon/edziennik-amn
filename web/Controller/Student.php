@@ -85,15 +85,15 @@ class Student {
         $plan = $this->em->createQueryBuilder()
                 ->select('p')
                 ->from('\Model\\Plan', 'p')
-                ->where('p.fromDate <= ?1 AND p.toDate >= ?1 AND p.class = ?2')
+                ->where('p.fromDate <= ?1 AND p.toDate >= ?1 AND p.class = ?2 AND (p.group = NULL OR p.group IN ?3)')
                 ->orderBy('p.day')
                 ->orderBy('p.hour')
-                ->setParameters(array('1' => new \DateTime(), '2' => $class))
+                ->setParameters(array(1 => new \DateTime(), 2 => $class, 3 => $this->me->getModel()->getGroups()))
                 ->getQuery()
                 ->getResult();
 
         foreach ($plan as $p) {
-            $s[$p->getHour()][$p->getDay()][] = array(
+            $s[$p->getHour()][$p->getDay()] = array(
                 'subject' => $p->getSubject(),
                 'classroom' => $p->getClassroom(),
                 'group' => $p->getGroup(),

@@ -666,7 +666,7 @@ class School {
 
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/teacherPrepare', array('info' => 'updt'));
+                    $Router->redirect('School/studentPrepare', array('info' => 'updt'));
                 $this->info('updt');
                 // nowy
             } else {
@@ -693,7 +693,7 @@ class School {
                 $this->em->persist($user);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/teacherPrepare', array('info' => 'added'));
+                    $Router->redirect('School/studentPrepare', array('info' => 'added'));
                 $this->info('added');
             }
         }

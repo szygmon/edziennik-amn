@@ -10,31 +10,49 @@ use Doctrine\Common\Collections\ArrayCollection as Collection;
  */
 class Group {
 
-	use \AutoProperty;
+    use \AutoProperty;
 
-	/**
-	 * @Column(type="integer")
-	 * @Id
-	 * @GeneratedValue(strategy="AUTO")
-	 */
-	protected $id;
+    /**
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
 
-	/** 
-         * @Column(type="string", length=255, nullable=false) 
-         */
-	protected $name;
+    /**
+     * @Column(type="string", length=255, nullable=false) 
+     */
+    protected $name;
 
-        /**
-         * @OneToMany(targetEntity="\Model\Group", mappedBy="mainGroup")
-         */
-        protected $subGroups;    
-    
-        /**
-         * @ManyToOne(targetEntity="\Model\Group", inversedBy="subGroups")
-         */
-        protected $mainGroup;
+    /**
+     * @OneToMany(targetEntity="\Model\Group", mappedBy="mainGroup")
+     */
+    protected $subGroups;
 
-        /** @OneToMany(targetEntity="\Model\Plan", mappedBy="group") */
-        protected $plans;
+    /**
+     * @ManyToOne(targetEntity="\Model\Group", inversedBy="subGroups")
+     */
+    protected $mainGroup;
+
+    /** @OneToMany(targetEntity="\Model\Plan", mappedBy="group") */
+    protected $plans;
+
+    /**
+     * @ManyToMany(targetEntity="\Model\Student", mappedBy="group")
+     * @JoinTable(name="students_groups")
+     */
+    protected $students;
+
+    public function addStudent(\Model\Student $student = null) {
+        $this->students->add($student);
+    }
+
+    public function removeStudent(\Model\Clas $student) {
+        $this->students->removeElement($student);
+    }
+
+    public function __construct() {
+        $this->students = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
 }
