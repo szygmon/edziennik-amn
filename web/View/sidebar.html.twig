@@ -34,14 +34,14 @@
                 </a>
                 <ul class="treeview-menu">
                     <li id="semesters-sidebar"><a href="{{ url('School/semesters') }}"><i class="fa fa-circle-o"></i> Semestry</a></li>
-                    <li><a href="{{ url('School/classes') }}"><i class="fa fa-circle-o"></i> Klasy</a></li>
-                    <li><a href="{{ url('School/groups') }}"><i class="fa fa-circle-o"></i> Grupy</a></li>
-                    <li><a href="{{ url('School/subjects') }}"><i class="fa fa-circle-o"></i> Przedmioty</a></li>
-                    <li><a href="{{ url('School/classrooms') }}"><i class="fa fa-circle-o"></i> Sale lekcyjne</a></li>
-                    <li><a href="{{ url('School/hours') }}"><i class="fa fa-circle-o"></i> Godziny zajęć</a></li>
-                    <li><a href="{{ url('School/plans') }}"><i class="fa fa-circle-o"></i> Plan lekcji</a></li>
-                    <li><a href="{{ url('School/teachers') }}"><i class="fa fa-circle-o"></i> Nauczyciele</a></li>
-                    <li><a href="{{ url('School/students') }}"><i class="fa fa-circle-o"></i> Uczniowie</a></li>
+                    <li id="classes-sidebar"><a href="{{ url('School/classes') }}"><i class="fa fa-circle-o"></i> Klasy</a></li>
+                    <li id="groups-sidebar"><a href="{{ url('School/groups') }}"><i class="fa fa-circle-o"></i> Grupy</a></li>
+                    <li id="subjects-sidebar"><a href="{{ url('School/subjects') }}"><i class="fa fa-circle-o"></i> Przedmioty</a></li>
+                    <li id="classrooms-sidebar"><a href="{{ url('School/classrooms') }}"><i class="fa fa-circle-o"></i> Sale lekcyjne</a></li>
+                    <li id="hours-sidebar"><a href="{{ url('School/hours') }}"><i class="fa fa-circle-o"></i> Godziny zajęć</a></li>
+                    <li id="plans-sidebar"><a href="{{ url('School/plans') }}"><i class="fa fa-circle-o"></i> Plan lekcji</a></li>
+                    <li id="teachers-sidebar"><a href="{{ url('School/teachers') }}"><i class="fa fa-circle-o"></i> Nauczyciele</a></li>
+                    <li id="students-sidebar"><a href="{{ url('School/students') }}"><i class="fa fa-circle-o"></i> Uczniowie</a></li>
                 </ul>
             </li>
 
@@ -53,7 +53,7 @@
                 </a>
                 <ul class="treeview-menu">
                     {% for class in Me.getActualClasses %}
-                        <li><a href="#"><i class="fa fa-circle-o"></i> {{ class.name }}</a></li>
+                        <li><a href="{{ url('Classes/classes', {'id': class.id }) }}"><i class="fa fa-circle-o"></i> {{ class.name }}</a></li>
                         {% endfor %}
                 </ul>
             </li>

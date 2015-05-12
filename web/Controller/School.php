@@ -88,7 +88,7 @@ class School {
         // ususwanie
         if ($action == 'del' && is_numeric($id) && $id > 0) {
             $class = $this->em->getRepository('\Model\\Clas')->find($id);
-            $class->removeAllStudents();
+            //$class->removeAllStudents(); ///////////////////////////////////////////////////potem sie zastanowie, trzeba jakieś blokady usuwania dać...
             $plans = $this->em->getRepository('\Model\\Plan')->findBy(array('class' => $class));
             foreach ($plans as $plan) {
                 $this->em->remove($plan);
@@ -252,14 +252,6 @@ class School {
         $this->info = 'brak';
 
         return array('classrooms' => $classrooms, 'info' => $info);
-    }
-
-    /**
-     * @Route(/admin/school/classroomsM)
-     */
-    public function classroomsM() {
-        $classrooms = $this->em->getRepository('Model\\Classroom')->findAll();
-        return array('classrooms' => $classrooms, 'info' => 'brak');
     }
 
     /**

@@ -36,7 +36,7 @@
                                         {% endif %}
                                         <span class="info-box-icon">{{ r.value }}</span>
                                         <div class="info-box-content">
-                                            <span class="info-box-text">{{ r.ratingDesc.description }}</span>
+                                            <span class="info-box-text" data-placement="top" data-toggle="tooltip" title="{{ r.ratingDesc.description }}">{{ r.ratingDesc.description }}</span>
                                             <span class="info-box-number">Waga: {{ r.ratingDesc.weight }}</span>
                                             <div class="progress">
                                                 <div class="progress-bar" style="width: 70%"></div>
