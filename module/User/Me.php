@@ -161,12 +161,17 @@ class Me {
                 ->setParameters(array('1' => new \DateTime()))
                 ->getQuery()
                 ->getResult();
-
-        return $sem[0];
+        if ($sem[0])
+            return $sem[0];
+        else
+            return null;
     }
-    
+
     public function getActualYear() {
-        return $this->getActualSemester()->getYear();
+        if ($this->getActualSemester()) 
+            return $this->getActualSemester()->getYear();
+        else
+            return null;
     }
 
     public function getTeacherSidebarData() {
@@ -180,11 +185,11 @@ class Me {
 
     public function getNotifications() {
         $em = \Di::get('em');
-        
+
         $notifications = $em->getRepository('\Model\\Notification')->findBy(array('user' => $this->model), array('id' => 'DESC'));
         $count = count($notifications);
-        
+
         return array('notifs' => $notifications, 'count' => $count);
     }
-    
+
 }

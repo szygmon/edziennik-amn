@@ -88,6 +88,12 @@ class School {
         // ususwanie
         if ($action == 'del' && is_numeric($id) && $id > 0) {
             $class = $this->em->getRepository('\Model\\Clas')->find($id);
+            $class->removeAllStudents();
+            $plans = $this->em->getRepository('\Model\\Plan')->findBy(array('class' => $class));
+            foreach ($plans as $plan) {
+                $this->em->remove($plan);
+            }
+
             $this->em->remove($class);
             $this->em->flush();
             $this->info('deleted');
@@ -385,17 +391,7 @@ class School {
     }
 
     public function getPlan() {
-        $sem = $this->em->createQueryBuilder()
-                ->select('s')
-                ->from('\Model\\Semester', 's')
-                ->where('s.fromDate <= ?1 AND s.toDate >= ?1')
-                ->setParameters(array('1' => new \DateTime()))
-                ->setMaxResults(1)
-                ->getQuery()
-                ->getResult();
-        //foreach ($sem as $sr) {
-            $year = $sem[0]->getYear();
-        //}
+        $year = $this->me->getActualYear();
         $classes = $this->em->getRepository('Model\\Clas')->findBy(array('year' => $year), array('name' => 'ASC'));
         foreach ($classes as $class) {
             $plan = $this->em->createQueryBuilder()

@@ -59,6 +59,11 @@ class Clas {
     public function removeStudent(\Model\Clas $student) {
         $this->students->removeElement($student);
     }
+    
+    public function removeAllStudents() {
+        foreach ($this->students as $s)
+            $this->students->removeElement($s);
+    }
 
     public function __construct() {
         $this->students = new \Doctrine\Common\Collections\ArrayCollection();
