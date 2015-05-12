@@ -22,7 +22,8 @@
 
             <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
-                <div class="small-box bg-green">
+
+                <div class="small-box bg-green divlink">
                     <div class="inner">
                         <h3>Oceny</h3>
                         <p>Moje oceny</p>
@@ -32,10 +33,11 @@
                     </div>
                     <a href="{{ url('Student/ratings') }}" class="small-box-footer">Sprawdź <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
-            </div><!-- ./col -->
+
+            </div><!-- ./col --></a>
             <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
-                <div class="small-box bg-yellow">
+                <div class="small-box bg-yellow divlink">
                     <div class="inner">
                         <h3>Frekwencja</h3>
                         <p>Moje obecności</p>
@@ -48,7 +50,7 @@
             </div><!-- ./col -->
             <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
-                <div class="small-box bg-aqua">
+                <div class="small-box bg-aqua divlink">
                     <div class="inner">
                         <h3>Plan lekcji</h3>
                         <p>Moje zajęcia</p>
@@ -61,7 +63,7 @@
             </div><!-- ./col -->
             <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
-                <div class="small-box bg-red">
+                <div class="small-box bg-red divlink">
                     <div class="inner">
                         <h3>65</h3>
                         <p>Unique Visitors</p>
@@ -440,4 +442,12 @@
         </div><!-- /.row (main row) -->
 
     </section><!-- /.content -->
+
+    <script type="text/javascript">
+        $('.divlink').css('cursor', 'pointer');
+        $(document).delegate('.divlink', 'click', function () {
+            window.location = $(this).find('a').attr('href');
+        });
+    </script>
+
 {% endblock %}
