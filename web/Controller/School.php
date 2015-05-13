@@ -288,13 +288,13 @@ class School {
             $classroom = $this->em->getRepository('\Model\\Classroom')->find($id);
         } else
             $classroom = null;
-        
+
         $inf = $this->info($info);
         return array('info' => $inf, 'classroom' => $classroom);
     }
 
-// godziny lekcyjne //
     /**
+     * Godziny lekcyjne
      * @Route(/admin/school/hours/{action}/{id})
      */
     public function hours($id = '', $action = '') {
@@ -362,7 +362,7 @@ class School {
     }
 
     /**
-     * plan lekcji
+     * Plan lekcji
      * @Route(/admin/school/plans/{action}/{id})
      */
     public function plans($id = '', $action = '') {
@@ -440,8 +440,8 @@ class School {
         return $return;
     }
 
-// przedmioty //
     /**
+     * Przedmioty
      * @Route(/admin/school/subjects/{action}/{id})
      * @param \Core\Router $Router
      */
@@ -458,7 +458,7 @@ class School {
                 $this->em->persist($sub);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/subPrepare', array('info' => 'added'));
+                    $Router->redirect('School/subEdit', array('info' => 'added'));
                 $this->info('added');
             }
         }
@@ -466,6 +466,21 @@ class School {
         // ususwanie
         if ($action == 'del' && is_numeric($id) && $id > 0) {
             $subject = $this->em->getRepository('\Model\\Subject')->find($id);
+            if ($subject->getRatings()[0]) {
+                var_dump('Nie można usunąć! Do tego przedmiotu są przypisane oceny!');
+                die;
+            }
+            if ($subject->getRatingDescs()[0]) {
+                var_dump('Nie można usunąć! Do tego przedmiotu są przypisane opisy ocen!');
+                die;
+            }
+            if ($subject->getLessons()[0]) {
+                var_dump('Nie można usunąć! Do tego przedmiotu są przypisane tematy lekcji!');
+                die;
+            }
+            foreach ($subject->getPlans() as $p) {
+                $this->em->remove($p);
+            }
             $this->em->remove($subject);
             $this->em->flush();
             $this->info('deleted');
@@ -482,15 +497,15 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/subjects/prepare/{info})
+     * @Route(/admin/school/subjects/edit/{info})
      */
-    public function subPrepare($info = 'brak') {
+    public function subEdit($info = 'brak') {
         $inf = $this->info($info);
         return array('info' => $inf);
     }
 
     /**
-     * semestry
+     * Semestry
      * @Route(/admin/school/semesters/{action}/{id})
      */
     public function semesters($id = '', $action = '') {
@@ -545,6 +560,10 @@ class School {
                 $rem = $this->em->getRepository('\Model\\Semester')->findBy(array('year' => $sem->getYear()));
                 $this->em->remove($sem->getYear());
                 foreach ($rem as $r) {
+                    if ($r->getRatingDescs()[0]) {
+                        print('Nie można usunąć! Do semestru są przypisane oceny!');
+                        die;
+                    }
                     $this->em->remove($r);
                 }
                 $this->em->flush();
@@ -596,8 +615,8 @@ class School {
         return $years;
     }
 
-// nauczyciele
     /**
+     * Nauczyciele
      * @Route(/admin/school/teachers/{action}/{id})
      * @param \User\Me $Me
      * @param \Core\Router $Router
@@ -609,13 +628,13 @@ class School {
             if ($action == 'updt' && is_numeric($id)) {
                 $user = $this->em->getRepository('\Model\\Teacher')->find($id);
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
-                if ($check) {
+                if ($check[0] && $check[0]->getId() != $id) {
                     var_dump('jest już taki mail!');
                     die;
                 }
                 $user->setEmail($_POST['email']);
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
-                if ($check) {
+                if ($check[0] && $check[0]->getId() != $id) {
                     var_dump('jest już taki username!');
                     die;
                 }
@@ -626,7 +645,7 @@ class School {
                     $user->setPassword($_POST['password']);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/teacherPrepare', array('info' => 'updt'));
+                    $Router->redirect('School/teacherEdit', array('info' => 'updt'));
                 $this->info('updt');
                 // nowy
             } else {
@@ -653,7 +672,7 @@ class School {
                 $this->em->persist($user);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/teacherPrepare', array('info' => 'added'));
+                    $Router->redirect('School/teacherEdit', array('info' => 'added'));
                 $this->info('added');
             }
         }
@@ -661,6 +680,13 @@ class School {
         // usuwanie
         if ($action == 'del' && is_numeric($id) && $id > 0) {
             $t = $this->em->getRepository('\Model\\Teacher')->find($id); /// dodać jakieś waruki? żeby sie powiązania nie spieprzyły
+            if ($t->getLessons()[0]) {
+                print('Nie można usunąć! Ten nauczyciel prowadził lekcje! Zrobić nieaktywnego?');
+                die;
+            }
+            foreach ($t->getPlans() as $p) {
+                $this->em->remove($p);
+            }
             $this->em->remove($t);
             $this->em->flush();
             $this->info('deleted');
@@ -677,9 +703,9 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/teachers/prepare/{info})
+     * @Route(/admin/school/teachers/edit/{info})
      */
-    public function teacherPrepare($info = 'brak') {
+    public function teacherEdit($info = 'brak') {
         if (!is_numeric($info)) {
             $inf = $this->info($info);
             $teacher = 'new';
@@ -691,8 +717,8 @@ class School {
         return array('info' => $inf, 'teacher' => $teacher);
     }
 
-// uczniowie
     /**
+     * Uczniowie
      * @Route(/admin/school/students/{action}/{id})
      * @param \User\Me $Me
      * @param \Core\Router $Router
@@ -704,13 +730,13 @@ class School {
             if ($action == 'updt' && is_numeric($id)) {
                 $user = $this->em->getRepository('\Model\\Student')->find($id);
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
-                if ($check) {
+                if ($check[0] && $check[0]->getId() != $id) {
                     var_dump('jest już taki email!');
                     die;
                 }
                 $user->setEmail($_POST['email']);
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
-                if ($check) {
+                if ($check[0] && $check[0]->getId() != $id) {
                     var_dump('jest już taki username!');
                     die;
                 }
@@ -727,7 +753,7 @@ class School {
 
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/studentPrepare', array('info' => 'updt'));
+                    $Router->redirect('School/studentEdit', array('info' => 'updt'));
                 $this->info('updt');
                 // nowy
             } else {
@@ -764,7 +790,7 @@ class School {
                 $this->em->persist($user);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/studentPrepare', array('info' => 'added'));
+                    $Router->redirect('School/studentEdit', array('info' => 'added'));
                 $this->info('added');
             }
         }
@@ -788,9 +814,9 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/students/prepare/{info})
+     * @Route(/admin/school/students/edit/{info})
      */
-    public function studentPrepare($info = 'brak') {
+    public function studentEdit($info = 'brak') {
         if (!is_numeric($info)) {
             $inf = $this->info($info);
             $student = 'new';

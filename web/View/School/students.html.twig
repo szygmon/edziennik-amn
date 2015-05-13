@@ -26,11 +26,6 @@
                     Szkoła
                     <small>Control panel</small>
                 </h1>
-                <ol class="breadcrumb">
-                    <li><a href="{{ url('Home/index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-                    <li><a href="{{ url('School/index') }}"><i class="fa"></i>Szkoła</a></li>
-                    <li class="active">Uczniowie</li>
-                </ol>
             </section>
 
             <!-- Main content -->
@@ -58,7 +53,7 @@
                                     <span class="text">{{ s.givenName }} {{ s.familyName }} ({{ s.username }}) e-mail: {{ s.email }}</span>
                                     <!-- General tools such as edit or delete-->
                                     <div class="tools">
-                                        <a href="{{ url('School/studentPrepare', {'info': s.id}) }}" class="fa fa-edit"></a>
+                                        <a href="{{ url('School/studentEdit', {'info': s.id}) }}" class="fa fa-edit"></a>
                                         <a href="{{ url('School/students', {'action': 'del', 'id': s.id}) }}" class="fa fa-trash-o"></a>
                                     </div>
                                 </li>
@@ -71,13 +66,14 @@
                     </div><!-- /.box-body -->
 
                     <div class="box-footer clearfix no-border">
-                        <a href="{{ url('School/studentPrepare') }}" class="btn btn-default pull-right"><i class="fa fa-plus"></i> Dodaj nowego</a>
+                        <a href="{{ url('School/studentEdit') }}" class="btn btn-default pull-right"><i class="fa fa-plus"></i> Dodaj nowego</a>
                     </div>
                 </div><!-- /.box -->
 
 
             </section><!-- /.Left col -->
 
-        </div><!-- /.row (main row) -->
-
+    <script type="text/javascript">
+        $("#school-category-sidebar, #students-sidebar").addClass("treeview active");
+    </script>
 {% endblock %}

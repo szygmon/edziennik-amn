@@ -19,12 +19,6 @@
                 Szkoła
                 <small>Control panel</small>
             </h1>
-            <ol class="breadcrumb">
-                <li><a href="{{ url('Home/index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-                <li><a href="{{ url('School/index') }}"><i class="fa"></i>Szkoła</a></li>
-                <li><a href="{{ url('School/subjects') }}"><i class="fa"></i>Przedmioty</a></li>
-                <li class="active">Dodaj nowy</li>
-            </ol>
         </section>
 
         <!-- Main content -->
@@ -52,15 +46,10 @@
                     </form>
                 </div><!-- /.box-body -->
 
-
-
-
             </div><!-- /.box -->
+        </section>
 
-
-        </section><!-- /.Left col -->
-
-    </div><!-- /.row (main row) -->
-
-
+    <script type="text/javascript">
+        $("#school-category-sidebar, #subjects-sidebar").addClass("treeview active");
+    </script>
 {% endblock %}
