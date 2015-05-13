@@ -79,7 +79,7 @@ class School {
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd'])) {
                     \Notify::success('Dodano!');
-                    $Router->redirect('School/classPrepare', array('info' => 'added'));
+                    $Router->redirect('School/classEdit', array('info' => 'added'));
                 }
                 \Notify::success('Dodano!');
             }
@@ -88,9 +88,19 @@ class School {
         // ususwanie
         if ($action == 'del' && is_numeric($id) && $id > 0) {
             $class = $this->em->getRepository('\Model\\Clas')->find($id);
-            //$class->removeAllStudents(); ///////////////////////////////////////////////////potem sie zastanowie, trzeba jakieś blokady usuwania dać...
-            $plans = $this->em->getRepository('\Model\\Plan')->findBy(array('class' => $class));
-            foreach ($plans as $plan) {
+            if ($class->getStudents()[0]) {
+                print('Nie można usunąć! Klasa zwiera studentów!');
+                die;
+            }
+            if ($class->getRatings()[0]) {
+                print('Nie można usunąć! Klasa zwiera przypisane oceny!');
+                die;
+            }
+            if ($class->getLessons()[0]) {
+                print('Nie można usunąć! Klasa zwiera odbyte lekcje!');
+                die;
+            }
+            foreach ($class->getPlans() as $plan) {
                 $this->em->remove($plan);
             }
 
@@ -100,8 +110,7 @@ class School {
         }
 
         // lista
-        $classes = $this->em->getRepository('Model\\Clas')->findBy(array(), array('year' => 'ASC', 'name' => 'ASC'));
-
+        $classes = $this->em->getRepository('Model\\Clas')->findBy(array(), array('year' => 'ASC', 'name' => 'ASC')); /// tutaj nie działa sortowanie bo year to nie rok tylko model
         // czyszczenie infa
         $info = $this->info;
         $this->info = 'brak';
@@ -110,17 +119,17 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/classes/prepare/{info})
+     * @Route(/admin/school/classes/edit/{info})
      */
-    public function classPrepare($info = 'brak') {
+    public function classEdit($info = 'brak') {
         $inf = $this->info($info);
 
         $years = $this->em->getRepository('Model\\Year')->findAll();
         return array('years' => $years, 'info' => $inf);
     }
 
-// grupy //
     /**
+     * Grupy
      * @Route(/admin/school/groups/{action}/{id})
      * @param \Core\Router $Router
      */
@@ -137,10 +146,10 @@ class School {
                 } else
                     $group->setMainGroup(NULL);
                 $this->em->flush();
+                if (isset($_POST['saveAndAdd']))
+                    $Router->redirect('School/groupEdit', array('info' => 'added'));
                 $this->info('updt');
-                // nowa
-            } else {
-                // sprawdzenie czy już takiej nie ma ?? potrzebne wogóle?? to sprawdzanie??
+            } else { // nowa grupa
                 $group = new \Model\Group();
                 $group->setName($_POST['name']);
                 if ($_POST['mainGroup'] != 0) {
@@ -150,7 +159,7 @@ class School {
                 $this->em->persist($group);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/groupPrepare', array('info' => 'added'));
+                    $Router->redirect('School/groupEdit', array('info' => 'added'));
                 $this->info('added');
             }
         }
@@ -161,6 +170,14 @@ class School {
             if ($this->em->getRepository('\Model\\Group')->findOneBy(array('mainGroup' => $group)) != NULL) {
                 $this->info('err3');
             } else {
+                ////////////////////////////////////////////////////////////////////////////notif potwierdzający: zostaną usunieci studenci z grup i plan zaiwerający przypis do grupy
+                foreach ($group->getStudents() as $student) {
+                    $group->removeStudent($student);
+                }
+                foreach ($group->getPlans() as $plan) {
+                    $this->em->remove($plan);
+                }
+
                 $this->em->remove($group);
                 $this->em->flush();
                 $this->info('deleted');
@@ -177,25 +194,18 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/groups/prepare/{info})
+     * @Route(/admin/school/groups/edit/{id}/{info})
      */
-    public function groupPrepare($info = 'brak') {
+    public function groupEdit($id = '', $info = 'brak') {
+        if (is_numeric($id)) {
+            $data = $this->em->getRepository('\Model\\Group')->find($id);
+        } else {
+            $data = null;
+        }
         $inf = $this->info($info);
         $groups = null;
         $this->groupList($groups);
-        return array('groups' => $groups, 'info' => $inf);
-    }
-
-    /**
-     * @Route(/admin/school/groups/edit/{id})
-     */
-    public function groupEdit($id = '') {
-        if (is_numeric($id)) {
-            $data = $this->em->getRepository('\Model\\Group')->find($id);
-        }
-        $groups = null;
-        $this->groupList($groups);
-        return array('group' => $data, 'groups' => $groups);
+        return array('group' => $data, 'groups' => $groups, 'info' => $inf);
     }
 
 // lista grup //    
@@ -213,32 +223,48 @@ class School {
         }
     }
 
-// sale lekcyjne //
     /**
+     * Sale lekcyjne
      * @Route(/admin/school/classrooms/{action}/{id})
      * @param \Core\Router $Router
      */
     public function classrooms($Router, $id = '', $action = '') {
-        // dodawanie
-        if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) {
-            // sprawdzenie czy już takiej nie ma
-            $qb = $this->em->getRepository('\Model\\Classroom')->findOneBy(array('name' => $_POST['name']));
-            if ($qb != NULL)
-                $this->info('err');
-            else {
-                $classroom = new \model\Classroom();
+        if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) { // dodawanie
+            if ($action == 'updt' && is_numeric($id)) { // aktualizacja
+                $classroom = $this->em->getRepository('\Model\\Classroom')->find($id);
                 $classroom->setName($_POST['name']);
-                $this->em->persist($classroom);
+                $classroom->setSeats(!is_numeric($_POST['seats']) ? NULL : $_POST['seats']);
+                $classroom->setProjector($_POST['projector']);
+                $classroom->setOthers($_POST['others']);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/classroomPrepare', array('info' => 'added'));
-                $this->info('added');
+                    $Router->redirect('School/classroomEdit', array('info' => 'added'));
+                $this->info('updt');
+            } else {
+                $qb = $this->em->getRepository('\Model\\Classroom')->findOneBy(array('name' => $_POST['name']));
+                if ($qb != NULL) // sprawdzenie czy już takiej nie ma
+                    $this->info('err');
+                else {
+                    $classroom = new \model\Classroom();
+                    $classroom->setName($_POST['name']);
+                    $classroom->setSeats(!is_numeric($_POST['seats']) ? NULL : $_POST['seats']);
+                    $classroom->setProjector($_POST['projector']);
+                    $classroom->setOthers($_POST['others']);
+                    $this->em->persist($classroom);
+                    $this->em->flush();
+                    if (isset($_POST['saveAndAdd']))
+                        $Router->redirect('School/classroomEdit', array('info' => 'added'));
+                    $this->info('added');
+                }
             }
         }
 
-        // ususwanie
+        // ususwanie 
         if ($action == 'del' && is_numeric($id) && $id > 0) {
             $classroom = $this->em->getRepository('\Model\\Classroom')->find($id);
+            foreach ($classroom->getPlans() as $p) {
+                $p->setClassroom(null);
+            }
             $this->em->remove($classroom);
             $this->em->flush();
             $this->info('deleted');
@@ -255,11 +281,16 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/classrooms/prepare/{info})
+     * @Route(/admin/school/classrooms/edit/{id}/{info})
      */
-    public function classroomPrepare($info = 'brak') {
+    public function classroomEdit($id = '', $info = 'brak') {
+        if (is_numeric($id)) {
+            $classroom = $this->em->getRepository('\Model\\Classroom')->find($id);
+        } else
+            $classroom = null;
+        
         $inf = $this->info($info);
-        return array('info' => $inf);
+        return array('info' => $inf, 'classroom' => $classroom);
     }
 
 // godziny lekcyjne //
@@ -577,7 +608,17 @@ class School {
             // aktualizacja
             if ($action == 'updt' && is_numeric($id)) {
                 $user = $this->em->getRepository('\Model\\Teacher')->find($id);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
+                if ($check) {
+                    var_dump('jest już taki mail!');
+                    die;
+                }
                 $user->setEmail($_POST['email']);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
+                if ($check) {
+                    var_dump('jest już taki username!');
+                    die;
+                }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
                 $user->setFamilyName($_POST['familyName']);
@@ -590,7 +631,17 @@ class School {
                 // nowy
             } else {
                 $user = new \Model\Teacher();
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
+                if ($check) {
+                    var_dump('jest już taki mail!');
+                    die;
+                }
                 $user->setEmail($_POST['email']);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
+                if ($check) {
+                    var_dump('jest już taki username!');
+                    die;
+                }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
                 $user->setFamilyName($_POST['familyName']);
@@ -652,7 +703,17 @@ class School {
             // aktualizacja
             if ($action == 'updt' && is_numeric($id)) {
                 $user = $this->em->getRepository('\Model\\Student')->find($id);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
+                if ($check) {
+                    var_dump('jest już taki email!');
+                    die;
+                }
                 $user->setEmail($_POST['email']);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
+                if ($check) {
+                    var_dump('jest już taki username!');
+                    die;
+                }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
                 $user->setFamilyName($_POST['familyName']);
@@ -671,7 +732,17 @@ class School {
                 // nowy
             } else {
                 $user = new \Model\Student();
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
+                if ($check) {
+                    var_dump('jest już taki email!');
+                    die;
+                }
                 $user->setEmail($_POST['email']);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
+                if ($check) {
+                    var_dump('jest już taki username!');
+                    die;
+                }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
                 $user->setFamilyName($_POST['familyName']);

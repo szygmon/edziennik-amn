@@ -55,7 +55,7 @@ class Plan {
         
         /**
         * @ManyToOne(targetEntity="\Model\Clas", inversedBy="plans")  
-        * @JoinColumn(nullable=false)      
+        * @JoinColumn(nullable=false, referencedColumnName="id", onDelete="SET NULL")      
         */
         protected $class;
         

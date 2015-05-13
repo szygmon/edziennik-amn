@@ -38,7 +38,7 @@ class Group {
     protected $plans;
 
     /**
-     * @ManyToMany(targetEntity="\Model\Student", mappedBy="group")
+     * @ManyToMany(targetEntity="\Model\Student", mappedBy="groups")
      * @JoinTable(name="students_groups")
      */
     protected $students;
@@ -47,7 +47,7 @@ class Group {
         $this->students->add($student);
     }
 
-    public function removeStudent(\Model\Clas $student) {
+    public function removeStudent(\Model\Student $student) {
         $this->students->removeElement($student);
     }
 
