@@ -64,7 +64,7 @@
                         <i class="fa fa-edit"></i> <span>Zajęcia</span> <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu">
-                        {% for i, plan in Me.getTeacherPlan('2015-05-13').plan %}
+                        {% for i, plan in Me.getTeacherPlan().plan %}
                             <li>
                                 {% if Me.getTeacherPlan.link[i] == '#' %}
                                     <a href="#" data-toggle="modal" data-target="#addLesson" data-lesson="{{ plan.hour.id }}|{{ plan.class.id }}|{{ plan.group.id }}|{{ plan.subject.id }}"><i class="fa fa-circle-o"></i> {{ plan.hour.id }}. {{ plan.class.name }}: {{ plan.subject.subject }}</a>
@@ -74,12 +74,13 @@
                             </li>
                         {% endfor %}
                         <li class="header"></li>
+                        <li id="mylessons-sidebar"><a href="{{ url('Lesson/myLessons') }}"><i class="fa fa-circle-o"></i> Moje zajęcia</a></li>
                         <li><a href="{{ url('Lesson/editLesson') }}"><i class="fa fa-circle-o"></i> Nowa lekcja</a></li>
                     </ul>
                 </li>
 
             {% endif %}
-            
+
         </ul>
     </section>
     <!-- /.sidebar -->
@@ -177,7 +178,11 @@
         var lmodal = $(this);
         var lres = lrecipient.split('|');
         lmodal.find('#lesson-class-input').val(lres[1]);
-        lmodal.find('#lesson-group-input').val(lres[2]);
+        if (lres[2] == '') {
+            lmodal.find('#lesson-group-input').val(0);
+        } else {
+            lmodal.find('#lesson-group-input').val(lres[2]);
+        }
         lmodal.find('#lesson-hour-input').val(lres[0]);
         lmodal.find('#lesson-subject-input').val(lres[3]);
     });

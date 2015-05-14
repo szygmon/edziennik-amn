@@ -104,6 +104,8 @@
         $(document).delegate('.divlink', 'click', function () {
             window.location = $(this).find('a').attr('href');
         });
+        
+        $("#lessons-category-sidebar, #mylessons-sidebar").addClass("treeview active");
     </script>
 
 {% endblock %}
