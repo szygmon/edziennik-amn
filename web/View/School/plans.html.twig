@@ -158,7 +158,18 @@
                                 <select name="classroom" class="form-control" id="classroom-input">
                                     <option value="0">-brak-</option>
                                     {% for c in classrooms %}
-                                        <option value="{{ c.id }}">{{ c.name }}</option>
+                                        <option value="{{ c.id }}">
+                                            {{ c.name }}
+                                            {% if c.seats %}
+                                            {{ c.seats }} miejsc 
+                                        {% endif %}
+                                        {% if c.projector %}
+                                            projektor 
+                                        {% endif %}
+                                        {% if c.others %}
+                                            {{ c.others }}
+                                        {% endif %}
+                                        </option>
                                     {% endfor %}
                                 </select>
                             </div>

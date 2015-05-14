@@ -100,13 +100,25 @@ class Student {
                 ->getQuery()
                 ->getResult();
         foreach ($plan as $p) {
-            $s[$p->getHour()][$p->getDay()] = $p;
+            if ($p->getDay() > date('N')) {
+                $i = $p->getDay() - date('N');
+                if (date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $i . ' days')) <= date('Y-m-d', $p->getToDate()->getTimestamp())) {
+                    $s[$p->getHour()->getId()][$p->getDay()] = $p;
+                }
+            } else {
+                $i = 7 - (date('N') - $p->getDay());
+                if (date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $i . ' days')) <= date('Y-m-d', $p->getToDate()->getTimestamp())) {
+                    $s[$p->getHour()->getId()][$p->getDay()] = $p;
+                }
+            }
         }
         $return = array(1 => $s[1], 2 => $s[2], 3 => $s[3], 4 => $s[4], 5 => $s[5], 6 => $s[6], 7 => $s[7], 8 => $s[8]);
 
         $dayname = array('godzina', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek');
         
-        return array('plan' => $return, 'class' => $class, 'dayname' => $dayname);
+        $hours = $this->em->getRepository('\Model\\Hour')->findAll();
+
+        return array('plan' => $return, 'class' => $class, 'dayname' => $dayname, 'hours' => $hours);
     }
 
 }
