@@ -368,33 +368,69 @@ class School {
     public function plans($id = '', $action = '') {
         // dodawanie
         if (isset($_POST['save'])) {
+            if ($_POST['planid'] > 0) { //aktualizacja wpisu
+                $plan = $this->em->getRepository('\Model\\Plan')->find($_POST['planid']);
 
-            $plan = new \Model\Plan();
-            $date = explode(' - ', $_POST['dateRange']);
-            $plan->setFromDate(new \DateTime($date[0]));
-            $plan->setToDate(new \DateTime($date[1]));
+                $date = explode(' - ', $_POST['dateRange']);
+                $plan->setFromDate(new \DateTime($date[0]));
+                $plan->setToDate(new \DateTime($date[1]));
 
-            $plan->setHour($_POST['hour']);
-            $plan->setDay($_POST['day']);
-            $s = $this->em->getRepository('\Model\\Subject')->find($_POST['subject']);
-            $plan->setSubject($s);
-            if ($_POST['classroom'] != 0) {
-                $c = $this->em->getRepository('\Model\\Classroom')->find($_POST['classroom']);
-                $plan->setClassroom($c);
+                $plan->setHour($_POST['hour']);
+                $plan->setDay($_POST['day']);
+                $s = $this->em->getRepository('\Model\\Subject')->find($_POST['subject']);
+                $plan->setSubject($s);
+                if ($_POST['classroom'] != 0) {
+                    $c = $this->em->getRepository('\Model\\Classroom')->find($_POST['classroom']);
+                    $plan->setClassroom($c);
+                } else
+                    $plan->setClassroom(null);
+                if ($_POST['group'] != 0) {
+                    $g = $this->em->getRepository('\Model\\Group')->find($_POST['group']);
+                    $plan->setGroup($g);
+                } else
+                    $plan->setGroup(null);
+                $t = $this->em->getRepository('\Model\\Teacher')->find($_POST['teacher']);
+                $plan->setTeacher($t);
+                $c = $this->em->getRepository('\Model\\Clas')->find($_POST['class']);
+                $plan->setClass($c);
+
+                $this->em->flush();
+                $this->info('updt');
+            } else { //nowy wpis
+                $plan = new \Model\Plan();
+                $date = explode(' - ', $_POST['dateRange']);
+                $plan->setFromDate(new \DateTime($date[0]));
+                $plan->setToDate(new \DateTime($date[1]));
+
+                $plan->setHour($_POST['hour']);
+                $plan->setDay($_POST['day']);
+                $s = $this->em->getRepository('\Model\\Subject')->find($_POST['subject']);
+                $plan->setSubject($s);
+                if ($_POST['classroom'] != 0) {
+                    $c = $this->em->getRepository('\Model\\Classroom')->find($_POST['classroom']);
+                    $plan->setClassroom($c);
+                }
+                if ($_POST['group'] != 0) {
+                    $g = $this->em->getRepository('\Model\\Group')->find($_POST['group']);
+                    $plan->setGroup($g);
+                }
+
+                $t = $this->em->getRepository('\Model\\Teacher')->find($_POST['teacher']);
+                $plan->setTeacher($t);
+                $c = $this->em->getRepository('\Model\\Clas')->find($_POST['class']);
+                $plan->setClass($c);
+
+                $this->em->persist($plan);
+                $this->em->flush();
+                $this->info('added');
             }
-            if ($_POST['group'] != 0) {
-                $g = $this->em->getRepository('\Model\\Group')->find($_POST['group']);
-                $plan->setGroup($g);
-            }
-
-            $t = $this->em->getRepository('\Model\\Teacher')->find($_POST['teacher']);
-            $plan->setTeacher($t);
-            $c = $this->em->getRepository('\Model\\Clas')->find($_POST['class']);
-            $plan->setClass($c);
-
-            $this->em->persist($plan);
+        }
+        
+        // usuwanie
+        if ($action == 'del' && is_numeric($id) && $id > 0) {
+            $plan = $this->em->getRepository('\Model\\Plan')->find($id);
+            $this->em->remove($plan);
             $this->em->flush();
-            $this->info('added');
         }
 
         // lista
@@ -427,12 +463,14 @@ class School {
                     ->getQuery()
                     ->getResult();
             foreach ($plan as $p) {
-                $s[$p->getHour()][$p->getDay()][] = array(
-                    'subject' => $p->getSubject(),
-                    'classroom' => $p->getClassroom(),
-                    'group' => $p->getGroup(),
-                    'teacher' => $p->getTeacher()
-                );
+                if ($p->getDay() > date('N')) {
+                    $i = $p->getDay() - date('N');
+                    if (date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $i . ' days')) <= date('Y-m-d', $p->getToDate()->getTimestamp())) {
+                        $s[$p->getHour()][$p->getDay()][] = $p;
+                    } 
+                } else {
+                    $s[$p->getHour()][$p->getDay()][] = $p;
+                }
             }
             $return[$class->getName()] = array(1 => $s[1], 2 => $s[2], 3 => $s[3], 4 => $s[4], 5 => $s[5], 6 => $s[6], 7 => $s[7], 8 => $s[8]);
             unset($s);

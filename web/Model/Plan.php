@@ -19,12 +19,6 @@ class Plan {
 	 */
 	protected $id;
         
-        ///**
-        //* @ManyToOne(targetEntity="\Model\Hour", inversedBy="plans")  
-        //* @JoinColumn(nullable=false)      
-        //*
-        
-        /// narazie godzina jako liczba 1-8
         /**
 	 * @Column(type="integer", nullable=false)
 	 */
@@ -55,7 +49,7 @@ class Plan {
         
         /**
         * @ManyToOne(targetEntity="\Model\Clas", inversedBy="plans")  
-        * @JoinColumn(nullable=false, referencedColumnName="id", onDelete="SET NULL")      
+        * @JoinColumn(nullable=false)      
         */
         protected $class;
         

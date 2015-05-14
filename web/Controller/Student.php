@@ -100,12 +100,7 @@ class Student {
                 ->getQuery()
                 ->getResult();
         foreach ($plan as $p) {
-            $s[$p->getHour()][$p->getDay()] = array(
-                'subject' => $p->getSubject(),
-                'classroom' => $p->getClassroom(),
-                'group' => $p->getGroup(),
-                'teacher' => $p->getTeacher()
-            );
+            $s[$p->getHour()][$p->getDay()] = $p;
         }
         $return = array(1 => $s[1], 2 => $s[2], 3 => $s[3], 4 => $s[4], 5 => $s[5], 6 => $s[6], 7 => $s[7], 8 => $s[8]);
 
