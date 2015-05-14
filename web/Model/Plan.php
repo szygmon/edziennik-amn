@@ -20,8 +20,9 @@ class Plan {
 	protected $id;
         
         /**
-	 * @Column(type="integer", nullable=false)
-	 */
+        * @ManyToOne(targetEntity="\Model\Hour", inversedBy="plans")  
+        * @JoinColumn(nullable=false)      
+        */
         protected $hour;
         
         /**

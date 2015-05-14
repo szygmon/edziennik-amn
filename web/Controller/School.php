@@ -300,37 +300,21 @@ class School {
     public function hours($id = '', $action = '') {
         // dodawanie
         if (isset($_POST['save'])) {
-            // aktualizacja
-            if ($action == 'updt' && is_numeric($id)) {
-                $hour = $this->em->getRepository('\Model\\Hour')->find($id);
-                $hour->setFromTime(new \DateTime($_POST['fromTime']));
-                $hour->setToTime(new \DateTime($_POST['toTime']));
-                $this->em->flush();
-
-                $this->info('updt');
-                // nowa
-            } else {
-                // sprawdzenie czy już takiej nie ma
-                $qb = $this->em->getRepository('\Model\\Hour')->findOneBy(array('fromTime' => new \DateTime($_POST['fromTime']), 'toTime' => new \DateTime($_POST['toTime'])));
-                if ($qb != NULL)
-                    $this->info('err');
-                else {
+            $check = $this->em->getRepository('\Model\\Hour')->find(1);
+            for ($i = 1; $i < 9; $i++) {
+                if (!$check) {
                     $hour = new \model\Hour();
-                    $hour->setFromTime(new \DateTime($_POST['fromTime']));
-                    $hour->setToTime(new \DateTime($_POST['toTime']));
+                } else {
+                    $hour = $this->em->getRepository('\Model\\Hour')->find($i);
+                }
+                $hour->setFromTime(new \DateTime($_POST['hour' . $i . 'from']));
+                $hour->setToTime(new \DateTime($_POST['hour' . $i . 'to']));
+                if (!$check) {
                     $this->em->persist($hour);
-                    $this->em->flush();
-                    $this->info('added');
                 }
             }
-        }
-
-        // ususwanie
-        if ($action == 'del' && is_numeric($id) && $id > 0) {
-            $hour = $this->em->getRepository('\Model\\Hour')->find($id);
-            $this->em->remove($hour);
+            $this->info('updt');
             $this->em->flush();
-            $this->info('deleted');
         }
 
         // lista
@@ -375,7 +359,8 @@ class School {
                 $plan->setFromDate(new \DateTime($date[0]));
                 $plan->setToDate(new \DateTime($date[1]));
 
-                $plan->setHour($_POST['hour']);
+                $h = $this->em->getRepository('\Model\\Hour')->find($_POST['hour']);
+                $plan->setHour($h);
                 $plan->setDay($_POST['day']);
                 $s = $this->em->getRepository('\Model\\Subject')->find($_POST['subject']);
                 $plan->setSubject($s);
@@ -402,7 +387,8 @@ class School {
                 $plan->setFromDate(new \DateTime($date[0]));
                 $plan->setToDate(new \DateTime($date[1]));
 
-                $plan->setHour($_POST['hour']);
+                $h = $this->em->getRepository('\Model\\Hour')->find($_POST['hour']);
+                $plan->setHour($h);
                 $plan->setDay($_POST['day']);
                 $s = $this->em->getRepository('\Model\\Subject')->find($_POST['subject']);
                 $plan->setSubject($s);
@@ -425,7 +411,7 @@ class School {
                 $this->info('added');
             }
         }
-        
+
         // usuwanie
         if ($action == 'del' && is_numeric($id) && $id > 0) {
             $plan = $this->em->getRepository('\Model\\Plan')->find($id);
@@ -441,12 +427,13 @@ class School {
         $groups = null;
         $this->groupList($groups);
         $teachers = $this->em->getRepository('\Model\\Teacher')->findAll();
+        $hours = $this->em->getRepository('\Model\\Hour')->findAll();
 
         // czyszczenie infa
         $info = $this->info;
         $this->info = 'brak';
 
-        return array('classes' => $classes, 'subjects' => $subjects, 'classrooms' => $classrooms, 'groups' => $groups, 'teachers' => $teachers, 'plan' => $this->getPlan(), 'info' => $info);
+        return array('classes' => $classes, 'subjects' => $subjects, 'classrooms' => $classrooms, 'groups' => $groups, 'teachers' => $teachers, 'plan' => $this->getPlan(), 'hours' => $hours, 'info' => $info);
     }
 
     public function getPlan() {
@@ -466,10 +453,13 @@ class School {
                 if ($p->getDay() > date('N')) {
                     $i = $p->getDay() - date('N');
                     if (date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $i . ' days')) <= date('Y-m-d', $p->getToDate()->getTimestamp())) {
-                        $s[$p->getHour()][$p->getDay()][] = $p;
-                    } 
+                        $s[$p->getHour()->getId()][$p->getDay()][] = $p;
+                    }
                 } else {
-                    $s[$p->getHour()][$p->getDay()][] = $p;
+                    $i = 7 - (date('N') - $p->getDay());
+                    if (date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $i . ' days')) <= date('Y-m-d', $p->getToDate()->getTimestamp())) {
+                        $s[$p->getHour()->getId()][$p->getDay()][] = $p;
+                    }
                 }
             }
             $return[$class->getName()] = array(1 => $s[1], 2 => $s[2], 3 => $s[3], 4 => $s[4], 5 => $s[5], 6 => $s[6], 7 => $s[7], 8 => $s[8]);

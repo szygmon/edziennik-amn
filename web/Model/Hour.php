@@ -29,6 +29,6 @@ class Hour {
          */
 	protected $toTime;
 
-        ///** @OneToMany(targetEntity="\Model\Plan", mappedBy="Hour") */
-        //protected $plans;
+        /** @OneToMany(targetEntity="\Model\Plan", mappedBy="hour") */
+        protected $plans;
 }
