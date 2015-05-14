@@ -50,10 +50,8 @@ class School {
      * @Route(/admin/school)
      */
     public function index() {
-        $year = $this->getActualYear();
-        $classes = $this->em->getRepository('Model\\Clas')->findBy(array('year' => $year), array('name' => 'ASC'));
-
-        return array('classes' => $classes);
+        
+        return array('classes' => '$classes');
     }
 
     /**
@@ -189,7 +187,7 @@ class School {
         $this->info = 'brak';
 
         $groups = null;
-        $this->groupList($groups);
+        $this->me->groupList($groups);
         return array('groups' => $groups, 'info' => $info);
     }
 
@@ -204,23 +202,8 @@ class School {
         }
         $inf = $this->info($info);
         $groups = null;
-        $this->groupList($groups);
+        $this->me->groupList($groups);
         return array('group' => $data, 'groups' => $groups, 'info' => $inf);
-    }
-
-// lista grup //    
-    public function groupList(&$array, $criteria = array('mainGroup' => NULL), $offset = 0, $lvl = 0) {
-        while (($groups = $this->em->getRepository('Model\\Group')->findBy($criteria, array('name' => 'ASC'), 1, $offset)) != NULL) {
-            if (is_array($groups)) {
-                foreach ($groups as $group) {
-                    $array[] = array('id' => $group->getId(), 'name' => $group->getName(), 'level' => $lvl);
-                    if ($group->getSubGroups() != NULL) {
-                        $this->groupList($array, array('mainGroup' => $group->getId()), 0, $lvl + 1);
-                    }
-                }
-            }
-            $offset++;
-        }
     }
 
     /**
@@ -425,7 +408,7 @@ class School {
         $subjects = $this->em->getRepository('Model\\Subject')->findAll();
         $classrooms = $this->em->getRepository('Model\\Classroom')->findAll();
         $groups = null;
-        $this->groupList($groups);
+        $this->me->groupList($groups);
         $teachers = $this->em->getRepository('\Model\\Teacher')->findAll();
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
 
@@ -450,7 +433,7 @@ class School {
                     ->getQuery()
                     ->getResult();
             foreach ($plan as $p) {
-                if ($p->getDay() > date('N')) {
+                if ($p->getDay() >= date('N')) {
                     $i = $p->getDay() - date('N');
                     if (date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $i . ' days')) <= date('Y-m-d', $p->getToDate()->getTimestamp())) {
                         $s[$p->getHour()->getId()][$p->getDay()][] = $p;

@@ -69,6 +69,21 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="recipient-name" class="control-label">Grupa:</label>
+                            <select name="group" class="form-control" {% if lesson.id %} disabled {% endif %}>
+                                <option value="0">-cała klasa-</option>
+                                {% for gr in groups %}
+                                    <option value="{{ gr.id }}" {% if lesson.group.id == gr.id %} selected {% endif %}>
+                                        {% if gr.level > 0 %}
+                                            {% for i in range(1, gr.level) %}&nbsp;&nbsp;&nbsp;{% endfor %}
+                                        {% endif %}
+                                        {{ gr.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
                             <label for="recipient-name" class="control-label">Przedmiot:</label>
                             <select name="subject" class="form-control" {% if lesson.id %} disabled {% endif %}>
                                 {% for s in Me.getTeacherSidebarData.subjects %}

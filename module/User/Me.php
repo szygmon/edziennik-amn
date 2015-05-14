@@ -124,7 +124,7 @@ class Me {
 
         $em = \Di::get('em');
 
-        $lessons = $em->getRepository('\Model\\Lesson')->findBy(array('date' => new \DateTime()));
+        $lessons = $em->getRepository('\Model\\Lesson')->findBy(array('date' => new \DateTime($date)));
 
         foreach ($lessons as $lesson) {
             $l[] = $lesson->getHour()->getId();
@@ -154,8 +154,9 @@ class Me {
             $link[$plan->getHour()->getId()] = '#';
             $list[$plan->getHour()->getId()] = $plan;
         }
-        
-        if (is_array($list)) ksort($list);
+
+        if (is_array($list))
+            ksort($list);
         return array('plan' => $list, 'link' => $link);
     }
 
@@ -188,8 +189,10 @@ class Me {
         $teachers = $em->getRepository('\Model\Teacher')->findBy(array(), array('familyName' => 'ASC'));
         $classes = $em->getRepository('\Model\Clas')->findBy(array('year' => $this->getActualYear()), array('name' => 'ASC'));
         $hours = $em->getRepository('\Model\Hour')->findAll();
+        $groups = null;
+        $this->groupList($groups);
 
-        return array('subjects' => $subjects, 'teachers' => $teachers, 'classes' => $classes, 'hours' => $hours);
+        return array('subjects' => $subjects, 'teachers' => $teachers, 'classes' => $classes, 'hours' => $hours, 'groups' => $groups);
     }
 
     public function getNotifications() {
@@ -199,6 +202,29 @@ class Me {
         $count = count($notifications);
 
         return array('notifs' => $notifications, 'count' => $count);
+    }
+
+    public function isTeacher() {
+        if ($this->model instanceof \Model\Teacher)
+            return true;
+        else
+            return false;
+    }
+
+    // lista grup //    
+    public function groupList(&$array, $criteria = array('mainGroup' => NULL), $offset = 0, $lvl = 0) {
+        $em = \Di::get('em');
+        while (($groups = $em->getRepository('Model\\Group')->findBy($criteria, array('name' => 'ASC'), 1, $offset)) != NULL) {
+            if (is_array($groups)) {
+                foreach ($groups as $group) {
+                    $array[] = array('id' => $group->getId(), 'name' => $group->getName(), 'level' => $lvl);
+                    if ($group->getSubGroups() != NULL) {
+                        $this->groupList($array, array('mainGroup' => $group->getId()), 0, $lvl + 1);
+                    }
+                }
+            }
+            $offset++;
+        }
     }
 
 }

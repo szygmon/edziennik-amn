@@ -100,7 +100,7 @@ class Student {
                 ->getQuery()
                 ->getResult();
         foreach ($plan as $p) {
-            if ($p->getDay() > date('N')) {
+            if ($p->getDay() >= date('N')) {
                 $i = $p->getDay() - date('N');
                 if (date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $i . ' days')) <= date('Y-m-d', $p->getToDate()->getTimestamp())) {
                     $s[$p->getHour()->getId()][$p->getDay()] = $p;

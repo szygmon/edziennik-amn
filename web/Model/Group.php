@@ -36,6 +36,9 @@ class Group {
 
     /** @OneToMany(targetEntity="\Model\Plan", mappedBy="group") */
     protected $plans;
+    
+    /** @OneToMany(targetEntity="\Model\Lesson", mappedBy="group") */
+    protected $lessons;
 
     /**
      * @ManyToMany(targetEntity="\Model\Student", mappedBy="groups")

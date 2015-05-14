@@ -12,7 +12,6 @@ class Lesson {
 
     /** @var \Doctrine\ORM\EntityManager */
     protected $em;
-    private $info = 'brak';
 
     /**
      * @param \User\Me $Me
@@ -33,7 +32,7 @@ class Lesson {
     }
 
     /**
-     * @Route(/teacher/lesson/edit/{id})
+     * @Route(/teacher/lessons/edit/{id})
      * @param \Core\Router $Router
      */
     public function editLesson($Router, $id = '') {
@@ -52,6 +51,10 @@ class Lesson {
                 $lesson->setHour($h);
                 $subject = $this->em->getRepository('\Model\\Subject')->find($_POST['subject']);
                 $lesson->setSubject($subject);
+                if ($_POST['group'] != 0) {
+                    $g = $this->em->getRepository('\Model\\group')->find($_POST['group']);
+                    $lesson->setGroup($g);
+                }
 
                 $this->em->persist($lesson);
                 $this->em->flush();
@@ -213,10 +216,28 @@ class Lesson {
                 }
             }
         }
-        
+
+        $groups = null;
+        $this->me->groupList($groups);
+
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
 
-        return array('lesson' => $lesson, 'ratingd' => $ratingd, 'ratings' => $ratings, 'ratingsAv' => $ratingsAv, 'hours' => $hours, 'attendance' => $at);
+        return array('lesson' => $lesson, 'ratingd' => $ratingd, 'ratings' => $ratings, 'ratingsAv' => $ratingsAv, 'hours' => $hours, 'attendance' => $at, 'groups' => $groups);
+    }
+
+    /**
+     * @Route(/teacher/lessons/mylessons/{id})
+     * @param \Core\Router $Router
+     */
+    public function myLessons($Router, $id = '') {
+        for ($i = 0; $i < 5; $i++) {
+            $data[$i+1] = $this->me->getTeacherPlan(date("Y-m-d", strtotime('monday this week + '.$i.' days')));
+        }
+
+        $hours = $this->em->getRepository('\Model\\Hour')->findAll();
+        $dayname = array('godzina', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek');
+
+        return array('lessons' => $data, 'hours' => $hours, 'dayname' => $dayname,);
     }
 
 }

@@ -55,5 +55,11 @@ class Lesson {
 
     /** @OneToMany(targetEntity="\Model\Attendance", mappedBy="lesson") */
     protected $attendances;
+    
+    /**
+     * @ManyToOne(targetEntity="\Model\Group", inversedBy="lessons")
+     * @JoinColumn(nullable=true)
+     */
+    protected $group;
 
 }
