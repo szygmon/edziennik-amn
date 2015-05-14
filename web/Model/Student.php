@@ -31,6 +31,9 @@ class Student extends User {
 
     /** @OneToMany(targetEntity="\Model\Rating", mappedBy="student") */
     protected $ratings;
+    
+    /** @OneToMany(targetEntity="\Model\Attendance", mappedBy="student") */
+    protected $attendances;
 
     /**
      * @ManyToMany(targetEntity="\Model\Group", inversedBy="students")

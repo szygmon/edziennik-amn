@@ -120,11 +120,9 @@ class Lesson {
                                     if ($_POST['rat' . $student->getId() . '-' . $i] != $rating->getValue()) {
                                         $rating->setValue($_POST['rat' . $student->getId() . '-' . $i]);
                                         $rating->setDate(new \DateTime());
-                                        $this->em->flush(); //////////////////////////////////////////////////może raz na końcu?
                                     }
                                 } else { // usuwanie oceny która została usunięta z dziennika
                                     $this->em->remove($rating);
-                                    $this->em->flush(); ///////////////////////////////////////////////////jw
                                 }
                             }
                         }
@@ -139,17 +137,36 @@ class Lesson {
                                 $rating->setDate(new \DateTime());
 
                                 $notif = new \Model\Notification(); // powiadomienie
-                                $notif->setMsg('Nowa ocena '.$_POST['rat' . $student->getId() . '-' . $i].' z '.$lesson->getSubject()->getSubject());
+                                $notif->setMsg('Nowa ocena ' . $_POST['rat' . $student->getId() . '-' . $i] . ' z ' . $lesson->getSubject()->getSubject());
                                 $notif->setUser($student);
                                 $this->em->persist($notif);
-                                
+
                                 $this->em->persist($rating);
-                                $this->em->flush(); //////////////////////////////////////////////////może raz na końcu?
                             }
                         }
                     }
                 }
             }
+            $this->em->flush();
+            $Router->redirect('Lesson/editLesson', array('id' => $id));
+        }
+
+        // frekwencja
+        if (isset($_POST['saveAttendance'])) {
+            $class = $this->em->getRepository('\Model\\Clas')->find($_POST['class']);
+            $lesson = $this->em->getRepository('\Model\\Lesson')->find($id);
+
+            foreach ($class->getStudents() as $student) {
+                $a = $this->em->getRepository('\Model\\Attendance')->findOneBy(array('student' => $student, 'lesson' => $lesson));
+                if (!$a) {
+                    $a = new \Model\Attendance();
+                    $a->setStudent($student);
+                    $a->setLesson($lesson);
+                    $this->em->persist($a);
+                }
+                $a->setPresence($_POST['attendance' . $student->getId()]);
+            }
+            $this->em->flush();
             $Router->redirect('Lesson/editLesson', array('id' => $id));
         }
 
@@ -187,10 +204,19 @@ class Lesson {
             $ratingd = null;
         }
 
-
+        $at = null;
+        if ($lesson) {
+            $lp = $this->em->getRepository('\Model\\Lesson')->findBy(array('class' => $lesson->getClass(), 'date' => $lesson->getDate()));
+            foreach ($lp as $l) {
+                foreach ($l->getAttendances() as $a) {
+                    $at[$a->getStudent()->getId()][$l->getHour()->getId()] = $a->getPresence();
+                }
+            }
+        }
+        
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
 
-        return array('lesson' => $lesson, 'ratingd' => $ratingd, 'ratings' => $ratings, 'ratingsAv' => $ratingsAv, 'hours' => $hours);
+        return array('lesson' => $lesson, 'ratingd' => $ratingd, 'ratings' => $ratings, 'ratingsAv' => $ratingsAv, 'hours' => $hours, 'attendance' => $at);
     }
 
 }

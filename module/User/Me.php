@@ -144,7 +144,7 @@ class Me {
             $plans = $em->createQueryBuilder()
                     ->select('p')
                     ->from('\Model\\Plan', 'p')
-                    ->where('p.teacher = ?1 AND p.fromDate <= ?2 AND p.toDate >= ?2 AND p.day = ?3 AND p.hour')
+                    ->where('p.teacher = ?1 AND p.fromDate <= ?2 AND p.toDate >= ?2 AND p.day = ?3')
                     ->orderBy('p.hour')
                     ->setParameters(array(1 => $this->getModel(), 2 => $date, 3 => $day))
                     ->getQuery()
@@ -155,7 +155,7 @@ class Me {
             $list[$plan->getHour()->getId()] = $plan;
         }
         
-        ksort($list);
+        if (is_array($list)) ksort($list);
         return array('plan' => $list, 'link' => $link);
     }
 

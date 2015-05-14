@@ -95,59 +95,67 @@
 
 
                 <div class="chart tab-pane" id="attendance-chart" style="position: relative; min-height: 300px;">
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th rowspan="2" width="1%">#</th>
-                                <th rowspan="2" width="15%">Uczeń</th>
-                                <th colspan="8">Lekcja</th>
-                                <th rowspan="2" width="4%">Statystyki</th>
-                            </tr>
-                            <tr>
-                                {% for i in range(1, 8) %}
-                                    <th width="10%">{{ i }}</th>
-                                    {% endfor %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% set nr = 1 %}
-                            {% for student in lesson.class.students %}
+                    <form name="inputform" method="POST" action="{{ url('Lesson/editLesson', {'id': lesson.id }) }}">
+                        <table class="table table-striped table-bordered">
+                            <thead>
                                 <tr>
-                                    <td>{{ nr }}</td>
-                                    <td>{{ student.givenName }} {{ student.familyName }}</td>
-                                    {% for l in range(1, 8) %}
-                                        <td>
-                                            {% if lesson.hour.id == l %}
-                                                <input type="radio" name="attendance{{ student.id }}" value="1">
-                                                <label>OB</label>
-                                                <input type="radio" name="attendance{{ student.id }}" value="2">
-                                                <label>NB</label>
-                                                <input type="radio" name="attendance{{ student.id }}" value="3">
-                                                <label>NBU</label>
-                                                <input type="radio" name="attendance{{ student.id }}" value="4">
-                                                <label>NBN</label>
-                                                <input type="radio" name="attendance{{ student.id }}" value="5">
-                                                <label>S</label>
-                                            {% else %}
-                                                BD
-                                            {% endif %}
-                                        </td>
-
-                                    {% endfor %}
-                                    <td>..</td>
+                                    <th rowspan="2" width="1%">#</th>
+                                    <th rowspan="2" width="15%">Uczeń</th>
+                                    <th colspan="8">Lekcja</th>
+                                    <th rowspan="2" width="4%">Statystyki</th>
                                 </tr>
+                                <tr>
+                                    {% for i in range(1, 8) %}
+                                        <th width="10%">{{ i }}</th>
+                                        {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set nr = 1 %}
+                                {% for student in lesson.class.students %}
+                                    <tr>
+                                        <td>{{ nr }}</td>
+                                        <td>{{ student.givenName }} {{ student.familyName }}</td>
+                                        {% for l in range(1, 8) %}
+                                            <td>
+                                                {% if lesson.hour.id == l %}
+                                                    <input type="radio" name="attendance{{ student.id }}" value="1" {% if attendance[student.id][l] == 1 %}checked{% endif %}>
+                                                    <label>OB</label>
+                                                    <input type="radio" name="attendance{{ student.id }}" value="2" {% if attendance[student.id][l] == 2 %}checked{% endif %}>
+                                                    <label>NB</label>
+                                                    <input type="radio" name="attendance{{ student.id }}" value="3" {% if attendance[student.id][l] == 3 %}checked{% endif %}>
+                                                    <label>S</label>
+                                                    <input type="radio" name="attendance{{ student.id }}" value="4" {% if attendance[student.id][l] == 4 %}checked{% endif %}>
+                                                    <label>ZW</label>
+                                                    <input type="radio" name="attendance{{ student.id }}" value="5" {% if attendance[student.id][l] == 5 %}checked{% endif %}>
+                                                    <label>NU</label>
+                                                {% else %}
+                                                    {{ attendance[student.id][l] }}
+                                                {% endif %}
+                                            </td>
+
+                                        {% endfor %}
+                                        <td>..</td>
+                                    </tr>
 
 
-                                {% set nr = nr + 1 %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                                    {% set nr = nr + 1 %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <input type="hidden" name="class" value="{{ lesson.class.id }}" />
+                        <input type="hidden" name="date" value="{{ lesson.date|date('Y-m-d') }}" />
+
+                        <div class="box-footer clearfix no-border">
+                            <input type="submit" name="saveAttendance" value="Zapisz" class="btn btn-default pull-right" />
+                        </div>
+                    </form>
                 </div>
 
 
 
                 <div class="chart tab-pane" id="ratings-chart" style="position: relative; min-height: 300px;">
-                    <form name="inputform" method="POST" action="{{ url('Lesson/editLesson', {'id':  lesson.id }) }}">
+                    <form name="inputform" method="POST" action="{{ url('Lesson/editLesson', {'id': lesson.id }) }}">
                         <table class="table table-striped table-bordered">
                             <thead>
                                 <tr>
@@ -188,7 +196,6 @@
                         </table>
                         <div class="box-footer clearfix no-border">
                             <input type="submit" name="saveRatings" value="Zapisz" class="btn btn-default pull-right" />
-
                         </div>
                     </form>
                 </div>
@@ -300,7 +307,7 @@
         $('.tooltipRating').tooltip({html: true})
 
         $(document).ready(function () {
-            $('input').each(function () {
+            $(':radio').each(function () {
                 var self = $(this),
                         label = self.next(),
                         label_text = label.text();
