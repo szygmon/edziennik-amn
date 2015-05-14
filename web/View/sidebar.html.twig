@@ -58,7 +58,7 @@
                 </ul>
             </li>
 
-            <li class="treeview" id="classes-category-sidebar">
+            <li class="treeview" id="lessons-category-sidebar">
                 <a href="#">
                     <i class="fa fa-edit"></i> <span>Zajęcia</span> <i class="fa fa-angle-left pull-right"></i>
                 </a>
@@ -72,6 +72,7 @@
                             {% endif %}
                         </li>
                     {% endfor %}
+                    <li class="header"></li>
                     <li><a href="{{ url('Lesson/editLesson') }}"><i class="fa fa-circle-o"></i> Nowa lekcja</a></li>
                 </ul>
             </li>
