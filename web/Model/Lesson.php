@@ -35,17 +35,18 @@ class Lesson {
 	 * @Column(type="date", nullable=false)
 	 */
 	protected $date;
-        
-        /** 
-         * @Column(type="integer", nullable=false) 
-         */
-	protected $hour;
 
         /**
-	 * @ManyToOne(targetEntity="\Model\Subject", inversedBy="subjects")
+	 * @ManyToOne(targetEntity="\Model\Subject", inversedBy="lessons")
 	 * @JoinColumn(nullable=false)
 	 */
 	protected $subject;
+        
+         /**
+	 * @ManyToOne(targetEntity="\Model\Hour", inversedBy="lessons")
+	 * @JoinColumn(nullable=false)
+	 */
+	protected $hour;
         
         /**
 	 * @Column(type="string", length=255, nullable=false)

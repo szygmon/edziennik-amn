@@ -47,8 +47,9 @@ class Lesson {
                 $lesson->setTeacher($teacher);
                 $class = $this->em->getRepository('\Model\\Clas')->find($_POST['class']);
                 $lesson->setClass($class);
-                $lesson->setDate(new \DateTime()); /////////////////////////////////////////////////////////////////////////////////
-                $lesson->setHour($_POST['hour']);
+                $lesson->setDate(new \DateTime($_POST['date']));
+                $h = $this->em->getRepository('\Model\\Hour')->find($_POST['hour']);
+                $lesson->setHour($h);
                 $subject = $this->em->getRepository('\Model\\Subject')->find($_POST['subject']);
                 $lesson->setSubject($subject);
 
@@ -74,7 +75,7 @@ class Lesson {
 
             if ($rd) { // edycja
                 $rd[0]->setDescription($_POST['desc']);
-                $rd[0]->setShortDesc($_POST['shortDesc'] ? $_POST['shortDesc'] : substr($_POST['description'], 0, 3));
+                $rd[0]->setShortDesc($_POST['shortDesc']);
                 $rd[0]->setWeight(is_numeric($_POST['weight']) ? $_POST['weight'] : 1);
                 $rd[0]->setColor($_POST['color']);
                 $this->em->flush();
@@ -83,7 +84,7 @@ class Lesson {
                 $rd = new \Model\RatingDesc();
 
                 $rd->setDescription($_POST['desc']);
-                $rd->setShortDesc($_POST['shortDesc'] ? $_POST['shortDesc'] : substr($_POST['description'], 0, 3)); ///////////////// nie działa...
+                $rd->setShortDesc($_POST['shortDesc']);
                 $rd->setWeight(is_numeric($_POST['weight']) ? $_POST['weight'] : 1);
                 $rd->setClass($class);
                 $rd->setSubject($subject);
@@ -187,9 +188,9 @@ class Lesson {
         }
 
 
+        $hours = $this->em->getRepository('\Model\\Hour')->findAll();
 
-
-        return array('lesson' => $lesson, 'ratingd' => $ratingd, 'ratings' => $ratings, 'ratingsAv' => $ratingsAv);
+        return array('lesson' => $lesson, 'ratingd' => $ratingd, 'ratings' => $ratings, 'ratingsAv' => $ratingsAv, 'hours' => $hours);
     }
 
 }

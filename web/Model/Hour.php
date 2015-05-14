@@ -31,4 +31,7 @@ class Hour {
 
         /** @OneToMany(targetEntity="\Model\Plan", mappedBy="hour") */
         protected $plans;
+        
+        /** @OneToMany(targetEntity="\Model\Lesson", mappedBy="hour") */
+        protected $lessons;
 }

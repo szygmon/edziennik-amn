@@ -124,31 +124,39 @@ class Me {
 
         $em = \Di::get('em');
 
-        //return 
-        $plans = $em->createQueryBuilder()
-                ->select('p')
-                ->from('\Model\\Plan', 'p')
-                ->where('p.teacher = ?1 AND p.fromDate <= ?2 AND p.toDate >= ?2 AND p.day = ?3')
-                ->orderBy('p.hour')
-                ->setParameters(array(1 => $this->getModel(), 2 => $date, 3 => $day))
-                ->getQuery()
-                ->getResult();
-        foreach ($plans as $plan) {
+        $lessons = $em->getRepository('\Model\\Lesson')->findBy(array('date' => new \DateTime()));
 
-            $check = $em->getRepository('\Model\\Lesson')->findBy(array(
-                'teacher' => $plan->getTeacher(),
-                'class' => $plan->getClass(),
-                'subject' => $plan->getSubject(),
-                'hour' => $plan->getHour(),
-                'date' => new \DateTime($date)
-            ));
-            if ($check) {
-                $lessons[] = $check[0];
-            } else {
-                $lessons[] = '#';
-            }
+        foreach ($lessons as $lesson) {
+            $l[] = $lesson->getHour()->getId();
+            $link[$lesson->getHour()->getId()] = $lesson;
+            $list[$lesson->getHour()->getId()] = $lesson;
         }
-        return array('plan' => $plans, 'lessons' => $lessons);
+        if ($l[0]) {
+            $plans = $em->createQueryBuilder()
+                    ->select('p')
+                    ->from('\Model\\Plan', 'p')
+                    ->where('p.teacher = ?1 AND p.fromDate <= ?2 AND p.toDate >= ?2 AND p.day = ?3 AND p.hour NOT IN (?4)')
+                    ->orderBy('p.hour')
+                    ->setParameters(array(1 => $this->getModel(), 2 => $date, 3 => $day, 4 => $l))
+                    ->getQuery()
+                    ->getResult();
+        } else {
+            $plans = $em->createQueryBuilder()
+                    ->select('p')
+                    ->from('\Model\\Plan', 'p')
+                    ->where('p.teacher = ?1 AND p.fromDate <= ?2 AND p.toDate >= ?2 AND p.day = ?3 AND p.hour')
+                    ->orderBy('p.hour')
+                    ->setParameters(array(1 => $this->getModel(), 2 => $date, 3 => $day))
+                    ->getQuery()
+                    ->getResult();
+        }
+        foreach ($plans as $plan) {
+            $link[$plan->getHour()->getId()] = '#';
+            $list[$plan->getHour()->getId()] = $plan;
+        }
+        
+        ksort($list);
+        return array('plan' => $list, 'link' => $link);
     }
 
     public function getActualSemester() {
@@ -168,7 +176,7 @@ class Me {
     }
 
     public function getActualYear() {
-        if ($this->getActualSemester()) 
+        if ($this->getActualSemester())
             return $this->getActualSemester()->getYear();
         else
             return null;
@@ -179,8 +187,9 @@ class Me {
         $subjects = $em->getRepository('\Model\\Subject')->findBy(array(), array('subject' => 'ASC'));
         $teachers = $em->getRepository('\Model\Teacher')->findBy(array(), array('familyName' => 'ASC'));
         $classes = $em->getRepository('\Model\Clas')->findBy(array('year' => $this->getActualYear()), array('name' => 'ASC'));
+        $hours = $em->getRepository('\Model\Hour')->findAll();
 
-        return array('subjects' => $subjects, 'teachers' => $teachers, 'classes' => $classes);
+        return array('subjects' => $subjects, 'teachers' => $teachers, 'classes' => $classes, 'hours' => $hours);
     }
 
     public function getNotifications() {
