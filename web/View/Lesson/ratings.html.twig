@@ -62,7 +62,7 @@
                     <h4 class="modal-title" id="addRdescLabel">Opis oceny</h4>
                 </div>
                 <div class="modal-body">
-                    <form name="inputform" method="POST" action="{{ url('Lesson/editLesson', {'action': 'add'}) }}">
+                    <form id="rd-form" name="inputform" method="POST" action="{{ url('Lesson/editLesson', {'action': 'add'}) }}">
 
                         <div class="form-group">
                             <label class="control-label">Pełny opis:<span class="text-red">*</span></label>
@@ -93,6 +93,7 @@
                         <input type="hidden" value="{{ lesson.class.id }}" name="class" />
                         <input type="hidden" value="{{ lesson.subject.id }}" name="subject" />
                         <input type="hidden" value="{{ lesson.id }}" name="lesson" />
+                        <input type="hidden" name="saveRatingDesc" value="Zapisz" />
 
                         <div class="box-footer clearfix no-border">
                             <input type="submit" name="saveRatingDesc" value="Zapisz" class="btn btn-default pull-right" />
@@ -116,7 +117,7 @@
             lmodal.find('#rating-weight-input').val(lres[3]);
             lmodal.find('#rating-color-input').val(lres[4]);
         });
-        
+
         // walidacja
         $("input[name$='saveRatingDesc']").on('click', function (e) {
             var rd = document.getElementById('rating-desc-input');
@@ -134,11 +135,31 @@
                 rsd.setCustomValidity('');
             }
         });
+
+        $("#rd-form").submit(function (event) {
+            $("#addRdesc").modal('toggle');
+            $("#ratings-chart").append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
+
+            // Stop form from submitting normally
+            event.preventDefault();
+            // Get some values from elements on the page:
+            var $form = $(this),
+                    url = $form.attr("action");
+                    
+            var serializedData = $form.serialize();
+            // Send the data using post
+            var posting = $.post(url, serializedData);
+
+            posting.done(function () {
+                $("#ratings-chart").load("{{ url('Lesson/ratings', {'id': lesson.id}) }}");
+            });
+        });
+
         //Colorpicker
         $(".my-colorpicker1").colorpicker();
         //color picker with addon
         $(".my-colorpicker2").colorpicker();
-        
+
         $('.tooltipRating').tooltip({html: true});
     </script>
 </body>

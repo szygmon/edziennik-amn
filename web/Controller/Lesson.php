@@ -82,7 +82,7 @@ class Lesson {
                 $rd[0]->setWeight(is_numeric($_POST['weight']) ? $_POST['weight'] : 1);
                 $rd[0]->setColor($_POST['color']);
                 $this->em->flush();
-                $Router->redirect('Lesson/editLesson', array('id' => $_POST['lesson']));
+                //$Router->redirect('Lesson/editLesson', array('id' => $_POST['lesson']));
             } else { // dodanie nowego
                 $rd = new \Model\RatingDesc();
 
@@ -97,7 +97,7 @@ class Lesson {
 
                 $this->em->persist($rd);
                 $this->em->flush();
-                $Router->redirect('Lesson/editLesson', array('id' => $_POST['lesson']));
+                //$Router->redirect('Lesson/editLesson', array('id' => $_POST['lesson']));
             }
         }
 
