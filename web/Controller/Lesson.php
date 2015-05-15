@@ -207,22 +207,12 @@ class Lesson {
             $ratingd = null;
         }
 
-        $at = null;
-        if ($lesson) {
-            $lp = $this->em->getRepository('\Model\\Lesson')->findBy(array('class' => $lesson->getClass(), 'date' => $lesson->getDate()));
-            foreach ($lp as $l) {
-                foreach ($l->getAttendances() as $a) {
-                    $at[$a->getStudent()->getId()][$l->getHour()->getId()] = $a->getPresence();
-                }
-            }
-        }
-
         $groups = null;
         $this->me->groupList($groups);
 
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
 
-        return array('lesson' => $lesson, 'ratingd' => $ratingd, 'ratings' => $ratings, 'ratingsAv' => $ratingsAv, 'hours' => $hours, 'attendance' => $at, 'groups' => $groups);
+        return array('lesson' => $lesson, 'hours' => $hours, 'groups' => $groups);
     }
 
     /**
@@ -231,13 +221,78 @@ class Lesson {
      */
     public function myLessons($Router, $id = '') {
         for ($i = 0; $i < 5; $i++) {
-            $data[$i+1] = $this->me->getTeacherPlan(date("Y-m-d", strtotime('monday this week + '.$i.' days')));
+            $data[$i + 1] = $this->me->getTeacherPlan(date("Y-m-d", strtotime('monday this week + ' . $i . ' days')));
         }
 
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
         $dayname = array('godzina', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek');
 
         return array('lessons' => $data, 'hours' => $hours, 'dayname' => $dayname,);
+    }
+
+    /**
+     * @Route(/teacher/lessons/attendance/{id})
+     */
+    public function attendance($id = '') {
+        if (is_numeric($id)) {
+            $lesson = $this->em->getRepository('Model\\Lesson')->find($id);
+
+            $at = null;
+            if ($lesson) {
+                $lp = $this->em->getRepository('\Model\\Lesson')->findBy(array('class' => $lesson->getClass(), 'date' => $lesson->getDate()));
+                foreach ($lp as $l) {
+                    foreach ($l->getAttendances() as $a) {
+                        $at[$a->getStudent()->getId()][$l->getHour()->getId()] = $a->getPresence();
+                    }
+                }
+            }
+        } else {
+            $lesson = null;
+            $at = null;
+        }
+        
+        return array('lesson' => $lesson, 'attendance' => $at);
+    }
+
+    /**
+     * @Route(/teacher/lessons/ratings/{id})
+     */
+    public function ratings($id = '') {
+        if (is_numeric($id)) {
+            $lesson = $this->em->getRepository('Model\\Lesson')->find($id);
+
+            $ratingDescs = $this->em->getRepository('\Model\\RatingDesc')->findBy(array(
+                'class' => $lesson->getClass(),
+                'subject' => $lesson->getSubject(),
+                'semester' => $this->me->getActualSemester() //////////////////////////////// tylko oceny z aktualnego semestru
+                    ), array('orderDesc' => 'ASC'));
+            foreach ($ratingDescs as $rd) {
+                $ratingd[$rd->getOrderDesc()] = $rd;
+                if ($rd->getRatings()) {
+                    foreach ($rd->getRatings() as $r) {
+                        $ratings[$r->getStudent()->getId()][$rd->getOrderDesc()] = $r;
+                        if (isset($ratingsSum[$r->getStudent()->getId()])) {
+                            $ratingsSum[$r->getStudent()->getId()] += $r->getValue() * $rd->getWeight();
+                            $counter[$r->getStudent()->getId()] += $rd->getWeight();
+                        } else {
+                            $ratingsSum[$r->getStudent()->getId()] = $r->getValue() * $rd->getWeight();
+                            $counter[$r->getStudent()->getId()] = $rd->getWeight();
+                        }
+                    }
+                }
+            }
+            if (isset($ratingsSum)) {
+                foreach ($ratingsSum as $key => $value) { // liczenie średniej
+                    $ratingsAv[$key] = round($value / $counter[$key], 2);
+                }
+            }
+        } else {
+            $lesson = null;
+            $ratings = null;
+            $ratingd = null;
+        }
+
+        return array('lesson' => $lesson, 'ratingd' => $ratingd, 'ratings' => $ratings, 'ratingsAv' => $ratingsAv);
     }
 
 }
