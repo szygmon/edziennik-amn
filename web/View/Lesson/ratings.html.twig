@@ -10,7 +10,7 @@
     <link href="{{ url('template') }}/css/bootstrap-colorpicker.min.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <form name="inputform" method="POST" action="{{ url('Lesson/editLesson', {'id': lesson.id }) }}">
+    <form id="ratings-form" name="inputform" method="POST" action="{{ url('Lesson/editLesson', {'id': lesson.id }) }}">
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
@@ -50,6 +50,7 @@
 
         </table>
         <div class="box-footer clearfix no-border">
+            <input type="hidden" name="saveRatings" value="Zapisz"/>
             <input type="submit" name="saveRatings" value="Zapisz" class="btn btn-default pull-right" />
         </div>
     </form>
@@ -136,6 +137,7 @@
             }
         });
 
+        // zapis opisu ocen
         $("#rd-form").submit(function (event) {
             $("#addRdesc").modal('toggle');
             $("#ratings-chart").append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
@@ -145,7 +147,26 @@
             // Get some values from elements on the page:
             var $form = $(this),
                     url = $form.attr("action");
-                    
+
+            var serializedData = $form.serialize();
+            // Send the data using post
+            var posting = $.post(url, serializedData);
+
+            posting.done(function () {
+                $("#ratings-chart").load("{{ url('Lesson/ratings', {'id': lesson.id}) }}");
+            });
+        });
+
+        // zapis opisu ocen
+        $("#ratings-form").submit(function (event) {
+            $("#ratings-chart").append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
+
+            // Stop form from submitting normally
+            event.preventDefault();
+            // Get some values from elements on the page:
+            var $form = $(this),
+                    url = $form.attr("action");
+
             var serializedData = $form.serialize();
             // Send the data using post
             var posting = $.post(url, serializedData);
