@@ -1398,7 +1398,7 @@
 		forceParse: true,
 		format: 'mm/dd/yyyy',
 		keyboardNavigation: true,
-		language: 'en',
+		language: 'pl',
 		minViewMode: 0,
 		multidate: false,
 		multidateSeparator: ',',
@@ -1408,7 +1408,7 @@
 		startView: 0,
 		todayBtn: false,
 		todayHighlight: false,
-		weekStart: 0
+		weekStart: 1
 	};
 	var locale_opts = $.fn.datepicker.locale_opts = [
 		'format',
@@ -1425,6 +1425,15 @@
 			monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 			today: "Today",
 			clear: "Clear"
+		},
+		pl: {
+			days: ["Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"],
+			daysShort: ["Nd", "Po", "Wt", "Śr", "Cz", "Pt", "So", "Nd"],
+			daysMin: ["Nd", "Po", "Wt", "Śr", "Cz", "Pt", "So", "Nd"],
+			months: ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"],
+			monthsShort: ["Sty", "Lut", "Marz", "Kwi", "Maj", "Cze", "Lip", "Sie", "Wrz", "Paź", "Lis", "Gru"],
+			today: "Dziś",
+			clear: "Czyść"
 		}
 	};
 
