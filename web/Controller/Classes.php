@@ -31,21 +31,6 @@ class Classes {
         return array('classes' => '$classes');
     }
 
-    // lista grup //    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////powtarza się w school zrobić to gdzie indziej
-    public function groupList(&$array, $criteria = array('mainGroup' => NULL), $offset = 0, $lvl = 0) {
-        while (($groups = $this->em->getRepository('Model\\Group')->findBy($criteria, array('name' => 'ASC'), 1, $offset)) != NULL) {
-            if (is_array($groups)) {
-                foreach ($groups as $group) {
-                    $array[] = array('id' => $group->getId(), 'name' => $group->getName(), 'level' => $lvl);
-                    if ($group->getSubGroups() != NULL) {
-                        $this->groupList($array, array('mainGroup' => $group->getId()), 0, $lvl + 1);
-                    }
-                }
-            }
-            $offset++;
-        }
-    }
-
     /**
      * @Route(/teacher/class/{id})
      * @param \Core\Router $Router
@@ -53,10 +38,9 @@ class Classes {
     public function classes($Router, $id = '') {
         if (is_numeric($id)) {
             $class = $this->em->getRepository('Model\\Clas')->find($id);
-            //$students = $class->getStudents();
         }
         $groups = null;
-        $this->groupList($groups);
+        $this->me->groupList($groups);
         return array('class' => $class, 'groups' => $groups);
     }
 
@@ -70,11 +54,53 @@ class Classes {
         foreach ($_POST['groups'] as $group) {
             $g = $this->em->getRepository('\Model\\Group')->find($group);
             $student->addGroup($g);
-            $this->em->flush(); //////////////////////////////////////////////////////////////////???????????????????????????????????????????
         }
+        $this->em->flush(); 
         $Router->redirect('Classes/classes', array('id' => $id));
 
         return array('class' => '');
+    }
+
+    /**
+     * @Route(/teacher/class/students/{class}/{year})
+     * @param \Core\Router $Router
+     */
+    public function students($Router, $year = '', $class = '') {
+        if (isset($_POST['save'])) {
+            $c = $this->em->getRepository('\Model\\Clas')->find($year);
+            foreach ($_POST['students'] as $s) {
+                $student = $this->em->getRepository('\Model\\Student')->find($s);
+                $student->addClass($c);
+            }
+            $this->em->flush();
+            $Router->redirect('Classes/classes', array('id' => $year));
+        }
+
+        if (isset($_POST['del'])) {
+            $c = $this->em->getRepository('\Model\\Clas')->find($year);
+            foreach ($_POST['students'] as $s) {
+                $student = $this->em->getRepository('\Model\\Student')->find($s);
+                $student->removeClass($c);
+            }
+            $this->em->flush();
+            $Router->redirect('Classes/classes', array('id' => $year));
+        }
+
+        if (is_numeric($class)) {
+            $class = $this->em->getRepository('\Model\\Clas')->find($class);
+        }
+        if (is_numeric($year)) {
+            $start = new \DateTime($year . '-01-01');
+            $end = new \DateTime($year . '-12-31');
+            $students = $this->em->createQueryBuilder()
+                    ->select('s')
+                    ->from('\Model\\Student', 's')
+                    ->where('s.birthdate >= ?1 AND s.birthdate <= ?2 ')
+                    ->setParameters(array(1 => $start, 2 => $end))
+                    ->getQuery()
+                    ->getResult();
+        }
+        return array('class' => $class, 'students' => $students);
     }
 
 }
