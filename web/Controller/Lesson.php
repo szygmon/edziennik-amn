@@ -212,22 +212,37 @@ class Lesson {
 
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
 
-        return array('lesson' => $lesson, 'hours' => $hours, 'groups' => $groups);
+        return array('lesson' => $lesson, 'hours' => $hours, 'groups' => $groups, 'get' => $_GET);
     }
 
     /**
-     * @Route(/teacher/lessons/mylessons/{id})
-     * @param \Core\Router $Router
+     * @Route(/teacher/lessons/mylessons)
      */
-    public function myLessons($Router, $id = '') {
-        for ($i = 0; $i < 5; $i++) {
-            $data[$i + 1] = $this->me->getTeacherPlan(date("Y-m-d", strtotime('monday this week + ' . $i . ' days')));
+    public function myLessons() {
+        $startDate = date("Y-m-d", strtotime('monday this week'));
+        $endDate = date("Y-m-d", strtotime('monday this week + 4 days'));
+        return array('startDate' => $startDate, 'endDate' => $endDate);
+    }
+    
+    /**
+     * @Route(/teacher/lessons/mylessonsweek/{startDate})
+     */
+    public function myLessonsWeek($startDate = '') {
+        if ($startDate == '') {
+            for ($i = 0; $i < 5; $i++) {
+                $date[$i + 1] = date("Y-m-d", strtotime('monday this week + ' . $i . ' days'));
+                $data[$i + 1] = $this->me->getTeacherPlan($date[$i + 1]);
+            }
+        } else {
+            for ($i = 0; $i < 5; $i++) {
+                $date[$i + 1] = date("Y-m-d", strtotime($startDate.' + ' . $i . ' days'));
+                $data[$i + 1] = $this->me->getTeacherPlan($date[$i + 1]);
+            }
         }
-
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
         $dayname = array('godzina', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek');
 
-        return array('lessons' => $data, 'hours' => $hours, 'dayname' => $dayname,);
+        return array('lessons' => $data, 'hours' => $hours, 'dayname' => $dayname, 'date' => $date);
     }
 
     /**
@@ -250,7 +265,7 @@ class Lesson {
             $lesson = null;
             $at = null;
         }
-        
+
         return array('lesson' => $lesson, 'attendance' => $at);
     }
 
