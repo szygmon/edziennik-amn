@@ -35,7 +35,7 @@
                     $('#startDate').text($.datepicker.formatDate(dateFormat, startDate, inst.settings));
                     $('#endDate').text($.datepicker.formatDate(dateFormat, endDate, inst.settings));
 
-                    var url = '{{ url('Lesson/myLessons', {'startDate': 'sd' }) }} .box-body';
+                    var url = '{{ url('Student/attendance', {'startDate': 'sd' }) }} .box-body';
                     url = url.replace('sd', $.datepicker.formatDate(dateFormat, startDate, inst.settings));
                     $('.box-body').load(url, function () {
                         $(this).children().unwrap();
@@ -97,24 +97,32 @@
                         {% for d in range(0, 5) %}
                             {% if d > 0 %}
                                 <div class="col-md-2">
-                                    {% if lessons[d].plan[i].subject.subject %}
-                                        <div class="info-box {% if lessons[d].link[i] == '#' %}bg-yellow{% else %}bg-green{% endif %} divlink">
+                                    {% if lesson[d][i].subject.subject %}
+                                        <div class="info-box {% if attendance[d][i].presence == 1 %}bg-green
+                                                    {% elseif attendance[d][i].presence == 2 %}bg-orange
+                                                    {% elseif attendance[d][i].presence == 3 %}bg-yellow
+                                                    {% elseif attendance[d][i].presence == 4 %}bg-green
+                                                    {% elseif attendance[d][i].presence == 5 %}bg-green
+                                                    {% else %}bg-gray
+                                                    {% endif %}">
                                             <div class="info-box-content plan-plan">
-                                                <span class="info-box-text">{{ lessons[d].plan[i].subject.subject }}</span>
-                                                <span class="info-box-text">{% if lessons[d].plan[i].classroom %} <small>s.</small> {{ lessons[d].plan[i].classroom.name }}{% endif %}&nbsp;</span>
+                                                <span class="info-box-text">{{ lesson[d][i].subject.subject }}</span>
+                                                <span class="info-box-text">
+                                                    {% if attendance[d][i].presence == 1 %} obecność
+                                                    {% elseif attendance[d][i].presence == 2 %} nieobecność 
+                                                    {% elseif attendance[d][i].presence == 3 %} spóźnienie
+                                                    {% elseif attendance[d][i].presence == 4 %} zwolnienie
+                                                    {% elseif attendance[d][i].presence == 5 %} nieobecność uspraw. 
+                                                    {% else %} B/D
+                                                    {% endif %}
+                                                </span>
                                                 <div class="progress">
                                                     <div class="progress-bar" style="width: 70%"></div>
                                                 </div>
                                                 <span class="progress-description">
-                                                    Klasa {{ lessons[d].plan[i].class.name }}
-                                                    {% if lessons[d].plan[i].group %}{{ lessons[d].plan[i].group.name }}{% endif %}
+                                                    {{ lesson[d][i].teacher.givenName }} {{ lesson[d][i].teacher.familyName }}
                                                 </span>
                                             </div>
-                                            {% if lessons[d].link[i] == '#' %}
-                                                <a href="{{ url('Lesson/editLesson') }}?date={{ date[d]|date('Y-m-d') }}&hour={{ i }}&class={{ lessons[d].plan[i].class.id }}&subject={{ lessons[d].plan[i].subject.id }}{% if lessons[d].plan[i].group.id %}&group={{lessons[d].plan[i].group.id }}{% endif %}"></a>
-                                            {% else %}
-                                                <a href="{{ url('Lesson/editLesson', {'id': lessons[d].plan[i].id }) }}"></a>
-                                            {% endif %}
                                         </div>
                                     {% else %}
                                         <div class="info-box bg-gray">

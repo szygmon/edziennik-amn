@@ -35,6 +35,7 @@ class Student {
     }
 
     /**
+     * Oceny
      * @Route(/student/ratings/{class})
      */
     public function ratings($class = '') {
@@ -72,7 +73,7 @@ class Student {
     }
 
     /**
-     * plan lekcji
+     * Plan lekcji
      * @Route(/student/plan)
      */
     public function plan() {
@@ -115,10 +116,54 @@ class Student {
         $return = array(1 => $s[1], 2 => $s[2], 3 => $s[3], 4 => $s[4], 5 => $s[5], 6 => $s[6], 7 => $s[7], 8 => $s[8]);
 
         $dayname = array('godzina', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek');
-        
+
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
 
         return array('plan' => $return, 'class' => $class, 'dayname' => $dayname, 'hours' => $hours);
+    }
+
+    /**
+     * Frekwencja
+     * @Route(/student/attendance/{startDate})
+     */
+    public function attendance($startDate = '') {
+        // szukanie aktualnej klasy
+        $myClasses = $this->me->getModel()->getClass();
+        foreach ($myClasses as $c) {
+            $sem = $c->getYear()->getSemesters();
+            foreach ($sem as $s) {
+                if ($s == $this->me->getActualSemester())
+                    $class = $c;
+            }
+        }
+
+        for ($i = 0; $i < 5; $i++) {
+            if ($startDate == '') {
+                $date[$i + 1] = date("Y-m-d", strtotime('monday this week + ' . $i . ' days'));
+            } else {
+                $date[$i + 1] = date("Y-m-d", strtotime($startDate . ' + ' . $i . ' days'));
+            }
+            $lessons = $this->em->getRepository('\Model\\Lesson')->findBy(array('date' => new \DateTime($date[$i + 1]), 'class' => $class));
+            foreach ($lessons as $l) {
+                $lesson[$i + 1][$l->getHour()->getId()] = $l;
+                $find = false;
+                foreach ($l->getAttendances() as $a) {
+                    if ($a->getStudent() == $this->me->getModel()) {
+                        $find = true;
+                        $attendance[$i + 1][$l->getHour()->getId()] = $a;
+                    }
+                }
+                if (!$find)
+                    $attendance[$i + 1][$l->getHour()->getId()] = 'B/D';
+            }
+        }
+        $startDate = $date[1];
+        $endDate = date("Y-m-d", strtotime($startDate . ' + 4 days'));
+        
+        $hours = $this->em->getRepository('\Model\\Hour')->findAll();
+        $dayname = array('godzina', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek');
+
+        return array('startDate' => $startDate, 'endDate' => $endDate, 'lesson' => $lesson, 'attendance' => $attendance, 'hours' => $hours, 'dayname' => $dayname, 'date' => $date);
     }
 
 }

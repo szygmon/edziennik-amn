@@ -78,7 +78,7 @@ class Classes {
 
         if (isset($_POST['del'])) {
             $c = $this->em->getRepository('\Model\\Clas')->find($year);
-            foreach ($_POST['students'] as $s) {
+            foreach ($_POST['students'] as $s) { // a co jak ma oceny już  wtej klasie???????
                 $student = $this->em->getRepository('\Model\\Student')->find($s);
                 $student->removeClass($c);
             }

@@ -216,33 +216,25 @@ class Lesson {
     }
 
     /**
-     * @Route(/teacher/lessons/mylessons)
+     * @Route(/teacher/lessons/mylessons/{startDate})
      */
-    public function myLessons() {
-        $startDate = date("Y-m-d", strtotime('monday this week'));
-        $endDate = date("Y-m-d", strtotime('monday this week + 4 days'));
-        return array('startDate' => $startDate, 'endDate' => $endDate);
-    }
-    
-    /**
-     * @Route(/teacher/lessons/mylessonsweek/{startDate})
-     */
-    public function myLessonsWeek($startDate = '') {
-        if ($startDate == '') {
-            for ($i = 0; $i < 5; $i++) {
+    public function myLessons($startDate = '') {
+
+        for ($i = 0; $i < 5; $i++) {
+            if ($startDate == '') {
                 $date[$i + 1] = date("Y-m-d", strtotime('monday this week + ' . $i . ' days'));
-                $data[$i + 1] = $this->me->getTeacherPlan($date[$i + 1]);
+            } else {
+                $date[$i + 1] = date("Y-m-d", strtotime($startDate . ' + ' . $i . ' days'));
             }
-        } else {
-            for ($i = 0; $i < 5; $i++) {
-                $date[$i + 1] = date("Y-m-d", strtotime($startDate.' + ' . $i . ' days'));
-                $data[$i + 1] = $this->me->getTeacherPlan($date[$i + 1]);
-            }
+            $data[$i + 1] = $this->me->getTeacherPlan($date[$i + 1]);
         }
+        $startDate = $date[1];
+        $endDate = date("Y-m-d", strtotime($startDate . ' + 4 days'));
+        
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
         $dayname = array('godzina', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek');
-
-        return array('lessons' => $data, 'hours' => $hours, 'dayname' => $dayname, 'date' => $date);
+        
+        return array('startDate' => $startDate, 'endDate' => $endDate, 'lessons' => $data, 'hours' => $hours, 'dayname' => $dayname, 'date' => $date);
     }
 
     /**
