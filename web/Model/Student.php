@@ -31,7 +31,7 @@ class Student extends User {
 
     /** @OneToMany(targetEntity="\Model\Rating", mappedBy="student") */
     protected $ratings;
-    
+
     /** @OneToMany(targetEntity="\Model\Attendance", mappedBy="student") */
     protected $attendances;
 
@@ -46,6 +46,11 @@ class Student extends User {
      * @JoinTable(name="students_class")
      */
     protected $class;
+
+    /**
+     * @OneToOne(targetEntity="\Model\Father", inversedBy="student")
+     */
+    protected $father;
 
     public function addClass(\Model\Clas $class = null) {
         $this->class->add($class);

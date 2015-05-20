@@ -15,6 +15,9 @@ class HomeUtil {
 	}
 
 	public function registerForm($post) {
+		$check = Di::get('em')->getRepository('\Model\School')->findOneBy(array('alias' => $_POST['schoolAlias']));
+		if ($check)
+			die('Alias zajęty');
 		$school = new School();
 		// ++ unikalność
 		$school->setName($_POST['schoolAlias']);
@@ -45,5 +48,4 @@ class HomeUtil {
 
 		return false;
 	}
-
-}
+	

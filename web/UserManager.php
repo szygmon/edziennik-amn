@@ -9,7 +9,11 @@ class UserManager {
 	}
 
 	public function setup($school) {
-		Db::exec('CREATE SCHEMA IF NOT EXISTS ' . $school->getSchema());
+		try {
+                    Db::exec('CREATE SCHEMA IF NOT EXISTS ' . $school->getSchema());
+                } catch (Exception $e) {
+                    Db::exec('CREATE SCHEMA ' . $school->getSchema());
+                }
 		$this->switchSchema($school);
 		return Db::install();
 	}

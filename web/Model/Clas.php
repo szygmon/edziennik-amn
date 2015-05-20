@@ -39,10 +39,13 @@ class Clas {
     //protected $behaviors;
     /** @OneToMany(targetEntity="\Model\RatingDesc", mappedBy="class") */
     protected $ratingDescs;
-    ///** @OneToMany(targetEntity="\Model\Student_in_clas", mappedBy="clas") */
-    //protected $students;
-    ///** @OneToMany(targetEntity="\Model\Educator", mappedBy="clas") */
-    //protected $educators;
+
+    /**
+     * @ManyToMany(targetEntity="\Model\Teacher", inversedBy="classes")
+     * @JoinTable(name="educators")
+     */
+    protected $educators;
+
     /** @OneToMany(targetEntity="\Model\Lesson", mappedBy="class") */
     protected $lessons;
 
@@ -59,7 +62,7 @@ class Clas {
     public function removeStudent(\Model\Clas $student) {
         $this->students->removeElement($student);
     }
-    
+
     public function removeAllStudents() {
         foreach ($this->students as $s)
             $this->students->removeElement($s);

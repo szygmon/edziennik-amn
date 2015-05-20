@@ -9,19 +9,22 @@ use Doctrine\Common\Collections\ArrayCollection as Collection;
  */
 class Teacher extends \Model\User {
 
-	//use \AutoProperty;
-        /** 
-         * @Column(type="integer", nullable=true) 
-         */
-        protected $stopien; // przykład pola jakiegoś, potem się coś doda
+    //use \AutoProperty;
+    /**
+     * @Column(type="integer", nullable=true) 
+     */
+    protected $stopien; // przykład pola jakiegoś, potem się coś doda
 
-        /** @OneToMany(targetEntity="\Model\Plan", mappedBy="teacher") */
-        protected $plans;
-        
-        ///** @OneToMany(targetEntity="\Model\Educator", mappedBy="teacher") */
-        //protected $educators;
-        
-        /** @OneToMany(targetEntity="\Model\Lesson", mappedBy="teacher") */
-        protected $lessons;
-	
+    /** @OneToMany(targetEntity="\Model\Plan", mappedBy="teacher") */
+    protected $plans;
+
+    /**
+     * @ManyToMany(targetEntity="\Model\Clas", mappedBy="educators")
+     * @JoinTable(name="educators")
+     */
+    protected $classes;
+
+    /** @OneToMany(targetEntity="\Model\Lesson", mappedBy="teacher") */
+    protected $lessons;
+
 }
