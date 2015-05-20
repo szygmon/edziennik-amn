@@ -36,31 +36,33 @@
                                             <div class="info-box bg-yellow">
                                             {% elseif r.value == 1 %}
                                                 <div class="info-box bg-red">
-                                                {% endif %}
-                                                <span class="info-box-icon">{{ r.value }}</span>
-                                                <div class="info-box-content">
-                                                    <span class="info-box-text" data-placement="top" data-toggle="tooltip" title="{{ r.ratingDesc.description }}">{{ r.ratingDesc.description }}</span>
-                                                    <span class="info-box-number">Waga: {{ r.ratingDesc.weight }}</span>
-                                                    <div class="progress">
-                                                        <div class="progress-bar" style="width: 70%"></div>
-                                                    </div>
-                                                    <span class="progress-description">
-                                                        Data: {{ r.date|date("Y-m-d") }}
-                                                    </span>
-                                                </div><!-- /.info-box-content -->
-                                            </div><!-- /.info-box -->
-                                        </div>
-                                        {% set i = i + 1 %}
-                                    {% endfor %}
+                                                {% else %}
+                                                    <div class="info-box bg-aqua">
+                                                    {% endif %}
+                                                    <span class="info-box-icon">{{ r.value }}</span>
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text" data-placement="top" data-toggle="tooltip" title="{{ r.ratingDesc.description }}">{{ r.ratingDesc.description }}</span>
+                                                        <span class="info-box-number">Waga: {{ r.ratingDesc.weight }}</span>
+                                                        <div class="progress">
+                                                            <div class="progress-bar" style="width: 70%"></div>
+                                                        </div>
+                                                        <span class="progress-description">
+                                                            Data: {{ r.date|date("Y-m-d") }}
+                                                        </span>
+                                                    </div><!-- /.info-box-content -->
+                                                </div><!-- /.info-box -->
+                                            </div>
+                                            {% set i = i + 1 %}
+                                        {% endfor %}
+                                    </div>
+
+
                                 </div>
-
-
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
 
-                    </section>
-                    <script type="text/javascript">
-                        $("#student-category-sidebar, #student-ratings-sidebar").addClass("treeview active");
-                    </script>
-                {% endblock %}
+                        </section>
+                        <script type="text/javascript">
+                            $("#student-category-sidebar, #student-ratings-sidebar").addClass("treeview active");
+                        </script>
+                    {% endblock %}
