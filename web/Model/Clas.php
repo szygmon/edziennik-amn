@@ -30,21 +30,21 @@ class Clas {
      */
     protected $year;
 
-    /** @OneToMany(targetEntity="\Model\Plan", mappedBy="clas") */
+    /** @OneToMany(targetEntity="\Model\Plan", mappedBy="class") */
     protected $plans;
 
-    ///** @OneToMany(targetEntity="\Model\Rating", mappedBy="clas") */
-    //protected $ratings;
+    /** @OneToMany(targetEntity="\Model\Rating", mappedBy="class") */
+    protected $ratings;
     ///** @OneToMany(targetEntity="\Model\Behavior", mappedBy="clas") */
     //protected $behaviors;
-    ///** @OneToMany(targetEntity="\Model\Rating_desc", mappedBy="clas") */
-    //protected $rating_descs;
+    /** @OneToMany(targetEntity="\Model\RatingDesc", mappedBy="class") */
+    protected $ratingDescs;
     ///** @OneToMany(targetEntity="\Model\Student_in_clas", mappedBy="clas") */
     //protected $students;
     ///** @OneToMany(targetEntity="\Model\Educator", mappedBy="clas") */
     //protected $educators;
-    ///** @OneToMany(targetEntity="\Model\Lesson", mappedBy="clas") */
-    //protected $lessons;
+    /** @OneToMany(targetEntity="\Model\Lesson", mappedBy="class") */
+    protected $lessons;
 
     /**
      * @ManyToMany(targetEntity="\Model\Student", mappedBy="class")
@@ -58,6 +58,11 @@ class Clas {
 
     public function removeStudent(\Model\Clas $student) {
         $this->students->removeElement($student);
+    }
+    
+    public function removeAllStudents() {
+        foreach ($this->students as $s)
+            $this->students->removeElement($s);
     }
 
     public function __construct() {

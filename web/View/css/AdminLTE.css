@@ -1298,19 +1298,25 @@ a:focus {
   margin-bottom: 0.3em;
 }
 .box > .overlay,
-.box > .loading-img {
+.box > .loading-img,
+.chart > .overlay,
+.chart > .loading-img,
+.modal-body > .overlay, 
+.modal-body > .overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
 }
-.box .overlay {
+.box .overlay, .chart .overlay, .modal-body .overlay {
   z-index: 1010;
   background: rgba(255, 255, 255, 0.7);
   border-radius: 3px;
 }
-.box .overlay > .fa {
+.box .overlay > .fa,
+.chart .overlay > .fa,
+.modal-body .overlay > .fa {
   position: absolute;
   top: 50%;
   left: 50%;

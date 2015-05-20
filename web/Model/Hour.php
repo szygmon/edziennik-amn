@@ -1,6 +1,6 @@
 <?php
 
-namespace model;
+namespace Model;
 
 use Doctrine\Common\Collections\ArrayCollection as Collection;
 
@@ -29,6 +29,9 @@ class Hour {
          */
 	protected $toTime;
 
-        ///** @OneToMany(targetEntity="\Model\Plan", mappedBy="Hour") */
-        //protected $plans;
+        /** @OneToMany(targetEntity="\Model\Plan", mappedBy="hour") */
+        protected $plans;
+        
+        /** @OneToMany(targetEntity="\Model\Lesson", mappedBy="hour") */
+        protected $lessons;
 }

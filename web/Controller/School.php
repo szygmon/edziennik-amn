@@ -50,7 +50,8 @@ class School {
      * @Route(/admin/school)
      */
     public function index() {
-        return array('info' => $this->info);
+        
+        return array('classes' => '$classes');
     }
 
     /**
@@ -65,7 +66,7 @@ class School {
             $y = $this->em->getRepository('Model\\Year')->find($_POST['year']);
             $qb = $this->em->getRepository('\Model\\Clas')->findOneBy(array('name' => $_POST['name'], 'year' => $y));
             if ($qb != NULL)
-                $this->info('err');
+                \Notify::error('Taka klasa już istnieje!');
             else {
                 $year = $this->em->getRepository('Model\\Year')->find($_POST['year']);
 
@@ -74,23 +75,40 @@ class School {
                 $class->setYear($year);
                 $this->em->persist($class);
                 $this->em->flush();
-                if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/classPrepare', array('info' => 'added'));
-                $this->info('added');
+                if (isset($_POST['saveAndAdd'])) {
+                    \Notify::success('Dodano!');
+                    $Router->redirect('School/classEdit', array('info' => 'added'));
+                }
+                \Notify::success('Dodano!');
             }
         }
 
         // ususwanie
         if ($action == 'del' && is_numeric($id) && $id > 0) {
             $class = $this->em->getRepository('\Model\\Clas')->find($id);
+            if ($class->getStudents()[0]) {
+                print('Nie można usunąć! Klasa zwiera studentów!');
+                die;
+            }
+            if ($class->getRatings()[0]) {
+                print('Nie można usunąć! Klasa zwiera przypisane oceny!');
+                die;
+            }
+            if ($class->getLessons()[0]) {
+                print('Nie można usunąć! Klasa zwiera odbyte lekcje!');
+                die;
+            }
+            foreach ($class->getPlans() as $plan) {
+                $this->em->remove($plan);
+            }
+
             $this->em->remove($class);
             $this->em->flush();
             $this->info('deleted');
         }
 
         // lista
-        $classes = $this->em->getRepository('Model\\Clas')->findBy(array(), array('year' => 'ASC', 'name' => 'ASC'));
-
+        $classes = $this->em->getRepository('Model\\Clas')->findBy(array(), array('year' => 'ASC', 'name' => 'ASC')); /// tutaj nie działa sortowanie bo year to nie rok tylko model
         // czyszczenie infa
         $info = $this->info;
         $this->info = 'brak';
@@ -99,17 +117,17 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/classes/prepare/{info})
+     * @Route(/admin/school/classes/edit/{info})
      */
-    public function classPrepare($info = 'brak') {
+    public function classEdit($info = 'brak') {
         $inf = $this->info($info);
 
         $years = $this->em->getRepository('Model\\Year')->findAll();
         return array('years' => $years, 'info' => $inf);
     }
 
-// grupy //
     /**
+     * Grupy
      * @Route(/admin/school/groups/{action}/{id})
      * @param \Core\Router $Router
      */
@@ -126,10 +144,10 @@ class School {
                 } else
                     $group->setMainGroup(NULL);
                 $this->em->flush();
+                if (isset($_POST['saveAndAdd']))
+                    $Router->redirect('School/groupEdit', array('info' => 'added'));
                 $this->info('updt');
-                // nowa
-            } else {
-                // sprawdzenie czy już takiej nie ma ?? potrzebne wogóle?? to sprawdzanie??
+            } else { // nowa grupa
                 $group = new \Model\Group();
                 $group->setName($_POST['name']);
                 if ($_POST['mainGroup'] != 0) {
@@ -139,7 +157,7 @@ class School {
                 $this->em->persist($group);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/groupPrepare', array('info' => 'added'));
+                    $Router->redirect('School/groupEdit', array('info' => 'added'));
                 $this->info('added');
             }
         }
@@ -150,6 +168,14 @@ class School {
             if ($this->em->getRepository('\Model\\Group')->findOneBy(array('mainGroup' => $group)) != NULL) {
                 $this->info('err3');
             } else {
+                ////////////////////////////////////////////////////////////////////////////notif potwierdzający: zostaną usunieci studenci z grup i plan zaiwerający przypis do grupy
+                foreach ($group->getStudents() as $student) {
+                    $group->removeStudent($student);
+                }
+                foreach ($group->getPlans() as $plan) {
+                    $this->em->remove($plan);
+                }
+
                 $this->em->remove($group);
                 $this->em->flush();
                 $this->info('deleted');
@@ -161,73 +187,67 @@ class School {
         $this->info = 'brak';
 
         $groups = null;
-        $this->groupList($groups);
+        $this->me->groupList($groups);
         return array('groups' => $groups, 'info' => $info);
     }
 
     /**
-     * @Route(/admin/school/groups/prepare/{info})
+     * @Route(/admin/school/groups/edit/{id}/{info})
      */
-    public function groupPrepare($info = 'brak') {
-        $inf = $this->info($info);
-        $groups = null;
-        $this->groupList($groups);
-        return array('groups' => $groups, 'info' => $inf);
-    }
-
-    /**
-     * @Route(/admin/school/groups/edit/{id})
-     */
-    public function groupEdit($id = '') {
+    public function groupEdit($id = '', $info = 'brak') {
         if (is_numeric($id)) {
             $data = $this->em->getRepository('\Model\\Group')->find($id);
+        } else {
+            $data = null;
         }
+        $inf = $this->info($info);
         $groups = null;
-        $this->groupList($groups);
-        return array('group' => $data, 'groups' => $groups);
+        $this->me->groupList($groups);
+        return array('group' => $data, 'groups' => $groups, 'info' => $inf);
     }
 
-// lista grup //    
-    public function groupList(&$array, $criteria = array('mainGroup' => NULL), $offset = 0, $lvl = 0) {
-        while (($groups = $this->em->getRepository('Model\\Group')->findBy($criteria, array('name' => 'ASC'), 1, $offset)) != NULL) {
-            if (is_array($groups)) {
-                foreach ($groups as $group) {
-                    $array[] = array('id' => $group->getId(), 'name' => $group->getName(), 'level' => $lvl);
-                    if ($group->getSubGroups() != NULL) {
-                        $this->groupList($array, array('mainGroup' => $group->getId()), 0, $lvl + 1);
-                    }
-                }
-            }
-            $offset++;
-        }
-    }
-
-// sale lekcyjne //
     /**
+     * Sale lekcyjne
      * @Route(/admin/school/classrooms/{action}/{id})
      * @param \Core\Router $Router
      */
     public function classrooms($Router, $id = '', $action = '') {
-        // dodawanie
-        if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) {
-            // sprawdzenie czy już takiej nie ma
-            $qb = $this->em->getRepository('\Model\\Classroom')->findOneBy(array('name' => $_POST['name']));
-            if ($qb != NULL)
-                $this->info('err');
-            else {
-                $classroom = new \model\Classroom();
+        if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) { // dodawanie
+            if ($action == 'updt' && is_numeric($id)) { // aktualizacja
+                $classroom = $this->em->getRepository('\Model\\Classroom')->find($id);
                 $classroom->setName($_POST['name']);
-                $this->em->persist($classroom);
+                $classroom->setSeats(!is_numeric($_POST['seats']) ? NULL : $_POST['seats']);
+                $classroom->setProjector($_POST['projector']);
+                $classroom->setOthers($_POST['others']);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/classroomPrepare', array('info' => 'added'));
-                $this->info('added');
+                    $Router->redirect('School/classroomEdit', array('info' => 'added'));
+                $this->info('updt');
+            } else {
+                $qb = $this->em->getRepository('\Model\\Classroom')->findOneBy(array('name' => $_POST['name']));
+                if ($qb != NULL) // sprawdzenie czy już takiej nie ma
+                    $this->info('err');
+                else {
+                    $classroom = new \model\Classroom();
+                    $classroom->setName($_POST['name']);
+                    $classroom->setSeats(!is_numeric($_POST['seats']) ? NULL : $_POST['seats']);
+                    $classroom->setProjector($_POST['projector']);
+                    $classroom->setOthers($_POST['others']);
+                    $this->em->persist($classroom);
+                    $this->em->flush();
+                    if (isset($_POST['saveAndAdd']))
+                        $Router->redirect('School/classroomEdit', array('info' => 'added'));
+                    $this->info('added');
+                }
             }
         }
 
-        // ususwanie
+        // ususwanie 
         if ($action == 'del' && is_numeric($id) && $id > 0) {
             $classroom = $this->em->getRepository('\Model\\Classroom')->find($id);
+            foreach ($classroom->getPlans() as $p) {
+                $p->setClassroom(null);
+            }
             $this->em->remove($classroom);
             $this->em->flush();
             $this->info('deleted');
@@ -244,59 +264,40 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/classroomsM)
+     * @Route(/admin/school/classrooms/edit/{id}/{info})
      */
-    public function classroomsM() {
-        $classrooms = $this->em->getRepository('Model\\Classroom')->findAll();
-        return array('classrooms' => $classrooms, 'info' => 'brak');
-    }
+    public function classroomEdit($id = '', $info = 'brak') {
+        if (is_numeric($id)) {
+            $classroom = $this->em->getRepository('\Model\\Classroom')->find($id);
+        } else
+            $classroom = null;
 
-    /**
-     * @Route(/admin/school/classrooms/prepare/{info})
-     */
-    public function classroomPrepare($info = 'brak') {
         $inf = $this->info($info);
-        return array('info' => $inf);
+        return array('info' => $inf, 'classroom' => $classroom);
     }
 
-// godziny lekcyjne //
     /**
+     * Godziny lekcyjne
      * @Route(/admin/school/hours/{action}/{id})
      */
     public function hours($id = '', $action = '') {
         // dodawanie
         if (isset($_POST['save'])) {
-            // aktualizacja
-            if ($action == 'updt' && is_numeric($id)) {
-                $hour = $this->em->getRepository('\Model\\Hour')->find($id);
-                $hour->setFromTime(new \DateTime($_POST['fromTime']));
-                $hour->setToTime(new \DateTime($_POST['toTime']));
-                $this->em->flush();
-
-                $this->info('updt');
-                // nowa
-            } else {
-                // sprawdzenie czy już takiej nie ma
-                $qb = $this->em->getRepository('\Model\\Hour')->findOneBy(array('fromTime' => new \DateTime($_POST['fromTime']), 'toTime' => new \DateTime($_POST['toTime'])));
-                if ($qb != NULL)
-                    $this->info('err');
-                else {
+            $check = $this->em->getRepository('\Model\\Hour')->find(1);
+            for ($i = 1; $i < 9; $i++) {
+                if (!$check) {
                     $hour = new \model\Hour();
-                    $hour->setFromTime(new \DateTime($_POST['fromTime']));
-                    $hour->setToTime(new \DateTime($_POST['toTime']));
+                } else {
+                    $hour = $this->em->getRepository('\Model\\Hour')->find($i);
+                }
+                $hour->setFromTime(new \DateTime($_POST['hour' . $i . 'from']));
+                $hour->setToTime(new \DateTime($_POST['hour' . $i . 'to']));
+                if (!$check) {
                     $this->em->persist($hour);
-                    $this->em->flush();
-                    $this->info('added');
                 }
             }
-        }
-
-        // ususwanie
-        if ($action == 'del' && is_numeric($id) && $id > 0) {
-            $hour = $this->em->getRepository('\Model\\Hour')->find($id);
-            $this->em->remove($hour);
+            $this->info('updt');
             $this->em->flush();
-            $this->info('deleted');
         }
 
         // lista
@@ -327,78 +328,99 @@ class School {
         return array('hour' => $data);
     }
 
-// plan lekcji //
     /**
+     * Plan lekcji
      * @Route(/admin/school/plans/{action}/{id})
      */
     public function plans($id = '', $action = '') {
         // dodawanie
         if (isset($_POST['save'])) {
+            if ($_POST['planid'] > 0) { //aktualizacja wpisu
+                $plan = $this->em->getRepository('\Model\\Plan')->find($_POST['planid']);
 
-            $plan = new \Model\Plan();
-            $date = explode(' - ', $_POST['dateRange']);
-            $plan->setFromDate(new \DateTime($date[0]));
-            $plan->setToDate(new \DateTime($date[1]));
+                $date = explode(' - ', $_POST['dateRange']);
+                $plan->setFromDate(new \DateTime($date[0]));
+                $plan->setToDate(new \DateTime($date[1]));
 
-            $plan->setHour($_POST['hour']);
-            $plan->setDay($_POST['day']);
-            $s = $this->em->getRepository('\Model\\Subject')->find($_POST['subject']);
-            $plan->setSubject($s);
-            if ($_POST['classroom'] != 0) {
-                $c = $this->em->getRepository('\Model\\Classroom')->find($_POST['classroom']);
-                $plan->setClassroom($c);
+                $h = $this->em->getRepository('\Model\\Hour')->find($_POST['hour']);
+                $plan->setHour($h);
+                $plan->setDay($_POST['day']);
+                $s = $this->em->getRepository('\Model\\Subject')->find($_POST['subject']);
+                $plan->setSubject($s);
+                if ($_POST['classroom'] != 0) {
+                    $c = $this->em->getRepository('\Model\\Classroom')->find($_POST['classroom']);
+                    $plan->setClassroom($c);
+                } else
+                    $plan->setClassroom(null);
+                if ($_POST['group'] != 0) {
+                    $g = $this->em->getRepository('\Model\\Group')->find($_POST['group']);
+                    $plan->setGroup($g);
+                } else
+                    $plan->setGroup(null);
+                $t = $this->em->getRepository('\Model\\Teacher')->find($_POST['teacher']);
+                $plan->setTeacher($t);
+                $c = $this->em->getRepository('\Model\\Clas')->find($_POST['class']);
+                $plan->setClass($c);
+
+                $this->em->flush();
+                $this->info('updt');
+            } else { //nowy wpis
+                $plan = new \Model\Plan();
+                $date = explode(' - ', $_POST['dateRange']);
+                $plan->setFromDate(new \DateTime($date[0]));
+                $plan->setToDate(new \DateTime($date[1]));
+
+                $h = $this->em->getRepository('\Model\\Hour')->find($_POST['hour']);
+                $plan->setHour($h);
+                $plan->setDay($_POST['day']);
+                $s = $this->em->getRepository('\Model\\Subject')->find($_POST['subject']);
+                $plan->setSubject($s);
+                if ($_POST['classroom'] != 0) {
+                    $c = $this->em->getRepository('\Model\\Classroom')->find($_POST['classroom']);
+                    $plan->setClassroom($c);
+                }
+                if ($_POST['group'] != 0) {
+                    $g = $this->em->getRepository('\Model\\Group')->find($_POST['group']);
+                    $plan->setGroup($g);
+                }
+
+                $t = $this->em->getRepository('\Model\\Teacher')->find($_POST['teacher']);
+                $plan->setTeacher($t);
+                $c = $this->em->getRepository('\Model\\Clas')->find($_POST['class']);
+                $plan->setClass($c);
+
+                $this->em->persist($plan);
+                $this->em->flush();
+                $this->info('added');
             }
-            if ($_POST['group'] != 0) {
-                $g = $this->em->getRepository('\Model\\Group')->find($_POST['group']);
-                $plan->setGroup($g);
-            }
+        }
 
-            $t = $this->em->getRepository('\Model\\Teacher')->find($_POST['teacher']);
-            $plan->setTeacher($t);
-            $c = $this->em->getRepository('\Model\\Clas')->find($_POST['class']);
-            $plan->setClass($c);
-
-            $this->em->persist($plan);
+        // usuwanie
+        if ($action == 'del' && is_numeric($id) && $id > 0) {
+            $plan = $this->em->getRepository('\Model\\Plan')->find($id);
+            $this->em->remove($plan);
             $this->em->flush();
-            $this->info('added');
         }
 
         // lista
-        $sem = $this->em->createQueryBuilder()
-                ->select('s')
-                ->from('\Model\\Semester', 's')
-                ->where('s.fromDate <= ?1 AND s.toDate >= ?1')
-                ->setParameters(array('1' => new \DateTime()))
-                ->getQuery()
-                ->getResult();
-        foreach ($sem as $s) {
-            $year = $s->getYear();
-        }
+        $year = $this->me->getActualYear();
         $classes = $this->em->getRepository('Model\\Clas')->findBy(array('year' => $year), array('name' => 'ASC'));
         $subjects = $this->em->getRepository('Model\\Subject')->findAll();
         $classrooms = $this->em->getRepository('Model\\Classroom')->findAll();
         $groups = null;
-        $this->groupList($groups);
+        $this->me->groupList($groups);
         $teachers = $this->em->getRepository('\Model\\Teacher')->findAll();
+        $hours = $this->em->getRepository('\Model\\Hour')->findAll();
 
         // czyszczenie infa
         $info = $this->info;
         $this->info = 'brak';
 
-        return array('classes' => $classes, 'subjects' => $subjects, 'classrooms' => $classrooms, 'groups' => $groups, 'teachers' => $teachers, 'plan' => $this->getPlan(), 'info' => $info);
+        return array('classes' => $classes, 'subjects' => $subjects, 'classrooms' => $classrooms, 'groups' => $groups, 'teachers' => $teachers, 'plan' => $this->getPlan(), 'hours' => $hours, 'info' => $info);
     }
 
     public function getPlan() {
-        $sem = $this->em->createQueryBuilder()
-                ->select('s')
-                ->from('\Model\\Semester', 's')
-                ->where('s.fromDate < ?1 AND s.toDate > ?1')
-                ->setParameters(array('1' => new \DateTime()))
-                ->getQuery()
-                ->getResult();
-        foreach ($sem as $sr) {
-            $year = $sr->getYear();
-        }
+        $year = $this->me->getActualYear();
         $classes = $this->em->getRepository('Model\\Clas')->findBy(array('year' => $year), array('name' => 'ASC'));
         foreach ($classes as $class) {
             $plan = $this->em->createQueryBuilder()
@@ -411,12 +433,17 @@ class School {
                     ->getQuery()
                     ->getResult();
             foreach ($plan as $p) {
-                $s[$p->getHour()][$p->getDay()][] = array(
-                    'subject' => $p->getSubject(),
-                    'classroom' => $p->getClassroom(),
-                    'group' => $p->getGroup(),
-                    'teacher' => $p->getTeacher()
-                );
+                if ($p->getDay() >= date('N')) {
+                    $i = $p->getDay() - date('N');
+                    if (date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $i . ' days')) <= date('Y-m-d', $p->getToDate()->getTimestamp())) {
+                        $s[$p->getHour()->getId()][$p->getDay()][] = $p;
+                    }
+                } else {
+                    $i = 7 - (date('N') - $p->getDay());
+                    if (date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $i . ' days')) <= date('Y-m-d', $p->getToDate()->getTimestamp())) {
+                        $s[$p->getHour()->getId()][$p->getDay()][] = $p;
+                    }
+                }
             }
             $return[$class->getName()] = array(1 => $s[1], 2 => $s[2], 3 => $s[3], 4 => $s[4], 5 => $s[5], 6 => $s[6], 7 => $s[7], 8 => $s[8]);
             unset($s);
@@ -424,8 +451,8 @@ class School {
         return $return;
     }
 
-// przedmioty //
     /**
+     * Przedmioty
      * @Route(/admin/school/subjects/{action}/{id})
      * @param \Core\Router $Router
      */
@@ -442,7 +469,7 @@ class School {
                 $this->em->persist($sub);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/subPrepare', array('info' => 'added'));
+                    $Router->redirect('School/subEdit', array('info' => 'added'));
                 $this->info('added');
             }
         }
@@ -450,6 +477,21 @@ class School {
         // ususwanie
         if ($action == 'del' && is_numeric($id) && $id > 0) {
             $subject = $this->em->getRepository('\Model\\Subject')->find($id);
+            if ($subject->getRatings()[0]) {
+                var_dump('Nie można usunąć! Do tego przedmiotu są przypisane oceny!');
+                die;
+            }
+            if ($subject->getRatingDescs()[0]) {
+                var_dump('Nie można usunąć! Do tego przedmiotu są przypisane opisy ocen!');
+                die;
+            }
+            if ($subject->getLessons()[0]) {
+                var_dump('Nie można usunąć! Do tego przedmiotu są przypisane tematy lekcji!');
+                die;
+            }
+            foreach ($subject->getPlans() as $p) {
+                $this->em->remove($p);
+            }
             $this->em->remove($subject);
             $this->em->flush();
             $this->info('deleted');
@@ -466,15 +508,15 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/subjects/prepare/{info})
+     * @Route(/admin/school/subjects/edit/{info})
      */
-    public function subPrepare($info = 'brak') {
+    public function subEdit($info = 'brak') {
         $inf = $this->info($info);
         return array('info' => $inf);
     }
 
     /**
-     * semestry
+     * Semestry
      * @Route(/admin/school/semesters/{action}/{id})
      */
     public function semesters($id = '', $action = '') {
@@ -482,25 +524,20 @@ class School {
         if (isset($_POST['save'])) {
             // aktualizacja
             if ($action == 'updt' && is_numeric($id)) {
-                //$sem = $this->em->getRepository('\Model\\Semester')->find($id);
                 $sem = $this->em->getRepository('\Model\\Semester')->find($id);
                 $semesters = $this->em->getRepository('\Model\\Semester')->findBy(array('year' => $sem->getYear()), array('semester' => 'ASC'));
-                
+
                 $date1 = explode(' - ', $_POST['sem1DateRange']);
                 $semesters[0]->setFromDate(new \DateTime($date1[0]));
                 $semesters[0]->setToDate(new \DateTime($date1[1]));
-                
+
                 $date2 = explode(' - ', $_POST['sem2DateRange']);
                 $semesters[1]->setFromDate(new \DateTime($date2[0]));
                 $semesters[1]->setToDate(new \DateTime($date2[1]));
-                //var_dump('hhhh')       ;
-                //die;
                 $this->em->flush();
 
-                //$this->info('updt');
                 // nowy
             } else {
-                //var_dump('szmata'); die;
                 $year = new \Model\Year();
                 $year->setFromYear((int) $_POST['year']);
                 $year->setToYear($_POST['year'] + 1);
@@ -523,18 +560,21 @@ class School {
                 $this->em->persist($sem1);
                 $this->em->persist($sem2);
                 $this->em->flush();
-                //$this->info('added');
             }
         }
         // usuwanie
         if ($action == 'del' && is_numeric($id) && $id > 0) {
-            
+
             $sem = $this->em->getRepository('\Model\\Semester')->find($id);
             $date = new \DateTime('now');
             if ($date->format('Y') < $sem->getYear()->getFromYear()) { // sprawdzenie czy semestr nie jest aktualny albo się zaraz zacznie
                 $rem = $this->em->getRepository('\Model\\Semester')->findBy(array('year' => $sem->getYear()));
                 $this->em->remove($sem->getYear());
                 foreach ($rem as $r) {
+                    if ($r->getRatingDescs()[0]) {
+                        print('Nie można usunąć! Do semestru są przypisane oceny!');
+                        die;
+                    }
                     $this->em->remove($r);
                 }
                 $this->em->flush();
@@ -563,11 +603,10 @@ class School {
             $semester = $this->em->getRepository('\Model\\Semester')->find($id);
             $semesters = $this->em->getRepository('\Model\\Semester')->findBy(array('year' => $semester->getYear()), array('semester' => 'ASC'));
         } else {
-            \Notify::success('Dodano semestr!');           
+            \Notify::success('Dodano semestr!');
         }
         return array('years' => $this->getYearsList(), 'semesters' => $semesters);
     }
-
 
 // generator roczników od aktualnego do +6 bez tych co są w bazie
     public function getYearsList() {
@@ -587,8 +626,8 @@ class School {
         return $years;
     }
 
-// nauczyciele
     /**
+     * Nauczyciele
      * @Route(/admin/school/teachers/{action}/{id})
      * @param \User\Me $Me
      * @param \Core\Router $Router
@@ -599,7 +638,17 @@ class School {
             // aktualizacja
             if ($action == 'updt' && is_numeric($id)) {
                 $user = $this->em->getRepository('\Model\\Teacher')->find($id);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
+                if ($check[0] && $check[0]->getId() != $id) {
+                    var_dump('jest już taki mail!');
+                    die;
+                }
                 $user->setEmail($_POST['email']);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
+                if ($check[0] && $check[0]->getId() != $id) {
+                    var_dump('jest już taki username!');
+                    die;
+                }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
                 $user->setFamilyName($_POST['familyName']);
@@ -607,12 +656,22 @@ class School {
                     $user->setPassword($_POST['password']);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/teacherPrepare', array('info' => 'updt'));
+                    $Router->redirect('School/teacherEdit', array('info' => 'updt'));
                 $this->info('updt');
                 // nowy
             } else {
                 $user = new \Model\Teacher();
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
+                if ($check) {
+                    var_dump('jest już taki mail!');
+                    die;
+                }
                 $user->setEmail($_POST['email']);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
+                if ($check) {
+                    var_dump('jest już taki username!');
+                    die;
+                }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
                 $user->setFamilyName($_POST['familyName']);
@@ -624,7 +683,7 @@ class School {
                 $this->em->persist($user);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/teacherPrepare', array('info' => 'added'));
+                    $Router->redirect('School/teacherEdit', array('info' => 'added'));
                 $this->info('added');
             }
         }
@@ -632,6 +691,13 @@ class School {
         // usuwanie
         if ($action == 'del' && is_numeric($id) && $id > 0) {
             $t = $this->em->getRepository('\Model\\Teacher')->find($id); /// dodać jakieś waruki? żeby sie powiązania nie spieprzyły
+            if ($t->getLessons()[0]) {
+                print('Nie można usunąć! Ten nauczyciel prowadził lekcje! Zrobić nieaktywnego?');
+                die;
+            }
+            foreach ($t->getPlans() as $p) {
+                $this->em->remove($p);
+            }
             $this->em->remove($t);
             $this->em->flush();
             $this->info('deleted');
@@ -648,9 +714,9 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/teachers/prepare/{info})
+     * @Route(/admin/school/teachers/edit/{info})
      */
-    public function teacherPrepare($info = 'brak') {
+    public function teacherEdit($info = 'brak') {
         if (!is_numeric($info)) {
             $inf = $this->info($info);
             $teacher = 'new';
@@ -662,8 +728,8 @@ class School {
         return array('info' => $inf, 'teacher' => $teacher);
     }
 
-// uczniowie
     /**
+     * Uczniowie
      * @Route(/admin/school/students/{action}/{id})
      * @param \User\Me $Me
      * @param \Core\Router $Router
@@ -674,7 +740,17 @@ class School {
             // aktualizacja
             if ($action == 'updt' && is_numeric($id)) {
                 $user = $this->em->getRepository('\Model\\Student')->find($id);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
+                if ($check[0] && $check[0]->getId() != $id) {
+                    var_dump('jest już taki email!');
+                    die;
+                }
                 $user->setEmail($_POST['email']);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
+                if ($check[0] && $check[0]->getId() != $id) {
+                    var_dump('jest już taki username!');
+                    die;
+                }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
                 $user->setFamilyName($_POST['familyName']);
@@ -688,12 +764,22 @@ class School {
 
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/teacherPrepare', array('info' => 'updt'));
+                    $Router->redirect('School/studentEdit', array('info' => 'updt'));
                 $this->info('updt');
                 // nowy
             } else {
                 $user = new \Model\Student();
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
+                if ($check) {
+                    var_dump('jest już taki email!');
+                    die;
+                }
                 $user->setEmail($_POST['email']);
+                $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
+                if ($check) {
+                    var_dump('jest już taki username!');
+                    die;
+                }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
                 $user->setFamilyName($_POST['familyName']);
@@ -715,7 +801,7 @@ class School {
                 $this->em->persist($user);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
-                    $Router->redirect('School/teacherPrepare', array('info' => 'added'));
+                    $Router->redirect('School/studentEdit', array('info' => 'added'));
                 $this->info('added');
             }
         }
@@ -739,9 +825,9 @@ class School {
     }
 
     /**
-     * @Route(/admin/school/students/prepare/{info})
+     * @Route(/admin/school/students/edit/{info})
      */
-    public function studentPrepare($info = 'brak') {
+    public function studentEdit($info = 'brak') {
         if (!is_numeric($info)) {
             $inf = $this->info($info);
             $student = 'new';

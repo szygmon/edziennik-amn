@@ -1,181 +1,204 @@
 <!-- Left side column. contains the logo and sidebar -->
 <aside class="main-sidebar">
-	<!-- sidebar: style can be found in sidebar.less -->
-	<section class="sidebar">
-		<!-- Sidebar user panel -->
-		<div class="user-panel">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+        <!-- Sidebar user panel -->
+        <div class="user-panel">
             <div class="pull-left image">
-				<img src="{{ url('template') }}/images/user-ico.jpg" class="img-circle" alt="User Image" />
+                <img src="{{ url('template') }}/images/user-ico.jpg" class="img-circle" alt="User Image" />
             </div>
             <div class="pull-left info">
-				<p>Alexander Pierce</p>
+                <p>Alexander Pierce</p>
 
-				<a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+                <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
-		</div>
-		<!-- search form -->
-		<form action="#" method="get" class="sidebar-form">
+        </div>
+        <!-- search form -->
+        <form action="#" method="get" class="sidebar-form">
             <div class="input-group">
-				<input type="text" name="q" class="form-control" placeholder="Search..."/>
-				<span class="input-group-btn">
-					<button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
-				</span>
+                <input type="text" name="q" class="form-control" placeholder="Search..."/>
+                <span class="input-group-btn">
+                    <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
+                </span>
             </div>
-		</form>
-		<!-- /.search form -->
-		<!-- sidebar menu: : style can be found in sidebar.less -->
-		<ul class="sidebar-menu">
+        </form>
+        <!-- /.search form -->
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        <ul class="sidebar-menu">
             <li class="header">ADMINISTRATOR</li>
 
-			{# active  gdzies ... dodaj do aktywnej zakłądki :-) #}
-			<li class="treeview">
-				<a href="#">
-					<i class="fa fa-gear"></i> <span>Szkoła</span> <i class="fa fa-angle-left pull-right"></i>
-				</a>
-				<ul class="treeview-menu">
-					<li><a href="{{ url('School/semesters') }}"><i class="fa fa-circle-o"></i> Semestry</a></li>
-					<li><a href="{{ url('School/classes') }}"><i class="fa fa-circle-o"></i> Klasy</a></li>
-					<li><a href="{{ url('School/groups') }}"><i class="fa fa-circle-o"></i> Grupy</a></li>
-					<li><a href="{{ url('School/subjects') }}"><i class="fa fa-circle-o"></i> Przedmioty</a></li>
-					<li><a href="{{ url('School/classrooms') }}"><i class="fa fa-circle-o"></i> Sale lekcyjne</a></li>
-					<li><a href="{{ url('School/hours') }}"><i class="fa fa-circle-o"></i> Godziny zajęć</a></li>
-					<li><a href="{{ url('School/plans') }}"><i class="fa fa-circle-o"></i> Plan lekcji</a></li>
-					<li><a href="{{ url('School/teachers') }}"><i class="fa fa-circle-o"></i> Nauczyciele</a></li>
-					<li><a href="{{ url('School/students') }}"><i class="fa fa-circle-o"></i> Uczniowie</a></li>
-				</ul>
+            {# active  gdzies ... dodaj do aktywnej zakłądki :-) #}
+            <li class="treeview" id="school-category-sidebar">
+                <a href="#">
+                    <i class="fa fa-gear"></i> <span>Szkoła</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li id="semesters-sidebar"><a href="{{ url('School/semesters') }}"><i class="fa fa-circle-o"></i> Semestry</a></li>
+                    <li id="classes-sidebar"><a href="{{ url('School/classes') }}"><i class="fa fa-circle-o"></i> Klasy</a></li>
+                    <li id="groups-sidebar"><a href="{{ url('School/groups') }}"><i class="fa fa-circle-o"></i> Grupy</a></li>
+                    <li id="subjects-sidebar"><a href="{{ url('School/subjects') }}"><i class="fa fa-circle-o"></i> Przedmioty</a></li>
+                    <li id="classrooms-sidebar"><a href="{{ url('School/classrooms') }}"><i class="fa fa-circle-o"></i> Sale lekcyjne</a></li>
+                    <li id="hours-sidebar"><a href="{{ url('School/hours') }}"><i class="fa fa-circle-o"></i> Godziny zajęć</a></li>
+                    <li id="teachers-sidebar"><a href="{{ url('School/teachers') }}"><i class="fa fa-circle-o"></i> Nauczyciele</a></li>
+                    <li id="students-sidebar"><a href="{{ url('School/students') }}"><i class="fa fa-circle-o"></i> Uczniowie</a></li>
+                    <li id="plans-sidebar"><a href="{{ url('School/plans') }}"><i class="fa fa-circle-o"></i> Plan lekcji</a></li>
+                </ul>
             </li>
 
-            <li class="active treeview">
-				<a href="#">
-					<i class="fa fa-dashboard"></i> <span>Dashboard</span> <i class="fa fa-angle-left pull-right"></i>
-				</a>
-				<ul class="treeview-menu">
-					<li class="active"><a href="index.html"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
-					<li><a href="index2.html"><i class="fa fa-circle-o"></i> Dashboard v2</a></li>
-				</ul>
-            </li>
-            <li class="treeview">
-				<a href="#">
-					<i class="fa fa-files-o"></i>
-					<span>Layout Options</span>
-					<span class="label label-primary pull-right">4</span>
-				</a>
-				<ul class="treeview-menu">
-					<li><a href="pages/layout/top-nav.html"><i class="fa fa-circle-o"></i> Top Navigation</a></li>
-					<li><a href="pages/layout/boxed.html"><i class="fa fa-circle-o"></i> Boxed</a></li>
-					<li><a href="pages/layout/fixed.html"><i class="fa fa-circle-o"></i> Fixed</a></li>
-					<li><a href="pages/layout/collapsed-sidebar.html"><i class="fa fa-circle-o"></i> Collapsed Sidebar</a></li>
-				</ul>
-            </li>
-            <li>
-				<a href="pages/widgets.html">
-					<i class="fa fa-th"></i> <span>Widgets</span> <small class="label pull-right bg-green">new</small>
-				</a>
-            </li>
-            <li class="treeview">
-				<a href="#">
-					<i class="fa fa-pie-chart"></i>
-					<span>Charts</span>
-					<i class="fa fa-angle-left pull-right"></i>
-				</a>
-				<ul class="treeview-menu">
-					<li><a href="pages/charts/morris.html"><i class="fa fa-circle-o"></i> Morris</a></li>
-					<li><a href="pages/charts/flot.html"><i class="fa fa-circle-o"></i> Flot</a></li>
-					<li><a href="pages/charts/inline.html"><i class="fa fa-circle-o"></i> Inline charts</a></li>
-				</ul>
-            </li>
-            <li class="treeview">
-				<a href="#">
-					<i class="fa fa-laptop"></i>
-					<span>UI Elements</span>
-					<i class="fa fa-angle-left pull-right"></i>
-				</a>
-				<ul class="treeview-menu">
-					<li><a href="pages/UI/general.html"><i class="fa fa-circle-o"></i> General</a></li>
-					<li><a href="pages/UI/icons.html"><i class="fa fa-circle-o"></i> Icons</a></li>
-					<li><a href="pages/UI/buttons.html"><i class="fa fa-circle-o"></i> Buttons</a></li>
-					<li><a href="pages/UI/sliders.html"><i class="fa fa-circle-o"></i> Sliders</a></li>
-					<li><a href="pages/UI/timeline.html"><i class="fa fa-circle-o"></i> Timeline</a></li>
-					<li><a href="pages/UI/modals.html"><i class="fa fa-circle-o"></i> Modals</a></li>
-				</ul>
-            </li>
-            <li class="treeview">
-				<a href="#">
-					<i class="fa fa-edit"></i> <span>Forms</span>
-					<i class="fa fa-angle-left pull-right"></i>
-				</a>
-				<ul class="treeview-menu">
-					<li><a href="pages/forms/general.html"><i class="fa fa-circle-o"></i> General Elements</a></li>
-					<li><a href="pages/forms/advanced.html"><i class="fa fa-circle-o"></i> Advanced Elements</a></li>
-					<li><a href="pages/forms/editors.html"><i class="fa fa-circle-o"></i> Editors</a></li>
-				</ul>
-            </li>
-            <li class="treeview">
-				<a href="#">
-					<i class="fa fa-table"></i> <span>Tables</span>
-					<i class="fa fa-angle-left pull-right"></i>
-				</a>
-				<ul class="treeview-menu">
-					<li><a href="pages/tables/simple.html"><i class="fa fa-circle-o"></i> Simple tables</a></li>
-					<li><a href="pages/tables/data.html"><i class="fa fa-circle-o"></i> Data tables</a></li>
-				</ul>
-            </li>
-            <li>
-				<a href="pages/calendar.html">
-					<i class="fa fa-calendar"></i> <span>Calendar</span>
-					<small class="label pull-right bg-red">3</small>
-				</a>
-            </li>
-            <li>
-				<a href="pages/mailbox/mailbox.html">
-					<i class="fa fa-envelope"></i> <span>Mailbox</span>
-					<small class="label pull-right bg-yellow">12</small>
-				</a>
-            </li>
-            <li class="treeview">
-				<a href="#">
-					<i class="fa fa-folder"></i> <span>Examples</span>
-					<i class="fa fa-angle-left pull-right"></i>
-				</a>
-				<ul class="treeview-menu">
-					<li><a href="pages/examples/invoice.html"><i class="fa fa-circle-o"></i> Invoice</a></li>
-					<li><a href="pages/examples/login.html"><i class="fa fa-circle-o"></i> Login</a></li>
-					<li><a href="pages/examples/register.html"><i class="fa fa-circle-o"></i> Register</a></li>
-					<li><a href="pages/examples/lockscreen.html"><i class="fa fa-circle-o"></i> Lockscreen</a></li>
-					<li><a href="pages/examples/404.html"><i class="fa fa-circle-o"></i> 404 Error</a></li>
-					<li><a href="pages/examples/500.html"><i class="fa fa-circle-o"></i> 500 Error</a></li>
-					<li><a href="pages/examples/blank.html"><i class="fa fa-circle-o"></i> Blank Page</a></li>
-				</ul>
-            </li>
-            <li class="treeview">
-				<a href="#">
-					<i class="fa fa-share"></i> <span>Multilevel</span>
-					<i class="fa fa-angle-left pull-right"></i>
-				</a>
-				<ul class="treeview-menu">
-					<li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
-					<li>
-						<a href="#"><i class="fa fa-circle-o"></i> Level One <i class="fa fa-angle-left pull-right"></i></a>
-						<ul class="treeview-menu">
-							<li><a href="#"><i class="fa fa-circle-o"></i> Level Two</a></li>
-							<li>
-								<a href="#"><i class="fa fa-circle-o"></i> Level Two <i class="fa fa-angle-left pull-right"></i></a>
-								<ul class="treeview-menu">
-									<li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-									<li><a href="#"><i class="fa fa-circle-o"></i> Level Three</a></li>
-								</ul>
-							</li>
-						</ul>
-					</li>
-					<li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
-				</ul>
-            </li>
-            <li><a href="documentation/index.html"><i class="fa fa-book"></i> Documentation</a></li>
-            <li class="header">LABELS</li>
-            <li><a href="#"><i class="fa fa-circle-o text-danger"></i> Important</a></li>
-            <li><a href="#"><i class="fa fa-circle-o text-warning"></i> Warning</a></li>
-            <li><a href="#"><i class="fa fa-circle-o text-info"></i> Information</a></li>
-		</ul>
-	</section>
-	<!-- /.sidebar -->
+            {% if Me.isTeacher %}
+                <li class="header">NAUCZYCIEL</li>
+
+                <li class="treeview" id="classes-category-sidebar">
+                    <a href="#">
+                        <i class="fa fa-gear"></i> <span>Klasy</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        {% for class in Me.getActualClasses %}
+                            <li><a href="{{ url('Classes/classes', {'id': class.id }) }}"><i class="fa fa-circle-o"></i> {{ class.name }}</a></li>
+                            {% endfor %}
+                    </ul>
+                </li>
+
+                <li class="treeview" id="lessons-category-sidebar">
+                    <a href="#">
+                        <i class="fa fa-edit"></i> <span>Zajęcia</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        {% for i, plan in Me.getTeacherPlan().plan %}
+                            <li>
+                                {% if Me.getTeacherPlan.link[i] == '#' %}
+                                    <a href="#" data-toggle="modal" data-target="#addLesson" data-lesson="{{ plan.hour.id }}|{{ plan.class.id }}|{{ plan.group.id }}|{{ plan.subject.id }}"><i class="fa fa-circle-o"></i> {{ plan.hour.id }}. {{ plan.class.name }}: {{ plan.subject.subject }}</a>
+                                {% else %} 
+                                    <a href="{{ url('Lesson/editLesson', {'id': Me.getTeacherPlan.plan[i].id }) }}"><i class="fa fa-circle-o"></i> {{ plan.hour.id }}. {{ plan.class.name }}: {{ plan.subject.subject }}</a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                        <li class="header"></li>
+                        <li id="mylessons-sidebar"><a href="{{ url('Lesson/myLessons') }}"><i class="fa fa-circle-o"></i> Moje zajęcia</a></li>
+                        <li><a href="{{ url('Lesson/editLesson') }}"><i class="fa fa-circle-o"></i> Nowa lekcja</a></li>
+                    </ul>
+                </li>
+
+            {% endif %}
+            {% if Me.isStudent %}
+                <li class="header">MENU UCZNIA</li>
+
+                <li class="treeview" id="student-category-sidebar">
+                    <a href="#">
+                        <i class="fa fa-edit"></i> <span>Dziennik</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li id="student-index-sidebar"><a href="{{ url('Student/index') }}"><i class="fa fa-circle-o"></i> Strona główna</a></li>
+                        <li id="student-ratings-sidebar"><a href="{{ url('Student/ratings') }}"><i class="fa fa-circle-o"></i> Oceny</a></li>
+                        <li id="student-attendance-sidebar"><a href="{{ url('Student/attendance') }}"><i class="fa fa-circle-o"></i> Frekwencja</a></li>
+                        <li id="student-plan-sidebar"><a href="{{ url('Student/plan') }}"><i class="fa fa-circle-o"></i> Plan lekcji</a></li>
+                        <li id=""><a href="#"><i class="fa fa-circle-o"></i> Statystyki</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+        </ul>
+    </section>
+    <!-- /.sidebar -->
 </aside>
+
+
+
+<div class="modal fade" id="addLesson" tabindex="-1" role="dialog" aria-labelledby="addLessonLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addLessonLabel">Nowa lekcja</h4>
+            </div>
+            <div class="modal-body">
+                <form name="inputform" method="POST" action="{{ url('Lesson/editLesson', {'action': 'add'}) }}">
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Godzina:</label>
+                        <select name="hour" id="lesson-hour-input" class="form-control">
+                            {% for h in Me.getTeacherSidebarData.hours %}
+                                <option value="{{ h.id }}">{{ h.id }}. {{ h.fromTime|date('H:i') }} - {{ h.toTime|date('H:i') }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Nauczyciel:</label>
+                        <select name="teacher" class="form-control">
+                            {% for t in Me.getTeacherSidebarData.teachers %}
+                                <option value="{{ t.id }}" {% if t.id == Me.getModel.id %} selected {% endif %}>{{ t.familyName }} {{ t.givenName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Klasa:</label>
+                        <select name="class" class="form-control" id="lesson-class-input">
+                            {% for c in Me.getTeacherSidebarData.classes %}
+                                <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Grupa:</label>
+                        <select name="group" class="form-control" id="lesson-group-input">
+                            <option value="0">-cała klasa-</option>
+                            {% for gr in Me.getTeacherSidebarData.groups %}
+                                <option value="{{ gr.id }}">
+                                    {% if gr.level > 0 %}
+                                        {% for i in range(1, gr.level) %}&nbsp;&nbsp;&nbsp;{% endfor %}
+                                    {% endif %}
+                                    {{ gr.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Przedmiot:</label>
+                        <select name="subject" class="form-control" id="lesson-subject-input">
+                            {% for s in Me.getTeacherSidebarData.subjects %}
+                                <option value="{{ s.id }}">{{ s.subject }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">Temat:</label>
+                        <input type="text" name="topic" class="form-control" />
+                    </div>
+
+
+
+                    <div class="box-footer clearfix no-border">
+                        <input type="submit" name="save" value="Zapisz" class="btn btn-default pull-right" />
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript" >
+
+    $('#addLesson').on('show.bs.modal', function (event) {
+        var lbutton = $(event.relatedTarget); // Button that triggered the modal
+        var lrecipient = lbutton.data('lesson'); // Extract info from data-* attributes
+        var lmodal = $(this);
+        var lres = lrecipient.split('|');
+        lmodal.find('#lesson-class-input').val(lres[1]);
+        if (lres[2] == '') {
+            lmodal.find('#lesson-group-input').val(0);
+        } else {
+            lmodal.find('#lesson-group-input').val(lres[2]);
+        }
+        lmodal.find('#lesson-hour-input').val(lres[0]);
+        lmodal.find('#lesson-subject-input').val(lres[3]);
+    });
+</script>

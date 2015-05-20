@@ -29,6 +29,18 @@ class Student extends User {
      */
     protected $birthplace;
 
+    /** @OneToMany(targetEntity="\Model\Rating", mappedBy="student") */
+    protected $ratings;
+    
+    /** @OneToMany(targetEntity="\Model\Attendance", mappedBy="student") */
+    protected $attendances;
+
+    /**
+     * @ManyToMany(targetEntity="\Model\Group", inversedBy="students")
+     * @JoinTable(name="students_groups")
+     */
+    protected $groups;
+
     /**
      * @ManyToMany(targetEntity="\Model\Clas", inversedBy="students")
      * @JoinTable(name="students_class")
@@ -43,8 +55,22 @@ class Student extends User {
         $this->class->removeElement($class);
     }
 
+    public function addGroup(\Model\Group $group = null) {
+        $this->groups->add($group);
+    }
+
+    public function removeGroup(\Model\Group $group) {
+        $this->groups->removeElement($group);
+    }
+
+    public function removeAllGroups() {
+        foreach ($this->groups as $s)
+            $this->groups->removeElement($s);
+    }
+
     public function __construct() {
         $this->class = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace model;
+namespace Model;
 
 use Doctrine\Common\Collections\ArrayCollection as Collection;
 
@@ -19,15 +19,10 @@ class Plan {
 	 */
 	protected $id;
         
-        ///**
-        //* @ManyToOne(targetEntity="\Model\Hour", inversedBy="plans")  
-        //* @JoinColumn(nullable=false)      
-        //*
-        
-        /// narazie godzina jako liczba 1-8
         /**
-	 * @Column(type="integer", nullable=false)
-	 */
+        * @ManyToOne(targetEntity="\Model\Hour", inversedBy="plans")  
+        * @JoinColumn(nullable=false)      
+        */
         protected $hour;
         
         /**
@@ -45,7 +40,7 @@ class Plan {
         * @ManyToOne(targetEntity="\Model\Teacher", inversedBy="plans")  
         * @JoinColumn(nullable=false)      
         */
-        protected $teacher; // może sie tak nazywać??
+        protected $teacher;
         
         /**
         * @ManyToOne(targetEntity="\Model\Classroom", inversedBy="plans")  

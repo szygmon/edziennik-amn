@@ -16,7 +16,7 @@
     {% endif %}
     
     
- <div class="content-wrapper">
+
         <!-- Content Header (Page header) -->
         <section class="content-header">
           <h1>
@@ -104,17 +104,24 @@
                   <div class="chart tab-pane active" id="revenue-chart" style="position: relative; height: 300px;"><ul>
 
 </ul></div>
-                  <div class="chart tab-pane" id="sem-cont" style="position: relative; min-height: 300px;">Ładowanie...</div>
+                  <div class="chart tab-pane" id="sem-cont" style="position: relative; min-height: 300px;">
+                      
+                          <div class="overlay">
+                  <i class="fa fa-refresh fa-spin"></i>
+                </div>
+                     
+                      </div>
+                  
                   <div class="chart tab-pane" id="cr-cont" style="position: relative; min-height: 300px;">Ładowanie...</div>
                   
                   <script type="text/javascript">
     $('#sem-link').click(function () 
     { 
-         $( "#sem-cont" ).load( "{{ url('School/semestersM') }}" )
+         $( "#sem-cont" ).load( "{{ url('School/semesters') }}" )
     });
     $('#cr-link').click(function () 
     { 
-         $( "#cr-cont" ).load( "{{ url('School/classroomsM') }}" )
+         $( "#cr-cont" ).load( "{{ url('School/classrooms') }}" )
     });
 </script>
 
