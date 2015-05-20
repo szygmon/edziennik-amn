@@ -13,12 +13,7 @@ class Notify {
 		if (!self::$data)
 			return;
 
-		$buf = $_SESSION['notify'];
-		foreach (self::$data as $n)
-			$buf[] = array('type' => $n['type'], 'title' => $n['title'], 'body' => $n['body']);
-
-		$_SESSION['notify'] = $buf;
-		self::$data = array();
+		self::merge();
 		return TRUE;
 	}
 
@@ -69,11 +64,21 @@ class Notify {
 	 * @return html
 	 */
 	public static function r() {
+		self::merge();
 		if (!isset($_SESSION['notify']))
 			return;
 
 		include __DIR__ . '/view/Notify.php';
 		unset($_SESSION['notify']);
+	}
+
+	private static function merge() {
+		$buf = $_SESSION['notify'];
+		foreach (self::$data as $n)
+			$buf[] = array('type' => $n['type'], 'title' => $n['title'], 'body' => $n['body']);
+
+		$_SESSION['notify'] = $buf;
+		self::$data = array();
 	}
 
 }

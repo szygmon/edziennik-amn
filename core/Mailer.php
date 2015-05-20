@@ -13,7 +13,6 @@ class Mailer {
 	}
 
 	private function __construct() {
-		require_once ABSPATH . NCORE . 'lib/Swiftmailer/lib/swift_required.php';
 		$transport = Swift_SmtpTransport::newInstance(Conf::get('smtp.host'), Conf::get('smtp.port'), Conf::get('smtp.encryption'))
 				->setUsername(Conf::get('smtp.username'))
 				->setPassword(Conf::get('smtp.password'));

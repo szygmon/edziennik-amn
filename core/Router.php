@@ -116,7 +116,7 @@ class Router {
 			$pattern = $route['path'];
 			foreach ($route['parameters'] as $parameter) {
 				if (!Di::get($parameter['name'], false)) {
-					$replacement = isset($parameter['default']) ? '(/[^/]+)?' : '(/[^/]+)';
+					$replacement = array_key_exists('default', $parameter) ? '(/[^/]+)?' : '(/[^/]+)';
 					$pattern = preg_replace('(/?{' . $parameter['name'] . '})', $replacement, $pattern);
 				}
 			}
@@ -153,7 +153,7 @@ class Router {
 		foreach ($methodMap['parameters'] as $parameter) {
 			$param = Di::get($parameter['name']);
 			if (!$param) {
-				$param = array_pop($params);
+				$param = array_shift($params);
 				if ($param === NULL && isset($parameter['default']))
 					$param = $parameter['default'];
 			}
@@ -176,22 +176,20 @@ class Router {
 	}
 
 	/**
+	 * Generate url's for controller
+	 * @param string $controller
+	 * @param array $args
 	 * @param string $subdomain
+	 * @param boolean $escaped
 	 * @return string
+	 * @throws \Exception
 	 */
-	public function getUrl($subdomain = null) {
-		return 'http' . (empty($_SERVER['HTTPS']) ? '' : 's') . '://'
-				. (is_null($subdomain) ? Conf::get('nc.site') : $subdomain . '.' . ltrim(Conf::get('nc.domain'), '.'));
-	}
-
 	public function url($controller, array $args = array(), $subdomain = null, $escaped = true) {
-		if (is_bool($subdomain)) {
-			$escaped = $subdomain;
-			$subdomain = null;
-		}
-		
-		if(is_null($subdomain))
+		if (is_null($subdomain))
 			$subdomain = $this->subdomain;
+		elseif ($subdomain === false) {
+			$subdomain = trim(str_replace(Conf::get('nc.domain'), '', Conf::get('nc.site')), '.');
+		}
 
 		foreach ($this->routeCollection as $r) {
 			if ($r['controller'] == $controller) {
@@ -208,13 +206,26 @@ class Router {
 			$pattern = preg_replace('({' . $key . '})', $escaped ? rawurlencode($arg) : $arg, $pattern);
 		}
 		$pattern = preg_replace('(/?{.+})', '', $pattern);
-		return $this->getUrl($subdomain) . '/' . $pattern;
+		return rtrim($this->getUrl($subdomain) . '/' . $pattern, '/');
 	}
 
+	/**
+	 * Return home site URL
+	 * @param string $subdomain
+	 * @return string
+	 */
+	public function getUrl($subdomain = null) {
+		if (is_null($subdomain))
+			$subdomain = $this->subdomain;
+		
+		return 'http' . (empty($_SERVER['HTTPS']) ? '' : 's') . '://'
+				. (is_null($subdomain) || $subdomain === false ? Conf::get('nc.site') : $subdomain . '.' . ltrim(Conf::get('nc.domain'), '.'));
+	}
+	
 	public function redirect($controller, array $args = array(), $subdomain = null, $escaped = true) {
 		Cookie::destruct();
 		header("location: " . $this->url($controller, $args, $subdomain, $escaped));
 		exit;
 	}
-
+	
 }

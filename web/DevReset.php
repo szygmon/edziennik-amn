@@ -41,6 +41,8 @@ class DevReset {
 		$user->setEmail('student@put.poznan.pl');
 		$user->setUsername('admin');
 		$user->setPassword('qwerty');
+		$user->setGivenName('Adam');
+		$user->setFamilyName('Test');
 		$user->setSchool($school);
 		$this->em->persist($user);
 		$this->em->flush();

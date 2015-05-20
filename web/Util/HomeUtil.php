@@ -23,7 +23,7 @@ class HomeUtil {
 		$user = new \Model\User();
 		$user->setUsername($_POST['username']);
 		$user->setEmail($_POST['email']);
-		$user->setPassword(password_hash($_POST['pass'], PASSWORD_BCRYPT, ['cost' => 12]));
+		$user->setPassword($_POST['pass']);
 		$user->setSchool($school);
 
 		$this->em->persist($school);
@@ -36,15 +36,14 @@ class HomeUtil {
 
 	public function loginForm($post) {
 		$login = $this->Me->login($_POST['username'], $_POST['password']);
-		
-		if($login){
+
+		if ($login) {
 			$this->Me->getModel()->setLastLogin(new DateTime);
 			Di::get('em')->flush();
 			Di::get('Router')->redirect('Home/index');
 		}
 
 		return false;
-		
 	}
 
 }

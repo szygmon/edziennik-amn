@@ -27,10 +27,12 @@ class Me {
     }
 
     public function auth($role) {
-        if (!count($auth))
-            $auth = $this->model->auth();
+		if(!$this->model)
+			return FALSE;
+        if (!count($this->auth))
+            $this->auth = $this->model->auth();
 
-        return in_array($role, $auth);
+        return in_array($role, $this->auth);
     }
 
     public function checkUser() {
@@ -100,15 +102,6 @@ class Me {
         if (is_null($this->cookie))
             $this->cookie = Cookie::create(Conf::get('nc.title') . "_session");
         return $this->cookie;
-    }
-
-    public function getUserType() {
-        if ($this->model instanceof \Model\Teacher)
-            return 'nauczyciel';
-        else if ($this->model instanceof \Model\Student)
-            return 'uczeń';
-        else
-            return false;
     }
 
     public function getActualClasses() {

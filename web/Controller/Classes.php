@@ -2,9 +2,6 @@
 
 namespace Controller;
 
-use Model\Object;
-use Core\Response;
-
 class Classes {
 
     /** @var \User\Me */
@@ -27,7 +24,6 @@ class Classes {
      * @Route(/teacher/lesson)
      */
     public function index() {
-
         return array('classes' => '$classes');
     }
 

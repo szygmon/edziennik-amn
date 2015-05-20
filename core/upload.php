@@ -4,8 +4,8 @@ define('MIN_WIDTH', 612);
 define('MIN_WIDTH_ACCEPT', 250);
 define('MIN_WIDTH_ERROR', "To zdjęcie jest za małe, minimalna szerokość to 250px."); // Min width
 
-use \PDO;
-use \core\Db;
+define('ABSPATH', dirname(__FILE__) . '/../');
+define('NCORE', 'core/');
 
 class Upload {
 
@@ -20,14 +20,11 @@ class Upload {
 	private $extension;
 
 	public function __construct() {
-		$this->abspath = dirname(__DIR__);
-		ini_set('date.timezone', 'Europe/Warsaw');
+		require ABSPATH . NCORE . 'Kernel.php';
+		Kernel::init();
+
 		if (isset($_FILES['upl']) && $_FILES['upl']['error'] == 0) {
-			if (isset($_POST['type'])) {
-				session_start();
-				$this->moveUserImage();
-			} else
-				$this->moveImage();
+			$this->moveUserImage();
 		}
 		echo '{"status":"' . $this->status . '"}';
 	}
@@ -96,23 +93,22 @@ class Upload {
 	}
 
 	public function moveUserImage() {
+		$user = Di::get('Me')->getModel();
 		$this->extension = pathinfo($_FILES['upl']['name'], PATHINFO_EXTENSION);
-		$this->name = md5($this->getUserLogin());
+		$this->name = md5($user->getId());
 
-		if ($_POST['type'] == 'bg') {
-			$type = 'bg';
-			$width = 1024;
-			$height = 200;
-		} else {
-			$type = 'avatar';
-			$width = 64;
-			$height = 64;
-		}
+		$width = 128;
+		$height = 128;
 
-		$newFile = $this->abspath . '/files/user/' . $type . '/' . $this->name . '.' . $this->extension;
+		$newFile = ABSPATH . 'files/user/' . $this->name . '.' . $this->extension;
 		if ($this->checkIsImage($this->extension) && extension_loaded('imagick')) {
 			$image = new Imagick();
 			$image->readImage($_FILES['upl']['tmp_name']);
+			if ($image->getImageWidth() < $image->getImageHeight())
+				$image->scaleImage($width, 0);
+			else {
+				$image->scaleImage(0, $height);
+			}
 
 			$x = ceil(($image->getImageWidth() - $width) / 2);
 			$y = ceil(($image->getImageHeight() - $height) / 2);
@@ -121,7 +117,7 @@ class Upload {
 			file_put_contents($_FILES['upl']['tmp_name'], $image);
 		}
 
-		$files = glob($this->abspath . '/files/user/' . $type . '/' . $this->name . '*');
+		$files = glob(ABSPATH . 'files/user/' . $this->name . '*');
 		foreach ($files as $file)
 			unlink($file);
 
@@ -145,31 +141,6 @@ class Upload {
 		}
 
 		return @getimagesize($file_path);
-	}
-
-	private function getUserLogin() {
-		// KERNEL INJECTION
-		define('ABSPATH', dirname(__FILE__) . '/../');
-		require dirname(__FILE__) . '/Conf.php';
-		require dirname(__FILE__) . '/Db.php';
-                require dirname(__FILE__) . '/../modules/User/password.php';
-		Conf::init();
-		// ;(
-
-		if (isset($_SESSION['user.email']) && isset($_SESSION['user.auth'])) {
-			$user = $this->getUser($_SESSION['user.email']);
-			if (password_verify($user['pass'], $_SESSION['user.auth']) || password_verify($user['token'], $_SESSION['user.auth'])) {
-				return $user['login'];
-			}
-		}
-	}
-
-	public function getUser($login) {
-		$sql = 'SELECT * FROM users u WHERE login=:login || email=:login';
-		$db = Db::pdo()->prepare($sql);
-		$db->bindValue(':login', $login);
-		$db->execute();
-		return $db->fetch(PDO::FETCH_ASSOC);
 	}
 
 }

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head> 
-        <title>{% block title %}| TITLE{% endblock %}</title>
+        <title>{% block title %}| E-dziennik{% endblock %}</title>
+		{# <link rel="shortcut icon" href="{{ url('template') }}/img/favicon.ico" type="image/x-icon"> #}
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
-		{# <link rel="shortcut icon" href="{{ url('template') }}/img/favicon.ico" type="image/x-icon"> #}
-		<link rel="stylesheet" href="{{ url('assets') }}css/bootstrap.min.css">
-		<link rel="stylesheet" href="{{ url('template') }}/css/salesPage.css?v1.0.0" type="text/css" >
-		<script src="{{ url('assets') }}js/bootstrap.min.js"></script>	
+		<link href="{{ url('libs') }}css/bootstrap.min.css" rel="stylesheet">
+		<link href="{{ url('template') }}/css/salesPage.css?v1.0.0" rel="stylesheet" type="text/css" >
+		<script src="{{ url('libs') }}js/bootstrap.min.js"></script>	
 	{% block head %}{% endblock %}
 </head>
 
@@ -16,10 +16,10 @@
 	{{ include('navbarSP.html.twig') }}
 	{% block body %}
 		<div class="container" style="margin-top:50px;">
-		{% block content %}{% endblock %}
-	</div>
-{% endblock %}
-
+			{% block content %}{% endblock %}
+		</div>
+	{% endblock %}
+	
 {% block footer %}
 	{{ include('footerSP.html.twig') }}
 {% endblock %}

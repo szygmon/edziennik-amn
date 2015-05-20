@@ -5,18 +5,17 @@
         <!-- Sidebar user panel -->
         <div class="user-panel">
             <div class="pull-left image">
-                <img src="{{ url('template') }}/images/user-ico.jpg" class="img-circle" alt="User Image" />
+                <img src="{{ getAvatar(Me.model.id) }}" class="img-circle" alt="User Image" />
             </div>
             <div class="pull-left info">
-                <p>Alexander Pierce</p>
-
+                <p>{{ Me.getModel.givenName }} {{ Me.getModel.familyName }}</p>
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
         </div>
         <!-- search form -->
         <form action="#" method="get" class="sidebar-form">
             <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..."/>
+                <input type="text" name="q" class="form-control" placeholder="Szukaj..."/>
                 <span class="input-group-btn">
                     <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
                 </span>
@@ -45,7 +44,7 @@
                 </ul>
             </li>
 
-            {% if Me.isTeacher %}
+            {% if Me.auth('teacher') %}
                 <li class="header">NAUCZYCIEL</li>
 
                 <li class="treeview" id="classes-category-sidebar">
@@ -78,9 +77,9 @@
                         <li><a href="{{ url('Lesson/editLesson') }}"><i class="fa fa-circle-o"></i> Nowa lekcja</a></li>
                     </ul>
                 </li>
-
             {% endif %}
-            {% if Me.isStudent %}
+
+            {% if Me.auth('student') %}
                 <li class="header">MENU UCZNIA</li>
 
                 <li class="treeview" id="student-category-sidebar">

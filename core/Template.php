@@ -37,6 +37,8 @@ class Template {
 		$this->template = Conf::get('nc.template', false);
 		$this->twigFunctions = array(
 			'url' => array($this, 'fnUrl'),
+			'script' => array($this, 'fnScript'),
+			'style' => array($this, 'fnStyle')
 		);
 	}
 
@@ -96,7 +98,7 @@ class Template {
 		$twig = new \Twig_Environment($loader, array('cache' => ABSPATH . '/core/cache/twig/', 'debug' => Conf::get("nc.debug")));
 
 		foreach ($this->twigFunctions as $name => $method) {
-			$function = new \Twig_SimpleFunction($name, $method);
+			$function = new \Twig_SimpleFunction($name, $method, array('is_safe' => array('html')));
 			$twig->addFunction($function);
 		}
 
@@ -110,15 +112,32 @@ class Template {
 		return $twig;
 	}
 
-	public function fnUrl($route, $args = array(), $escaped = true) {
+	public function fnUrl($route, $args = array(), $subdomain = null, $escaped = true) {
 		if ($route === 'site')
-			return $this->router->getUrl(Conf::get('nc.assets', null));
+			return $this->router->getUrl($subdomain || $subdomain === false ? $subdomain : Conf::get('nc.assets', null));
 		if ($route === 'template')
-			return $this->router->getUrl(Conf::get('nc.assets', null)) . '/' . $this->getTemplatePath();
-		if ($route === 'assets')
-			return $this->router->getUrl(Conf::get('nc.assets', null)) . '/core/assets/' . (is_string($args) ? $args : '');
+			return $this->router->getUrl($subdomain || $subdomain === false ? $subdomain : Conf::get('nc.assets', null)) . '/' . $this->getTemplatePath();
+		if ($route === 'libs')
+			return $this->router->getUrl($subdomain || $subdomain === false ? $subdomain : Conf::get('nc.assets', null)) . '/core/libs/' . (is_string($args) ? $args : '');
 
-		return rtrim($this->router->url($route, $args, $escaped), '/');
+		return $this->router->url($route, $args, $subdomain, $escaped);
+	}
+
+	public function fnScript($name = 'script') {
+		return '<script src="' . $this->getAsset($name, 'js') . '" type="text/javascript"></script>';
+	}
+
+	public function fnStyle($name = 'style') {
+		return '<link href="' . $this->getAsset($name, 'css') . '" rel="stylesheet" type="text/css" />';
+	}
+
+	public function getAsset($name, $type) {
+		$file = glob(ABSPATH . NCORE . 'assets/' . ( $this->template ? $this->template . '/' : '' ) . $type . '/' . $name . '_v*.' . $type);
+		if (is_null($file))
+			return '';
+
+		$file = str_replace(ABSPATH, '', $file[0]);
+		return $this->router->getUrl(Conf::get('nc.assets', null)) . '/' . $file;
 	}
 
 }

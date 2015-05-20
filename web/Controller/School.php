@@ -5,8 +5,10 @@ namespace Controller;
 use Model\Object;
 use Core\Response;
 
-// organizacja szkoły
-// klasy, przedmioty, sale lekcyjne, godziny zajęć, plan lekcji
+/**
+ * organizacja szkoły
+ * klasy, przedmioty, sale lekcyjne, godziny zajęć, plan lekcji
+ */
 class School {
 
     /** @var \User\Me */
@@ -14,7 +16,9 @@ class School {
 
     /** @var \Doctrine\ORM\EntityManager */
     protected $em;
-    private $info = 'brak';
+   
+	/** @var string */
+	protected $info = 'brak';
 
     /**
      * @param \User\Me $Me
@@ -50,7 +54,6 @@ class School {
      * @Route(/admin/school)
      */
     public function index() {
-        
         return array('classes' => '$classes');
     }
 
