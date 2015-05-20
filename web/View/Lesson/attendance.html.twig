@@ -45,7 +45,17 @@
                                     <input type="radio" name="attendance{{ student.id }}" value="5" {% if attendance[student.id][l] == 5 %}checked{% endif %}>
                                     <label>NU</label>
                                 {% else %}
-                                    {{ attendance[student.id][l] }}
+                                    {% if attendance[student.id][l] == 1 %}
+                                        obecny
+                                    {% elseif attendance[student.id][l] == 2 %}
+                                        nieobecny
+                                    {% elseif attendance[student.id][l] == 3 %}
+                                        spóźniony
+                                    {% elseif attendance[student.id][l] == 4 %}
+                                        zwolniony
+                                    {% elseif attendance[student.id][l] == 5 %}
+                                        nieobecny usprawiedliwiony
+                                    {% endif%}
                                 {% endif %}
                             </td>
 
@@ -67,7 +77,7 @@
         </div>
     </form>
 
-    
+
 
     <script type="text/javascript" >
         $(document).ready(function () {
@@ -84,7 +94,7 @@
                 });
             });
         });
-        
+
         // zapis opisu ocen
         $("#attendance-form").submit(function (event) {
             $("#attendance-chart").append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');

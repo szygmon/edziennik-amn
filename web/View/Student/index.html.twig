@@ -149,13 +149,13 @@
                                         <div class="info-box bg-green">
                                             <span class="info-box-icon">{{ i }}</span>
                                             <div class="info-box-content">
-                                                <div class="pull-right">{{ hours[i].fromTime|date('H:i') }}</div>
+                                                <div class="pull-right">{{ hours[i-1].fromTime|date('H:i') }}</div>
                                                 <span class="info-box-text">{{ plan['today'][i].subject.subject }}</span>
                                                 <span class="info-box-text">{% if plan['today'][i].classroom %} <small>s.</small> {{ plan['today'][i].classroom.name }}{% endif %}&nbsp;</span>
                                                 <div class="progress">
                                                     <div class="progress-bar" style="width: 70%"></div>
                                                 </div>
-                                                <div class="pull-right">{{ hours[i].toTime|date('H:i') }}</div>
+                                                <div class="pull-right">{{ hours[i-1].toTime|date('H:i') }}</div>
                                                 <span class="progress-description">
                                                     {{ plan['today'][i].teacher.givenName }} {{ plan['today'][i].teacher.familyName }}
                                                 </span>

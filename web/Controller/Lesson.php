@@ -160,14 +160,16 @@ class Lesson {
             $lesson = $this->em->getRepository('\Model\\Lesson')->find($id);
 
             foreach ($class->getStudents() as $student) {
-                $a = $this->em->getRepository('\Model\\Attendance')->findOneBy(array('student' => $student, 'lesson' => $lesson));
-                if (!$a) {
-                    $a = new \Model\Attendance();
-                    $a->setStudent($student);
-                    $a->setLesson($lesson);
-                    $this->em->persist($a);
+                if ($_POST['attendance' . $student->getId()]) {
+                    $a = $this->em->getRepository('\Model\\Attendance')->findOneBy(array('student' => $student, 'lesson' => $lesson));
+                    if (!$a) {
+                        $a = new \Model\Attendance();
+                        $a->setStudent($student);
+                        $a->setLesson($lesson);
+                        $this->em->persist($a);
+                    }
+                    $a->setPresence($_POST['attendance' . $student->getId()]);
                 }
-                $a->setPresence($_POST['attendance' . $student->getId()]);
             }
             $this->em->flush();
             $Router->redirect('Lesson/editLesson', array('id' => $id));

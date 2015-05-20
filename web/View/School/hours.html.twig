@@ -2,9 +2,9 @@
 
 {% block title %}eDziennik AMN - godziny zajęć{% endblock %}
 
-{% block head %}
+{#% block head %}
     <link href="{{ url('template') }}/css/bootstrap-timepicker.min.css" rel="stylesheet" type="text/css" />
-{% endblock %}
+{% endblock %#}
 
 {% block content %}
 
@@ -60,11 +60,11 @@
             $("#school-category-sidebar, #hours-sidebar").addClass("treeview active");
 
             //Timepicker
-            $(".timepicker").timepicker({
+            /*/$(".timepicker").timepicker({
                 showInputs: false,
                 minuteStep: 5,
                 showMeridian: false
-            });
+            });*/
         </script>
 
     {% endblock %}

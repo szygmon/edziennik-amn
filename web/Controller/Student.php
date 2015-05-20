@@ -90,13 +90,30 @@ class Student {
                     $subjects[$r->getSubject()->getId()] = $r->getSubject();
                 }
                 $ratings[$r->getSubject()->getId()][$r->getRatingDesc()->getOrderDesc()] = $r;
-                //$ratingDescs[$r->getSubject()->getId()][$r->getRatingDesc()->getOrderDesc()] = $r->getRatingDesc();
-                if (isset($ratingsSum[$r->getSubject()->getId()])) {
-                    $ratingsSum[$r->getSubject()->getId()] += $r->getValue() * $r->getRatingDesc()->getWeight();
-                    $counter[$r->getSubject()->getId()] += $r->getRatingDesc()->getWeight();
-                } else {
-                    $ratingsSum[$r->getSubject()->getId()] = $r->getValue() * $r->getRatingDesc()->getWeight();
-                    $counter[$r->getSubject()->getId()] = $r->getRatingDesc()->getWeight();
+                if (is_numeric(substr($r->getValue(), 0, 1))) {
+                    if (strpos($r->getValue(), '/')) { // jeśli poprawiana ocena
+                        $v = explode('/', $r->getValue());
+                        for ($i = 0; $i < 2; $i++) {
+                            if (substr($v[$i], 1, 1) == '+')
+                                $v[$i] = substr($v[$i], 0, 1) + 0.25;
+                            else if (substr($v[$i], 1, 1) == '-')
+                                $v[$i] = substr($v[$i], 0, 1) - 0.25;
+                        }
+                        $val = ($v[0] + $v[1]) / 2;
+                    } else { // sama ocena bez poprawy
+                        $val = $r->getValue();
+                        if (substr($val, 1, 1) == '+')
+                            $val = substr($val, 0, 1) + 0.25;
+                        else if (substr($val, 1, 1) == '-')
+                            $val = substr($val, 0, 1) - 0.25;
+                    }
+                    if (isset($ratingsSum[$r->getSubject()->getId()])) {
+                        $ratingsSum[$r->getSubject()->getId()] += $val * $r->getRatingDesc()->getWeight();
+                        $counter[$r->getSubject()->getId()] += $r->getRatingDesc()->getWeight();
+                    } else {
+                        $ratingsSum[$r->getSubject()->getId()] = $val * $r->getRatingDesc()->getWeight();
+                        $counter[$r->getSubject()->getId()] = $r->getRatingDesc()->getWeight();
+                    }
                 }
             }
         }
