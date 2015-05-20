@@ -211,6 +211,13 @@ class Me {
             return false;
     }
 
+    public function isStudent() {
+        if ($this->model instanceof \Model\Student)
+            return true;
+        else
+            return false;
+    }
+
     // lista grup //    
     public function groupList(&$array, $criteria = array('mainGroup' => NULL), $offset = 0, $lvl = 0) {
         $em = \Di::get('em');

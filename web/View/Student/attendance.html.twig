@@ -99,82 +99,84 @@
                                 <div class="col-md-2">
                                     {% if lesson[d][i].subject.subject %}
                                         <div class="info-box {% if attendance[d][i].presence == 1 %}bg-green
-                                                    {% elseif attendance[d][i].presence == 2 %}bg-orange
-                                                    {% elseif attendance[d][i].presence == 3 %}bg-yellow
-                                                    {% elseif attendance[d][i].presence == 4 %}bg-green
-                                                    {% elseif attendance[d][i].presence == 5 %}bg-green
-                                                    {% else %}bg-gray
-                                                    {% endif %}">
-                                            <div class="info-box-content plan-plan">
-                                                <span class="info-box-text">{{ lesson[d][i].subject.subject }}</span>
-                                                <span class="info-box-text">
-                                                    {% if attendance[d][i].presence == 1 %} obecność
-                                                    {% elseif attendance[d][i].presence == 2 %} nieobecność 
-                                                    {% elseif attendance[d][i].presence == 3 %} spóźnienie
-                                                    {% elseif attendance[d][i].presence == 4 %} zwolnienie
-                                                    {% elseif attendance[d][i].presence == 5 %} nieobecność uspraw. 
-                                                    {% else %} B/D
-                                                    {% endif %}
-                                                </span>
-                                                <div class="progress">
-                                                    <div class="progress-bar" style="width: 70%"></div>
-                                                </div>
-                                                <span class="progress-description">
-                                                    {{ lesson[d][i].teacher.givenName }} {{ lesson[d][i].teacher.familyName }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <div class="info-box bg-gray">
-                                            <div class="info-box-content plan-plan">
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% else %}
-                                <div class="col-md-2">
-                                    <div class="info-box bg-blue">
-                                        <span class="info-box-icon plan-number">{{ i }}</span>
-                                        <div class="info-box-content plan-hour">
-                                            <span class="info-box-number">{{ hours[i-1].fromTime|date('H:i') }}</span>
+                                        {% elseif attendance[d][i].presence == 2 %}bg-orange
+                                        {% elseif attendance[d][i].presence == 3 %}bg-yellow
+                                        {% elseif attendance[d][i].presence == 4 %}bg-green
+                                        {% elseif attendance[d][i].presence == 5 %}bg-green
+                                        {% else %}bg-gray
+                                        {% endif %}">
+                                        <div class="info-box-content plan-plan">
+                                            <span class="info-box-text">{{ lesson[d][i].subject.subject }}</span>
+                                            <span class="info-box-text">
+                                                {% if attendance[d][i].presence == 1 %} obecność
+                                                {% elseif attendance[d][i].presence == 2 %} nieobecność 
+                                                {% elseif attendance[d][i].presence == 3 %} spóźnienie
+                                                {% elseif attendance[d][i].presence == 4 %} zwolnienie
+                                                {% elseif attendance[d][i].presence == 5 %} nieobecność uspraw. 
+                                                {% else %} B/D
+                                                {% endif %}
+                                            </span>
                                             <div class="progress">
                                                 <div class="progress-bar" style="width: 70%"></div>
                                             </div>
-                                            <span class="progress-description">{{ hours[i-1].toTime|date('H:i') }}</span>
+                                            <span class="progress-description">
+                                                {{ lesson[d][i].teacher.givenName }} {{ lesson[d][i].teacher.familyName }}
+                                            </span>
                                         </div>
                                     </div>
+                                {% else %}
+                                    <div class="info-box bg-gray">
+                                        <div class="info-box-content plan-plan">
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="col-md-2">
+                                <div class="info-box bg-blue">
+                                    <span class="info-box-icon plan-number">{{ i }}</span>
+                                    <div class="info-box-content plan-hour">
+                                        <span class="info-box-number">{{ hours[i-1].fromTime|date('H:i') }}</span>
+                                        <div class="progress">
+                                            <div class="progress-bar" style="width: 70%"></div>
+                                        </div>
+                                        <span class="progress-description">{{ hours[i-1].toTime|date('H:i') }}</span>
+                                    </div>
                                 </div>
+                            </div>
                             {% endif %}
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-            </div><!-- /.box-body -->
-        </div>
-    </section>
-    <style type="text/css">
-        .plan-number {
-            width: 30px !important;
-        }
-        .plan-hour {
-            margin-left: 30px !important;
-        }
-        .plan-plan {
-            margin-left: 0 !important;
-        }
-        .plan-top {
-            margin:0 auto !important;
-        }
-        .plan-top-margin {
-            margin-bottom: 10px;
-        }
-        .divlink {
-            cursor: pointer;
-        }
-    </style>
-    <script type="text/javascript">
-        $(document).delegate('.divlink', 'click', function () {
-            window.location = $(this).find('a').attr('href');
-        });
-    </script>
+                                {% endfor %}
+                                </div>
+                                {% endfor %}
+                                </div><!-- /.box-body -->
+                            </div>
+                        </section>
+                        <style type="text/css">
+                            .plan-number {
+                                width: 30px !important;
+                            }
+                            .plan-hour {
+                                margin-left: 30px !important;
+                            }
+                            .plan-plan {
+                                margin-left: 0 !important;
+                            }
+                            .plan-top {
+                                margin:0 auto !important;
+                            }
+                            .plan-top-margin {
+                                margin-bottom: 10px;
+                            }
+                            .divlink {
+                                cursor: pointer;
+                            }
+                        </style>
+                        <script type="text/javascript">
+                            $(document).delegate('.divlink', 'click', function () {
+                                window.location = $(this).find('a').attr('href');
+                            });
 
-{% endblock %}
+                            $("#student-category-sidebar, #student-attendance-sidebar").addClass("treeview active");
+                        </script>
+
+                        {% endblock %}

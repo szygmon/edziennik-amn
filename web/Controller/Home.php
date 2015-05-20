@@ -36,7 +36,8 @@ class Home {
         if ($Me->isLogged()) {
             switch ($Me->getUserType()) {
                 case 'uczeń':
-                    return new Response([], 'Student/index');
+                    //return new Response([], 'Student/index');
+                    $Router->redirect('Student/index');
                     break;
                 default:
                     return new Response([], 'Home/indexSchool');

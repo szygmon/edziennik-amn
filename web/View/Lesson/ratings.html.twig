@@ -10,6 +10,13 @@
     <link href="{{ url('template') }}/css/bootstrap-colorpicker.min.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+    <div class="pad margin no-print">
+        <div class="callout callout-info" style="margin-bottom: 0!important;">												
+            <h4><i class="fa fa-info"></i> Informacja</h4>
+            Oceny jak w dzienniku papierowym: od 1 do 6 z możliwością poprawy (np. 1/3-). + (plus) dodaje 0,25, a - (minus) odejmuje 0,25 od oceny. Wartości oceny bez spacji!<br/>
+            Wpis nie zaczynający się od cyfry nie będzie liczony do średniej.
+        </div>
+    </div>
     <form id="ratings-form" name="inputform" method="POST" action="{{ url('Lesson/editLesson', {'id': lesson.id }) }}">
         <table class="table table-striped table-bordered">
             <thead>
@@ -67,12 +74,12 @@
 
                         <div class="form-group">
                             <label class="control-label">Pełny opis:<span class="text-red">*</span></label>
-                            <input type="text" name="desc" class="form-control" id="rating-desc-input" />
+                            <input type="text" name="desc" class="form-control" id="rating-desc-input" required/>
                         </div>
 
                         <div class="form-group">
                             <label class="control-label">Skrócony opis (do 3 znaków):<span class="text-red">*</span></label>
-                            <input type="text" name="shortDesc" class="form-control" id="rating-shortdesc-input" maxlength="3" />
+                            <input type="text" name="shortDesc" class="form-control" id="rating-shortdesc-input" maxlength="3" required />
                         </div>
 
                         <div class="form-group">
@@ -117,24 +124,6 @@
             lmodal.find('#rating-shortdesc-input').val(lres[2]);
             lmodal.find('#rating-weight-input').val(lres[3]);
             lmodal.find('#rating-color-input').val(lres[4]);
-        });
-
-        // walidacja
-        $("input[name$='saveRatingDesc']").on('click', function (e) {
-            var rd = document.getElementById('rating-desc-input');
-            var rsd = document.getElementById('rating-shortdesc-input');
-            if (rd.value == '') {
-                e.preventDefault;
-                rd.setCustomValidity('Wymagany opis oceny!');
-            } else {
-                rd.setCustomValidity('');
-            }
-            if (rsd.value == '') {
-                e.preventDefault;
-                rsd.setCustomValidity('Wymagany skrócony opis!');
-            } else {
-                rsd.setCustomValidity('');
-            }
         });
 
         // zapis opisu ocen

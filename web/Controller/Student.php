@@ -29,9 +29,46 @@ class Student {
      * @Route(/student)
      */
     public function index() {
+        $year = $this->me->getActualYear();
+        foreach ($this->me->getModel()->getClass() as $c) {
+            if ($c->getYear() == $year)
+                $class = $c;
+        }
 
+        $groups = $this->me->getModel()->getGroups();
+        if ($groups) {
+            foreach ($groups as $g) {
+                $gids[] = $g->getId();
+            }
+        } else {
+            $gids = array();
+        }
+        $plan = $this->em->createQueryBuilder()
+                ->select('p')
+                ->from('\Model\\Plan', 'p')
+                ->where('p.fromDate <= ?1 AND p.toDate >= ?1 AND p.class = ?2 AND (p.group is NULL OR p.group IN (?3)) AND (p.day = ?4 OR p.day = ?5) ')
+                ->orderBy('p.day')
+                ->orderBy('p.hour')
+                ->setParameters(array(1 => new \DateTime(), 2 => $class, 3 => $gids, 4 => date('N'), 5 => (date('N') + 1)))
+                ->getQuery()
+                ->getResult();
+        foreach ($plan as $p) {
+            if ($p->getDay() >= date('N')) {
+                $i = $p->getDay() - date('N');
+                if (date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $i . ' days')) <= date('Y-m-d', $p->getToDate()->getTimestamp())) {
+                    $s[$p->getDay() == date('N') ? 'today' : 'tomorrow'][$p->getHour()->getId()] = $p;
+                }
+            } else {
+                $i = 7 - (date('N') - $p->getDay());
+                if (date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $i . ' days')) <= date('Y-m-d', $p->getToDate()->getTimestamp())) {
+                    $s[$p->getDay() == date('N') ? 'today' : 'tomorrow'][$p->getHour()->getId()] = $p;
+                }
+            }
+        }
 
-        return array('classes' => $classes);
+        $hours = $this->em->getRepository('\Model\\Hour')->findAll();
+
+        return array('plan' => $s, 'hours' => $hours);
     }
 
     /**
@@ -159,7 +196,7 @@ class Student {
         }
         $startDate = $date[1];
         $endDate = date("Y-m-d", strtotime($startDate . ' + 4 days'));
-        
+
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
         $dayname = array('godzina', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek');
 

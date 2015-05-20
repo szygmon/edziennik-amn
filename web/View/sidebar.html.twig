@@ -80,7 +80,22 @@
                 </li>
 
             {% endif %}
+            {% if Me.isStudent %}
+                <li class="header">MENU UCZNIA</li>
 
+                <li class="treeview" id="student-category-sidebar">
+                    <a href="#">
+                        <i class="fa fa-edit"></i> <span>Dziennik</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li id="student-index-sidebar"><a href="{{ url('Student/index') }}"><i class="fa fa-circle-o"></i> Strona główna</a></li>
+                        <li id="student-ratings-sidebar"><a href="{{ url('Student/ratings') }}"><i class="fa fa-circle-o"></i> Oceny</a></li>
+                        <li id="student-attendance-sidebar"><a href="{{ url('Student/attendance') }}"><i class="fa fa-circle-o"></i> Frekwencja</a></li>
+                        <li id="student-plan-sidebar"><a href="{{ url('Student/plan') }}"><i class="fa fa-circle-o"></i> Plan lekcji</a></li>
+                        <li id=""><a href="#"><i class="fa fa-circle-o"></i> Statystyki</a></li>
+                    </ul>
+                </li>
+            {% endif %}
         </ul>
     </section>
     <!-- /.sidebar -->

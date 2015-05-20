@@ -181,26 +181,6 @@ class Lesson {
                 'subject' => $lesson->getSubject(),
                 'semester' => $this->me->getActualSemester() //////////////////////////////// tylko oceny z aktualnego semestru
                     ), array('orderDesc' => 'ASC'));
-            foreach ($ratingDescs as $rd) {
-                $ratingd[$rd->getOrderDesc()] = $rd;
-                if ($rd->getRatings()) {
-                    foreach ($rd->getRatings() as $r) {
-                        $ratings[$r->getStudent()->getId()][$rd->getOrderDesc()] = $r;
-                        if (isset($ratingsSum[$r->getStudent()->getId()])) {
-                            $ratingsSum[$r->getStudent()->getId()] += $r->getValue() * $rd->getWeight();
-                            $counter[$r->getStudent()->getId()] += $rd->getWeight();
-                        } else {
-                            $ratingsSum[$r->getStudent()->getId()] = $r->getValue() * $rd->getWeight();
-                            $counter[$r->getStudent()->getId()] = $rd->getWeight();
-                        }
-                    }
-                }
-            }
-            if (isset($ratingsSum)) {
-                foreach ($ratingsSum as $key => $value) { // liczenie średniej
-                    $ratingsAv[$key] = round($value / $counter[$key], 2);
-                }
-            }
         } else {
             $lesson = null;
             $ratings = null;
@@ -230,10 +210,10 @@ class Lesson {
         }
         $startDate = $date[1];
         $endDate = date("Y-m-d", strtotime($startDate . ' + 4 days'));
-        
+
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
         $dayname = array('godzina', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek');
-        
+
         return array('startDate' => $startDate, 'endDate' => $endDate, 'lessons' => $data, 'hours' => $hours, 'dayname' => $dayname, 'date' => $date);
     }
 
@@ -278,12 +258,30 @@ class Lesson {
                 if ($rd->getRatings()) {
                     foreach ($rd->getRatings() as $r) {
                         $ratings[$r->getStudent()->getId()][$rd->getOrderDesc()] = $r;
-                        if (isset($ratingsSum[$r->getStudent()->getId()])) {
-                            $ratingsSum[$r->getStudent()->getId()] += $r->getValue() * $rd->getWeight();
-                            $counter[$r->getStudent()->getId()] += $rd->getWeight();
-                        } else {
-                            $ratingsSum[$r->getStudent()->getId()] = $r->getValue() * $rd->getWeight();
-                            $counter[$r->getStudent()->getId()] = $rd->getWeight();
+                        if (is_numeric(substr($r->getValue(), 0, 1))) {
+                            if (strpos($r->getValue(), '/')) { // jeśli poprawiana ocena
+                                $v = explode('/', $r->getValue());
+                                for ($i = 0; $i < 2; $i++) {
+                                    if (substr($v[$i], 1, 1) == '+')
+                                        $v[$i] = substr($v[$i], 0, 1) + 0.25;
+                                    else if (substr($v[$i], 1, 1) == '-')
+                                        $v[$i] = substr($v[$i], 0, 1) - 0.25;
+                                }
+                                $val = ($v[0] + $v[1]) / 2;
+                            } else { // sama ocena bez poprawy
+                                $val = $r->getValue();
+                                if (substr($val, 1, 1) == '+')
+                                    $val = substr($val, 0, 1) + 0.25;
+                                else if (substr($val, 1, 1) == '-')
+                                    $val = substr($val, 0, 1) - 0.25;
+                            }
+                            if (isset($ratingsSum[$r->getStudent()->getId()])) {
+                                $ratingsSum[$r->getStudent()->getId()] += $val * $rd->getWeight();
+                                $counter[$r->getStudent()->getId()] += $rd->getWeight();
+                            } else {
+                                $ratingsSum[$r->getStudent()->getId()] = $val * $rd->getWeight();
+                                $counter[$r->getStudent()->getId()] = $rd->getWeight();
+                            }
                         }
                     }
                 }
