@@ -32,7 +32,7 @@ class Router {
 	private $response;
 
 	function __construct() {
-		if (Conf::get('nc.subdomains', false) && $_SERVER['HTTP_HOST'] != Conf::get('nc.site'))
+		if (Conf::get('nc.subdomains', false) && isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] != Conf::get('nc.site'))
 			$this->subdomain = rtrim(str_replace(Conf::get('nc.domain'), '', $_SERVER['HTTP_HOST']), '.');
 		if (isset($_SERVER['REQUEST_URI']))
 			$this->path = trim(reset(explode('?', $_SERVER['REQUEST_URI'])), '/');
@@ -217,15 +217,15 @@ class Router {
 	public function getUrl($subdomain = null) {
 		if (is_null($subdomain))
 			$subdomain = $this->subdomain;
-		
+
 		return 'http' . (empty($_SERVER['HTTPS']) ? '' : 's') . '://'
 				. (is_null($subdomain) || $subdomain === false ? Conf::get('nc.site') : $subdomain . '.' . ltrim(Conf::get('nc.domain'), '.'));
 	}
-	
+
 	public function redirect($controller, array $args = array(), $subdomain = null, $escaped = true) {
 		Cookie::destruct();
 		header("location: " . $this->url($controller, $args, $subdomain, $escaped));
 		exit;
 	}
-	
+
 }
