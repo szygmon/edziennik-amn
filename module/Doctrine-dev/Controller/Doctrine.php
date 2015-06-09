@@ -27,7 +27,7 @@ class Doctrine {
 
 		$schemaTool = new SchemaTool($this->em);
 		$cmf = $this->em->getMetadataFactory();
-		$sqls = $schemaTool->getUpdateSchemaSql($cmf->getAllMetadata(), true);
+		$sqls = $schemaTool->getUpdateSchemaSql($cmf->getAllMetadata(), false);
 
 		return array('sqls' => $sqls);
 	}

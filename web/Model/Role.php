@@ -18,4 +18,20 @@ class Role {
 	/** @Column(type="string") */
 	protected $name;
 
+	/**
+	 * @return string
+	 */
+	public function getName() {
+		return $this->name;
+	}
+
+	/**
+	 * @param string $name
+	 * @return \Model\Role
+	 */
+	public function setName($name) {
+		$this->name = $name;
+		return $this;
+	}
+
 }

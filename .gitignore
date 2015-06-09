@@ -1,7 +1,9 @@
+core/cache/*
+core/.gitignore
+core/composer.json
 !files/
 files/*
 !files/user/
 files/user/*
 !files/user/default.jpg
-core/cache/*
-/local.php
+local.php

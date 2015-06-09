@@ -3,10 +3,12 @@
 namespace Model;
 
 use \Doctrine\Common\Collections\ArrayCollection as Collection;
+use \Doctrine\ORM\Mapping\Table;
+
 
 /**
  * @Entity()
- * @Table(schema="public")
+ * @Table(name="public.school", schema="public")
  */
 class School {
 
@@ -31,9 +33,6 @@ class School {
 
 	/** @Column(type="datetime") */
 	protected $ts;
-
-	/** @OneToMany(targetEntity="\Model\User", mappedBy="school") */
-	protected $users;
 
 	public function __construct() {
 		if (!isset($this->ts))

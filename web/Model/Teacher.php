@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection as Collection;
  */
 class Teacher extends \Model\User {
 
-    //use \AutoProperty;
+    use \AutoProperty;
     /**
      * @Column(type="integer", nullable=true) 
      */

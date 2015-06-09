@@ -2,80 +2,82 @@
 
 namespace Model;
 
+use Doctrine\Common\Collections\ArrayCollection as Collection;
+
 /**
  * @Entity
  */
 class Student extends User {
 
-    use \AutoProperty;
+	use \AutoProperty;
 
-    /**
-     * @Column(type="string", length=45, nullable=true)
-     */
-    protected $registrationNr;
+	/**
+	 * @Column(type="string", length=45, nullable=true)
+	 */
+	protected $registrationNr;
 
-    /**
-     * @Column(type="string", length=11, nullable=true) 
-     */
-    protected $pesel;
+	/**
+	 * @Column(type="string", length=11, nullable=true) 
+	 */
+	protected $pesel;
 
-    /**
-     * @Column(type="date", nullable=true)
-     */
-    protected $birthdate;
+	/**
+	 * @Column(type="date", nullable=true)
+	 */
+	protected $birthdate;
 
-    /**
-     * @Column(type="string", length=45, nullable=true) 
-     */
-    protected $birthplace;
+	/**
+	 * @Column(type="string", length=45, nullable=true) 
+	 */
+	protected $birthplace;
 
-    /** @OneToMany(targetEntity="\Model\Rating", mappedBy="student") */
-    protected $ratings;
+	/** @OneToMany(targetEntity="\Model\Rating", mappedBy="student") */
+	protected $ratings;
 
-    /** @OneToMany(targetEntity="\Model\Attendance", mappedBy="student") */
-    protected $attendances;
+	/** @OneToMany(targetEntity="\Model\Attendance", mappedBy="student") */
+	protected $attendances;
 
-    /**
-     * @ManyToMany(targetEntity="\Model\Group", inversedBy="students")
-     * @JoinTable(name="students_groups")
-     */
-    protected $groups;
+	/**
+	 * @ManyToMany(targetEntity="\Model\Group", inversedBy="students")
+	 * @JoinTable(name="students_groups")
+	 */
+	protected $groups;
 
-    /**
-     * @ManyToMany(targetEntity="\Model\Clas", inversedBy="students")
-     * @JoinTable(name="students_class")
-     */
-    protected $class;
+	/**
+	 * @ManyToMany(targetEntity="\Model\Clas", inversedBy="students")
+	 * @JoinTable(name="students_class")
+	 */
+	protected $class;
 
-    /**
-     * @OneToOne(targetEntity="\Model\Father", inversedBy="student")
-     */
-    protected $father;
+	/**
+	 * @OneToOne(targetEntity="\Model\Parents", inversedBy="student")
+	 */
+	protected $parents;
 
-    public function addClass(\Model\Clas $class = null) {
-        $this->class->add($class);
-    }
+	public function addClass(\Model\Clas $class = null) {
+		$this->class->add($class);
+	}
 
-    public function removeClass(\Model\Clas $class) {
-        $this->class->removeElement($class);
-    }
+	public function removeClass(\Model\Clas $class) {
+		$this->class->removeElement($class);
+	}
 
-    public function addGroup(\Model\Group $group = null) {
-        $this->groups->add($group);
-    }
+	public function addGroup(\Model\Group $group = null) {
+		$this->groups->add($group);
+	}
 
-    public function removeGroup(\Model\Group $group) {
-        $this->groups->removeElement($group);
-    }
+	public function removeGroup(\Model\Group $group) {
+		$this->groups->removeElement($group);
+	}
 
-    public function removeAllGroups() {
-        foreach ($this->groups as $s)
-            $this->groups->removeElement($s);
-    }
+	public function removeAllGroups() {
+		foreach ($this->groups as $s)
+			$this->groups->removeElement($s);
+	}
 
-    public function __construct() {
-        $this->class = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	public function __construct() {
+		$this->class = new Collection;
+		$this->groups = new Collection;
+	}
 
 }
