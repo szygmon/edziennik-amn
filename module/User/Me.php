@@ -117,7 +117,7 @@ class Me {
 
         $em = \Di::get('em');
 
-        $lessons = $em->getRepository('\Model\\Lesson')->findBy(array('date' => new \DateTime($date)));
+        $lessons = $em->getRepository('\Model\\Lesson')->findBy(array('date' => new \DateTime($date), 'teacher' => $this->getModel()));
 
         foreach ($lessons as $lesson) {
             $l[] = $lesson->getHour()->getId();
