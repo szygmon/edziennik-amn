@@ -24,26 +24,28 @@
         <!-- /.search form -->
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu">
-            <li class="header">ADMINISTRATOR</li>
+            {% if Me.auth('admin') %}
+                <li class="header">ADMINISTRATOR</li>
 
-            {# active  gdzies ... dodaj do aktywnej zakłądki :-) #}
-            <li class="treeview" id="school-category-sidebar">
-                <a href="#">
-                    <i class="fa fa-gear"></i> <span>Szkoła</span> <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <li id="semesters-sidebar"><a href="{{ url('School/semesters') }}"><i class="fa fa-circle-o"></i> Semestry</a></li>
-                    <li id="classes-sidebar"><a href="{{ url('School/classes') }}"><i class="fa fa-circle-o"></i> Klasy</a></li>
-                    <li id="groups-sidebar"><a href="{{ url('School/groups') }}"><i class="fa fa-circle-o"></i> Grupy</a></li>
-                    <li id="subjects-sidebar"><a href="{{ url('School/subjects') }}"><i class="fa fa-circle-o"></i> Przedmioty</a></li>
-                    <li id="classrooms-sidebar"><a href="{{ url('School/classrooms') }}"><i class="fa fa-circle-o"></i> Sale lekcyjne</a></li>
-                    <li id="hours-sidebar"><a href="{{ url('School/hours') }}"><i class="fa fa-circle-o"></i> Godziny zajęć</a></li>
-                    <li id="teachers-sidebar"><a href="{{ url('School/teachers') }}"><i class="fa fa-circle-o"></i> Nauczyciele</a></li>
-                    <li id="students-sidebar"><a href="{{ url('School/students') }}"><i class="fa fa-circle-o"></i> Uczniowie</a></li>
-                    <li id="plans-sidebar"><a href="{{ url('School/plans') }}"><i class="fa fa-circle-o"></i> Plan lekcji</a></li>
-                </ul>
-            </li>
-
+                {# active  gdzies ... dodaj do aktywnej zakłądki :-) #}
+                <li class="treeview" id="school-category-sidebar">
+                    <a href="#">
+                        <i class="fa fa-gear"></i> <span>Szkoła</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li id="semesters-sidebar"><a href="{{ url('School/semesters') }}"><i class="fa fa-circle-o"></i> Semestry</a></li>
+                        <li id="classes-sidebar"><a href="{{ url('School/classes') }}"><i class="fa fa-circle-o"></i> Klasy</a></li>
+                        <li id="groups-sidebar"><a href="{{ url('School/groups') }}"><i class="fa fa-circle-o"></i> Grupy</a></li>
+                        <li id="subjects-sidebar"><a href="{{ url('School/subjects') }}"><i class="fa fa-circle-o"></i> Przedmioty</a></li>
+                        <li id="classrooms-sidebar"><a href="{{ url('School/classrooms') }}"><i class="fa fa-circle-o"></i> Sale lekcyjne</a></li>
+                        <li id="hours-sidebar"><a href="{{ url('School/hours') }}"><i class="fa fa-circle-o"></i> Godziny zajęć</a></li>
+                        <li id="teachers-sidebar"><a href="{{ url('School/teachers') }}"><i class="fa fa-circle-o"></i> Nauczyciele</a></li>
+                        <li id="students-sidebar"><a href="{{ url('School/students') }}"><i class="fa fa-circle-o"></i> Uczniowie</a></li>
+                        <li id="plans-sidebar"><a href="{{ url('School/plans') }}"><i class="fa fa-circle-o"></i> Plan lekcji</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+            
             {% if Me.auth('teacher') %}
                 <li class="header">NAUCZYCIEL</li>
 
