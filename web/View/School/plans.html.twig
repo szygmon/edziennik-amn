@@ -23,7 +23,7 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Plan lekcji
+                Szkoła<small>Plan lekcji</small>
             </h1>
         </section>
 
@@ -133,7 +133,7 @@
                                 <select name="teacher" class="form-control" id="teacher-input">
                                     <option value="0">-wybierz-</option>
                                     {% for t in teachers %}
-                                        <option value="{{ t.id }}">{{ t.givenName }} {{ t.familyName }}</option>
+                                        <option value="{{ t.id }}">{{ t.familyName }} {{ t.givenName }}</option>
                                     {% endfor %}
                                 </select>
                             </div>

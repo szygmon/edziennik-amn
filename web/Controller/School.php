@@ -257,7 +257,7 @@ class School {
         }
 
         // lista
-        $classrooms = $this->em->getRepository('Model\\Classroom')->findAll();
+        $classrooms = $this->em->getRepository('Model\\Classroom')->findBy(array(), array('name' => 'ASC'));
 
         // czyszczenie infa
         $info = $this->info;
@@ -408,11 +408,11 @@ class School {
         // lista
         $year = $this->me->getActualYear();
         $classes = $this->em->getRepository('Model\\Clas')->findBy(array('year' => $year), array('name' => 'ASC'));
-        $subjects = $this->em->getRepository('Model\\Subject')->findAll();
-        $classrooms = $this->em->getRepository('Model\\Classroom')->findAll();
+        $subjects = $this->em->getRepository('Model\\Subject')->findBy(array(), array('subject' => 'ASC'));
+        $classrooms = $this->em->getRepository('Model\\Classroom')->findBy(array(), array('name' => 'ASC'));
         $groups = null;
         $this->me->groupList($groups);
-        $teachers = $this->em->getRepository('\Model\\Teacher')->findAll();
+        $teachers = $this->em->getRepository('\Model\\Teacher')->findBy(array(), array('familyName' => 'ASC'));
         $hours = $this->em->getRepository('\Model\\Hour')->findAll();
 
         // czyszczenie infa
@@ -501,7 +501,7 @@ class School {
         }
 
         // lista
-        $subjects = $this->em->getRepository('Model\\Subject')->findAll();
+        $subjects = $this->em->getRepository('Model\\Subject')->findBy(array(), array('subject' => 'ASC'));
 
         // czyszczenie infa
         $info = $this->info;
