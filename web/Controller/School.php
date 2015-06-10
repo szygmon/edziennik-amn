@@ -631,11 +631,10 @@ class School {
 
     /**
      * Nauczyciele
-     * @Route(/admin/school/teachers/{action}/{id})
-     * @param \User\Me $Me
+     * @Route(/admin/school/teachers/{action}/{id})     
      * @param \Core\Router $Router
      */
-    public function teachers($Me, $Router, $id = '', $action = '') {
+    public function teachers($Router, $action = '', $id = '') {
         // dodawanie
         if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) {
             // aktualizacja
@@ -643,14 +642,12 @@ class School {
                 $user = $this->em->getRepository('\Model\\Teacher')->find($id);
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
                 if ($check[0] && $check[0]->getId() != $id) {
-                    var_dump('jest już taki mail!');
-                    die;
+                    die('jest już taki mail!');
                 }
                 $user->setEmail($_POST['email']);
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
                 if ($check[0] && $check[0]->getId() != $id) {
-                    var_dump('jest już taki username!');
-                    die;
+                    die('jest już taki username!');
                 }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
@@ -666,14 +663,12 @@ class School {
                 $user = new \Model\Teacher();
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
                 if ($check) {
-                    var_dump('jest już taki mail!');
-                    die;
+                    die('jest już taki mail!');
                 }
                 $user->setEmail($_POST['email']);
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
                 if ($check) {
-                    var_dump('jest już taki username!');
-                    die;
+                    die('jest już taki username!');
                 }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
@@ -682,7 +677,6 @@ class School {
                     $user->setPassword('qwerty');
                 else
                     $user->setPassword($_POST['password']);
-                $user->setSchool($Me->getModel()->getSchool());
                 $this->em->persist($user);
                 $this->em->flush();
                 if (isset($_POST['saveAndAdd']))
@@ -734,10 +728,9 @@ class School {
     /**
      * Uczniowie
      * @Route(/admin/school/students/{action}/{id})
-     * @param \User\Me $Me
      * @param \Core\Router $Router
      */
-    public function students($Me, $Router, $id = '', $action = '') {
+    public function students($Router, $action = '', $id = '') {
         // dodawanie
         if (isset($_POST['save']) || isset($_POST['saveAndAdd'])) {
             // aktualizacja
@@ -745,14 +738,12 @@ class School {
                 $user = $this->em->getRepository('\Model\\Student')->find($id);
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
                 if ($check[0] && $check[0]->getId() != $id) {
-                    var_dump('jest już taki email!');
-                    die;
+                    die('jest już taki email!');
                 }
                 $user->setEmail($_POST['email']);
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
                 if ($check[0] && $check[0]->getId() != $id) {
-                    var_dump('jest już taki username!');
-                    die;
+                    die('jest już taki username!');
                 }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
@@ -774,14 +765,12 @@ class School {
                 $user = new \Model\Student();
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('email' => $_POST['email']));
                 if ($check) {
-                    var_dump('jest już taki email!');
-                    die;
+                    die('jest już taki email!');
                 }
                 $user->setEmail($_POST['email']);
                 $check = $this->em->getRepository('\Model\\User')->findBy(array('username' => $_POST['username']));
                 if ($check) {
-                    var_dump('jest już taki username!');
-                    die;
+                    die('jest już taki username!');
                 }
                 $user->setUsername($_POST['username']);
                 $user->setGivenName($_POST['givenName']);
@@ -790,7 +779,6 @@ class School {
                     $user->setPassword('qwerty');
                 else
                     $user->setPassword($_POST['password']);
-                $user->setSchool($Me->getModel()->getSchool());
                 $user->setRegistrationNr($_POST['registrationNr']);
                 $user->setPesel($_POST['pesel']);
                 $user->setBirthdate(new \DateTime($_POST['birthdate']));
