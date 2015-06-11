@@ -7,34 +7,36 @@ class HomeUtil {
 	/** @var \User\Me */
 	protected $Me;
 
-	/**
-	 * @param \User\Me $Me
-	 */
+	/** @var \Doctrine\ORM\EntityManager */
+	protected $em;
+
 	function __construct() {
 		$this->Me = Di::get('Me');
+		$this->em = Di::get('em');
 	}
 
 	public function registerForm($post) {
 		$check = Di::get('em')->getRepository('\Model\School')->findOneBy(array('alias' => $_POST['schoolAlias']));
 		if ($check)
-			die('Alias zajęty');
+			return \Notify::error('Alias zajęty!');
+		
 		$school = new School();
 		// ++ unikalność
-		$school->setName($_POST['schoolAlias']);
+
+		$school->setName($_POST['schoolName']);
+		$school->setAlias($_POST['schoolAlias']);
 		(new \UserManager)->setup($school);
 
 		$user = new \Model\User();
 		$user->setUsername($_POST['username']);
 		$user->setEmail($_POST['email']);
 		$user->setPassword($_POST['pass']);
-		$user->setSchool($school);
-
+//		$user->setSchool($school);
 		$this->em->persist($school);
 		$this->em->persist($user);
 		$this->em->flush();
 
-		$msg = "Zarejestrowano pomyślnie";
-		return;
+		return \Notify::success('Zarejestrowano pomyślnie');	
 	}
 
 	public function loginForm($post) {
