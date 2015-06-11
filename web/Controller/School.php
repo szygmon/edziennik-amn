@@ -522,7 +522,7 @@ class School {
      * Semestry
      * @Route(/admin/school/semesters/{action}/{id})
      */
-    public function semesters($id = '', $action = '') {
+    public function semesters($action = '', $id = '') {
         // dodawanie
         if (isset($_POST['save'])) {
             // aktualizacja
@@ -538,9 +538,9 @@ class School {
                 $semesters[1]->setFromDate(new \DateTime($date2[0]));
                 $semesters[1]->setToDate(new \DateTime($date2[1]));
                 $this->em->flush();
-
-                // nowy
+				\Notify::success('Zaktualizowano semestr!');
             } else {
+				// nowy
                 $year = new \Model\Year();
                 $year->setFromYear((int) $_POST['year']);
                 $year->setToYear($_POST['year'] + 1);
@@ -563,6 +563,7 @@ class School {
                 $this->em->persist($sem1);
                 $this->em->persist($sem2);
                 $this->em->flush();
+				\Notify::success('Dodano semestr!');
             }
         }
         // usuwanie
@@ -602,11 +603,8 @@ class School {
      */
     public function semestersEdit($id = '') {
         if (is_numeric($id)) {
-            \Notify::success('Zaktualizowano semestr!');
             $semester = $this->em->getRepository('\Model\\Semester')->find($id);
             $semesters = $this->em->getRepository('\Model\\Semester')->findBy(array('year' => $semester->getYear()), array('semester' => 'ASC'));
-        } else {
-            \Notify::success('Dodano semestr!');
         }
         return array('years' => $this->getYearsList(), 'semesters' => $semesters);
     }
